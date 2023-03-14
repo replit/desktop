@@ -1,18 +1,36 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 
+app.setName("Desktop");
+
+process.on("unhandledRejection", (rejection: Error) => {
+  console.error(`[Unhandled Promise Rejction] ${rejection.stack}`);
+});
+
+const instanceLock = app.requestSingleInstanceLock();
+
+// The return value of this method indicates whether or not this instance
+// of your application successfully obtained the lock.
+// If it failed to obtain the lock, you can assume that another instance
+// of your application is already running with the lock and exit immediately.
+if (!instanceLock) {
+  app.quit();
+}
+
+const URL = "https://replit.com/~";
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
+    height: 600,
     width: 800,
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, "../index.html"));
+  mainWindow.loadURL(URL);
 }
 
 // This method will be called when Electron has finished
