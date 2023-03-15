@@ -19,7 +19,8 @@ if (!instanceLock) {
 
 const URL = "https://replit.com/~";
 const icon = nativeImage.createFromPath(
-  path.join(__dirname, "assets", "prompt.png")
+  // Need the .. because dirname here is `dist`
+  path.join(__dirname, "..", "assets", "prompt.png")
 );
 
 function createWindow() {
