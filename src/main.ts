@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, nativeImage, screen } from "electron";
 import * as path from "path";
 
 app.setName("Desktop");
@@ -18,15 +18,21 @@ if (!instanceLock) {
 }
 
 const URL = "https://replit.com/~";
+const icon = nativeImage.createFromPath(`${__dirname}/assets/prompt.png`);
 
 function createWindow() {
+  // Create a window that fills the screen's available work area.
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
-    height: 600,
-    width: 800,
+    icon,
+    width,
+    height,
   });
 
   // and load the index.html of the app.
@@ -37,12 +43,15 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  app.dock.setIcon(icon);
   createWindow();
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
   });
 });
 
