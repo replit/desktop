@@ -1,7 +1,7 @@
 import { app, BrowserWindow, nativeImage, screen } from "electron";
 import * as path from "path";
 
-app.setName("Desktop");
+app.setName("Replit");
 
 process.on("unhandledRejection", (rejection: Error) => {
   console.error(`[Unhandled Promise Rejction] ${rejection.stack}`);
@@ -18,7 +18,9 @@ if (!instanceLock) {
 }
 
 const URL = "https://replit.com/~";
-const icon = nativeImage.createFromPath(`${__dirname}/assets/prompt.png`);
+const icon = nativeImage.createFromPath(
+  path.join(__dirname, "assets", "prompt.png")
+);
 
 function createWindow() {
   // Create a window that fills the screen's available work area.
@@ -43,7 +45,11 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  app.dock.setIcon(icon);
+  if (process.platform === "darwin") {
+    // MacOS only API
+    app.dock.setIcon(icon);
+  }
+
   createWindow();
 
   app.on("activate", function () {
