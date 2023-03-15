@@ -17,7 +17,6 @@ if (!instanceLock) {
   app.quit();
 }
 
-const URL = "https://replit.com/~";
 const icon = nativeImage.createFromPath(
   // Need the .. because dirname here is `dist`
   path.join(__dirname, "..", "assets", "prompt.png")
@@ -27,19 +26,23 @@ function createWindow() {
   // Create a window that fills the screen's available work area.
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
+  const title = "Replit";
+  const url = "https://replit.com/~";
+  // var(--background-root) value in Dark mode
+  const backgroundColor = "#0E1525";
 
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
+    backgroundColor,
+    title,
     icon,
     width,
     height,
   });
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(URL);
+  mainWindow.loadURL(url);
 }
 
 // This method will be called when Electron has finished
