@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeImage, screen } from "electron";
+import { app, BrowserWindow, nativeImage, screen, shell } from "electron";
 import * as path from "path";
 
 app.setName("Replit");
@@ -40,6 +40,16 @@ function createWindow() {
     icon,
     width,
     height,
+  });
+
+  mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
+    const parsedUrl = new URL(navigationUrl);
+
+    // Prevent navigation away from Replit
+    if (parsedUrl.origin !== "https://replit.com") {
+      event.preventDefault();
+      shell.openExternal(navigationUrl);
+    }
   });
 
   mainWindow.loadURL(url);
