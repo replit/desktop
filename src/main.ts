@@ -18,8 +18,7 @@ if (!instanceLock) {
 }
 
 const icon = nativeImage.createFromPath(
-  // Need the .. because dirname here is `dist`
-  path.join(__dirname, "..", "assets", "prompt.png")
+  path.join(__dirname, "assets", "prompt.png")
 );
 
 function createWindow() {
