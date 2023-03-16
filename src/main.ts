@@ -28,12 +28,16 @@ function createWindow() {
   const { width, height } = primaryDisplay.workAreaSize;
   const title = "Replit";
   const url = "https://replit.com/~";
+  const preload = path.join(__dirname, "preload.js");
   // var(--background-root) value in Dark mode
   const backgroundColor = "#0E1525";
+  // MacOS only
+  const scrollBounce = true;
 
   const mainWindow = new BrowserWindow({
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload,
+      scrollBounce
     },
     backgroundColor,
     title,
