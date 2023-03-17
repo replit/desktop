@@ -8,7 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "electron-forge start",
+    "start": "yarn build && electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
