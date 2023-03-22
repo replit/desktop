@@ -26,7 +26,7 @@ function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
   const title = "Replit";
-  const url = "https://replit.com/~";
+  const url = "https://replit.com/login?goto=/desktop";
   const preload = path.join(__dirname, "preload.js");
   // var(--background-root) value in Dark mode
   const backgroundColor = "#0E1525";
@@ -36,7 +36,7 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload,
-      scrollBounce
+      scrollBounce,
     },
     backgroundColor,
     title,
