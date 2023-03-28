@@ -10,6 +10,7 @@
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "yarn build && electron-forge start",
     "package": "electron-forge package",
+    "publish": "electron-forge publish",
     "make": "electron-forge make"
   },
   "author": "Replit",
