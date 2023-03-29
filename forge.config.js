@@ -15,19 +15,33 @@ module.exports = {
       config: {},
     },
     {
-      name: "@electron-forge/maker-zip",
-      platforms: ["darwin"],
+      name: "@electron-forge/maker-dmg",
+      config: {
+        name: "Replit",
+        icon: "./assets/logo.png",
+        overwrite: true,
+        additionalDMGOptions: {
+          "background-color": "#0E1525",
+        },
+      },
     },
     {
       name: "@electron-forge/maker-deb",
       config: {
         options: {
-          icon: "/assets/logo.png",
+          name: "replit",
+          productName: "Replit",
+          maintainer: "Replit",
+          homepage: "https://replit.com",
+          description: "Replit desktop app",
+          icon: "./assets/logo.png",
+          categories: ["Development"],
+          section: "devel",
         },
       },
     },
     {
-      name: "@electron-forge/maker-rpm",
+      name: "@electron-forge/maker-zip",
       config: {},
     },
   ],
