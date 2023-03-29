@@ -26,7 +26,7 @@ function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
   const title = "Replit";
-  const url = "https://replit.com/login?goto=/desktop?isDesktopApp=true";
+  const url = "https://replit.com/login?goto=/desktop?isInDesktopApp=true";
   const preload = path.join(__dirname, "preload.js");
   // var(--background-root) value in Dark mode
   const backgroundColor = "#0E1525";
