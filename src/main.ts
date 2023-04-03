@@ -46,10 +46,10 @@ function createWindow() {
   });
 
   mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
-    const parsedUrl = new URL(navigationUrl);
+    const url = new URL(navigationUrl);
 
-    // Prevent navigation away from Replit
-    if (parsedUrl.origin !== "https://replit.com") {
+    // Prevent navigation away from Replit or to the signup page.
+    if (url.origin !== "https://replit.com" || url.pathname === "/signup") {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
