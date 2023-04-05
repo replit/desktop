@@ -45,6 +45,11 @@ function createWindow() {
     height,
   });
 
+  // Add a custom string to user agent to make it easier to differentiate requests from desktop app
+  mainWindow.webContents.setUserAgent(
+    `${mainWindow.webContents.getUserAgent()} ReplitDesktop`
+  );
+
   mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
     const url = new URL(navigationUrl);
 
