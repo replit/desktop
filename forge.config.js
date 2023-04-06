@@ -1,6 +1,6 @@
 module.exports = {
   packagerConfig: {
-    icon: "/assets/logo",
+    icon: "./assets/logo",
     executableName: "replit",
   },
   rebuildConfig: {},
