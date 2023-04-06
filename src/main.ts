@@ -1,6 +1,9 @@
 import { app, BrowserWindow, nativeImage, screen, shell } from "electron";
 import * as path from "path";
 
+// This should run as early in the main process as possible
+if (require("electron-squirrel-startup")) app.quit();
+
 app.setName("Replit");
 
 process.on("unhandledRejection", (rejection: Error) => {
