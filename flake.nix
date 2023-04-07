@@ -21,8 +21,9 @@
         installPhase = ''
           mkdir -p $out $out/bin
           cp -R deps/replit/dist $out/dist
+          cp -R node_modules $out/
           cat <<EOF > $out/bin/replit
-          #!${pkgs.electron}/bin/electron dist/main.js
+          #!${pkgs.electron}/bin/electron $out/dist/main.js
           EOF
           chmod +x $out/bin/replit
         '';
