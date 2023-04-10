@@ -1,7 +1,29 @@
+const osxNotarize =
+  process.env.APPLE_ID &&
+  process.env.APPLE_PASSWORD &&
+  process.env.APPLE_TEAM_ID
+    ? {
+        tool: "notarytool",
+        appleId: process.env.APPLE_ID,
+        appleIdPassword: process.env.APPLE_PASSWORD,
+        teamId: process.env.APPLE_TEAM_ID,
+      }
+    : undefined;
+
+const osxSign = osxNotarize ? {} : undefined;
+
+if (!osxNotarize) {
+  console.log(
+    "Notarytool credentials not passed, skipping sign and notarize step for OSX."
+  );
+}
+
 module.exports = {
   packagerConfig: {
     icon: "./assets/logo",
     executableName: "replit",
+    osxSign,
+    osxNotarize,
   },
   rebuildConfig: {},
   hooks: {
