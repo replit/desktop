@@ -1,8 +1,17 @@
-import { app, BrowserWindow, nativeImage, screen, shell } from "electron";
+import {
+  app,
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  nativeImage,
+  screen,
+  shell,
+} from "electron";
 import * as path from "path";
 
 // This should run as early in the main process as possible
 if (require("electron-squirrel-startup")) app.quit();
+
+const IS_MACOS = process.platform === "darwin";
 
 app.setName("Replit");
 
@@ -36,6 +45,18 @@ function createWindow() {
   // MacOS only
   const scrollBounce = true;
 
+  const platformStyling: BrowserWindowConstructorOptions = IS_MACOS
+    ? {
+        titleBarStyle: "hidden",
+        titleBarOverlay: {
+          color: "var(--background-root)",
+          symbolColor: "var(--foreground-default)",
+          height: 60,
+        },
+        trafficLightPosition: { x: 20, y: 22 },
+      }
+    : {};
+
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload,
@@ -46,12 +67,30 @@ function createWindow() {
     icon,
     width,
     height,
+    ...platformStyling,
   });
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   mainWindow.webContents.setUserAgent(
     `${mainWindow.webContents.getUserAgent()} ReplitDesktop`
   );
+
+  // CSS injection for custom title bar on macOS
+  if (IS_MACOS) {
+    mainWindow.webContents.on("did-finish-load", () => {
+      mainWindow.webContents.insertCSS(`
+      header {
+        margin-left: 74px;
+        width: calc(100% - 74px) !important;
+        -webkit-app-region: drag;
+      }
+
+      header > * > * {
+        -webkit-app-region: no-drag;
+      }
+    `);
+    });
+  }
 
   mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
     const url = new URL(navigationUrl);
@@ -70,7 +109,7 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  if (process.platform === "darwin") {
+  if (IS_MACOS) {
     // MacOS only API
     app.dock.setIcon(icon);
   }
@@ -90,7 +129,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+  if (IS_MACOS) {
     app.quit();
   }
 });
