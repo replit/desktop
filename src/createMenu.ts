@@ -1,7 +1,7 @@
 import { Menu, MenuItem } from "electron";
 import createWindow from "./createWindow";
 
-export default function createMenu(): void {
+export default function createMenu(): Menu {
   const menu = new Menu();
   menu.append(
     new MenuItem({
@@ -16,5 +16,5 @@ export default function createMenu(): void {
     })
   );
 
-  Menu.setApplicationMenu(menu);
+  return menu;
 }
