@@ -75,13 +75,11 @@ export default function createWindow(): void {
     }
   });
 
-  window.webContents.on("did-navigate-in-page", async () => {
+  window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
-    // Doing this with `did-navigate-in-page` is not ideal (changing the color theme from the settings pane **does not** navigate),
-    // ideally we'd have some way to pass events from the browser application, but for now this is better than nothing.
-    const backgroundColor = await window.webContents.executeJavaScript(`
-      getComputedStyle(document.body).getPropertyValue('--background-root');
-      `);
+    const backgroundColor = await window.webContents.executeJavaScript(
+      `getComputedStyle(document.body).getPropertyValue('--background-root');`
+    );
     store.set("lastSeenBackgroundColor", backgroundColor);
   });
 
