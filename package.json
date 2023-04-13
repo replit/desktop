@@ -33,9 +33,10 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "conf": "^11.0.1",
+    "conf": "10.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
+    "json-schema-typed": "^8.0.1",
     "type-fest": "^3.8.0"
   }
 }
