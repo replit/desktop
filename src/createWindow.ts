@@ -1,16 +1,51 @@
-import { BrowserWindow, screen, shell } from "electron";
+import {
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  screen,
+  shell,
+} from "electron";
 import { appIcon as icon, preloadScript as preload } from "./constants";
+import { isMac } from "./platform";
+import store from "./store";
+
+const DEFAULT_BG_COLOR = "#0E1525";
+
+// used to be able to start the app connecting to local replit instance
+function generateReplitURL() {
+  const urlPath = "/login?goto=/desktop?isInDesktopApp=true";
+
+  if (process.env.USE_LOCAL_URL === "true") {
+    return "http://localhost:3000" + urlPath;
+  } else {
+    return "https://replit.com" + urlPath;
+  }
+}
 
 export default function createWindow(): void {
   // Create a window that fills the screen's available work area.
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
   const title = "Replit";
-  const url = "https://replit.com/login?goto=/desktop?isInDesktopApp=true";
-  // var(--background-root) value in Dark mode
-  const backgroundColor = "#0E1525";
+  const url = generateReplitURL();
+  const backgroundColor = (store.get("lastSeenBackgroundColor") ||
+    DEFAULT_BG_COLOR) as string;
+
   // MacOS only
   const scrollBounce = true;
+
+  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
+  // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
+  const platformStyling: BrowserWindowConstructorOptions = isMac()
+    ? {
+        titleBarStyle: "hidden",
+        titleBarOverlay: {
+          color: "var(--background-root)",
+          symbolColor: "var(--foreground-default)",
+          height: 60,
+        },
+        trafficLightPosition: { x: 20, y: 22 },
+      }
+    : {};
 
   const window = new BrowserWindow({
     webPreferences: {
@@ -22,6 +57,7 @@ export default function createWindow(): void {
     icon,
     width,
     height,
+    ...platformStyling,
   });
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
@@ -37,6 +73,14 @@ export default function createWindow(): void {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
+  });
+
+  window.on("close", async () => {
+    // We're capturing the background color to use as main browser window background color.
+    const backgroundColor = await window.webContents.executeJavaScript(
+      `getComputedStyle(document.body).getPropertyValue('--background-root');`
+    );
+    store.set("lastSeenBackgroundColor", backgroundColor);
   });
 
   window.loadURL(url);
