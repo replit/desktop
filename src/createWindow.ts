@@ -1,12 +1,12 @@
 import { BrowserWindow, screen, shell } from "electron";
 import { appIcon as icon, preloadScript as preload } from "./constants";
 
-export default function createWindow(): void {
+export default function createWindow(url?: string): void {
   // Create a window that fills the screen's available work area.
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
   const title = "Replit";
-  const url = "https://replit.com/login?goto=/desktop?isInDesktopApp=true";
+  url = url || "https://replit.com/login?goto=/desktop?isInDesktopApp=true";
   // var(--background-root) value in Dark mode
   const backgroundColor = "#0E1525";
   // MacOS only
