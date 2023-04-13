@@ -1,6 +1,6 @@
 import { app, Menu, BrowserWindow } from "electron";
 import createWindow from "./createWindow";
-import { appIcon } from "./constants";
+import { macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 
@@ -34,7 +34,7 @@ Menu.setApplicationMenu(applicationMenu);
 app.whenReady().then(() => {
   // MacOS only APIs
   if (isMac()) {
-    app.dock.setIcon(appIcon);
+    app.dock.setIcon(macAppIcon);
     app.dock.setMenu(dockMenu);
   }
 
