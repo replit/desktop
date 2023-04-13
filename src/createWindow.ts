@@ -1,10 +1,23 @@
 import { BrowserWindow, screen, shell } from "electron";
 import { appIcon as icon, preloadScript as preload } from "./constants";
+import store from "./store";
 
 export default function createWindow(): void {
-  // Create a window that fills the screen's available work area.
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.workAreaSize;
+  let windowBounds = store.get("bounds");
+
+  if (!windowBounds) {
+    // If no previous window size was found, create a window that fills the screen's available work area, padded slightly
+    const workArea = screen.getPrimaryDisplay().workArea;
+    const padding = 16;
+
+    windowBounds = {
+      x: workArea.x + padding,
+      y: workArea.y + padding,
+      width: workArea.width - padding * 2,
+      height: workArea.height - padding * 2,
+    };
+  }
+
   const title = "Replit";
   const url = "https://replit.com/login?goto=/desktop?isInDesktopApp=true";
   // var(--background-root) value in Dark mode
@@ -20,9 +33,9 @@ export default function createWindow(): void {
     backgroundColor,
     title,
     icon,
-    width,
-    height,
   });
+
+  window.setBounds(windowBounds);
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   window.webContents.setUserAgent(
@@ -37,6 +50,10 @@ export default function createWindow(): void {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
+  });
+
+  window.on("close", () => {
+    store.set("bounds", window.getBounds());
   });
 
   window.loadURL(url);
