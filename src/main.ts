@@ -1,17 +1,11 @@
-import {
-  app,
-  BrowserWindow,
-  BrowserWindowConstructorOptions,
-  nativeImage,
-  screen,
-  shell,
-} from "electron";
-import * as path from "path";
+import { app, Menu, BrowserWindow } from "electron";
+import createWindow from "./createWindow";
+import createMenu from "./createMenu";
+import { appIcon } from "./constants";
+import { isMac } from "./platform";
 
 // This should run as early in the main process as possible
 if (require("electron-squirrel-startup")) app.quit();
-
-const IS_MACOS = process.platform === "darwin";
 
 app.setName("Replit");
 
@@ -29,89 +23,18 @@ if (!instanceLock) {
   app.quit();
 }
 
-const icon = nativeImage.createFromPath(
-  path.join(__dirname, "assets", "logo.png")
-);
+const menu = createMenu();
 
-function createWindow() {
-  // Create a window that fills the screen's available work area.
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.workAreaSize;
-  const title = "Replit";
-  const url = "https://replit.com/login?goto=/desktop?isInDesktopApp=true";
-  const preload = path.join(__dirname, "preload.js");
-  // var(--background-root) value in Dark mode
-  const backgroundColor = "#0E1525";
-  // MacOS only
-  const scrollBounce = true;
-
-  const platformStyling: BrowserWindowConstructorOptions = IS_MACOS
-    ? {
-        titleBarStyle: "hidden",
-        titleBarOverlay: {
-          color: "var(--background-root)",
-          symbolColor: "var(--foreground-default)",
-          height: 60,
-        },
-        trafficLightPosition: { x: 20, y: 22 },
-      }
-    : {};
-
-  const mainWindow = new BrowserWindow({
-    webPreferences: {
-      preload,
-      scrollBounce,
-    },
-    backgroundColor,
-    title,
-    icon,
-    width,
-    height,
-    ...platformStyling,
-  });
-
-  // Add a custom string to user agent to make it easier to differentiate requests from desktop app
-  mainWindow.webContents.setUserAgent(
-    `${mainWindow.webContents.getUserAgent()} ReplitDesktop`
-  );
-
-  // CSS injection for custom title bar on macOS
-  if (IS_MACOS) {
-    mainWindow.webContents.on("did-finish-load", () => {
-      mainWindow.webContents.insertCSS(`
-      header {
-        margin-left: 74px;
-        width: calc(100% - 74px) !important;
-        -webkit-app-region: drag;
-      }
-
-      header > * > * {
-        -webkit-app-region: no-drag;
-      }
-    `);
-    });
-  }
-
-  mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
-    const url = new URL(navigationUrl);
-
-    // Prevent navigation away from Replit or to the signup page.
-    if (url.origin !== "https://replit.com" || url.pathname === "/signup") {
-      event.preventDefault();
-      shell.openExternal(navigationUrl);
-    }
-  });
-
-  mainWindow.loadURL(url);
-}
+Menu.setApplicationMenu(menu);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  if (IS_MACOS) {
-    // MacOS only API
-    app.dock.setIcon(icon);
+  // MacOS only APIs
+  if (isMac()) {
+    app.dock.setIcon(appIcon);
+    // app.dock.setMenu(menu); // FIXME: bring this back! - dock has a different menu than the application!
   }
 
   createWindow();
@@ -129,7 +52,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
-  if (IS_MACOS) {
+  if (isMac()) {
     app.quit();
   }
 });
