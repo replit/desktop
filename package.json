@@ -8,11 +8,11 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "yarn build && electron-forge start",
-    "start:local-url": "yarn build && USE_LOCAL_URL=true electron-forge start",
+    "start": "pnpm build && electron-forge start",
+    "start:local": "pnpm build && USE_LOCAL_URL=true electron-forge start",
     "package": "electron-forge package",
     "publish": "electron-forge publish",
-    "make": "yarn build && electron-forge make"
+    "make": "pnpm build && electron-forge make"
   },
   "author": "Replit",
   "main": "./dist/main.js",
