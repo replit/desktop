@@ -34,7 +34,7 @@ app.whenReady().then(() => {
   // MacOS only APIs
   if (isMac()) {
     app.dock.setIcon(appIcon);
-    // app.dock.setMenu(menu); // FIXME: bring this back! - dock has a different menu than the application!
+    app.dock.setMenu(menu);
   }
 
   createWindow();
