@@ -41,7 +41,7 @@ module.exports = {
       name: "@electron-forge/maker-dmg",
       config: {
         name: "Replit",
-        icon: "./assets/logo.png",
+        icon: "./assets/logo.icns",
         overwrite: true,
         additionalDMGOptions: {
           "background-color": "#0E1525",
