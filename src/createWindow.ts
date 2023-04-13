@@ -8,23 +8,27 @@ import { appIcon as icon, preloadScript as preload } from "./constants";
 import { isMac } from "./platform";
 import store from "./store";
 
+// var(--background-root) value for dark mode
 const DEFAULT_BG_COLOR = "#0E1525";
 
-// used to be able to start the app connecting to local replit instance
+// Used to be able to start the app connecting to local Replit instance
 function generateReplitURL() {
-  const urlPath = "/login?goto=/desktop?isInDesktopApp=true";
+  const path = "/login?goto=/desktop?isInDesktopApp=true";
 
-  if (process.env.USE_LOCAL_URL === "true") {
-    return "http://localhost:3000" + urlPath;
+  if (process.env.USE_LOCAL_URL) {
+    return `http://localhost:3000${path}`;
   } else {
-    return "https://replit.com" + urlPath;
+    return `https://replit.com${path}`;
   }
 }
 
+function getWindowBounds() {
+  const windowBounds = store.get("bounds");
+
+  return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
+}
+
 export default function createWindow(): void {
-  // Create a window that fills the screen's available work area.
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.workAreaSize;
   const title = "Replit";
   const url = generateReplitURL();
   const backgroundColor = (store.get("lastSeenBackgroundColor") ||
@@ -55,10 +59,10 @@ export default function createWindow(): void {
     backgroundColor,
     title,
     icon,
-    width,
-    height,
     ...platformStyling,
   });
+
+  window.setBounds(getWindowBounds());
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   window.webContents.setUserAgent(
@@ -81,6 +85,8 @@ export default function createWindow(): void {
       `getComputedStyle(document.body).getPropertyValue('--background-root');`
     );
     store.set("lastSeenBackgroundColor", backgroundColor);
+
+    store.set("bounds", window.getBounds());
   });
 
   window.loadURL(url);
