@@ -6,6 +6,9 @@ import {
 } from "electron";
 import { appIcon as icon, preloadScript as preload } from "./constants";
 import { isMac } from "./platform";
+import store from "./store";
+
+const DEFAULT_BG_COLOR = "#0E1525";
 
 // used to be able to start the app connecting to local replit instance
 function generateReplitURL() {
@@ -24,12 +27,13 @@ export default function createWindow(): void {
   const { width, height } = primaryDisplay.workAreaSize;
   const title = "Replit";
   const url = generateReplitURL();
-  // var(--background-root) value in Dark mode
-  const backgroundColor = "#0E1525";
+  const backgroundColor = (store.get("lastSeenBackgroundColor") ||
+    DEFAULT_BG_COLOR) as string;
+
   // MacOS only
   const scrollBounce = true;
 
-  // for MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
+  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
   // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
   const platformStyling: BrowserWindowConstructorOptions = isMac()
     ? {
@@ -69,6 +73,16 @@ export default function createWindow(): void {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
+  });
+
+  window.webContents.on("did-navigate-in-page", async () => {
+    // We're capturing the background color to use as main browser window background color.
+    // Doing this with `did-navigate-in-page` is not ideal (changing the color theme from the settings pane **does not** navigate),
+    // ideally we'd have some way to pass events from the browser application, but for now this is better than nothing.
+    const backgroundColor = await window.webContents.executeJavaScript(`
+      getComputedStyle(document.body).getPropertyValue('--background-root');
+      `);
+    store.set("lastSeenBackgroundColor", backgroundColor);
   });
 
   window.loadURL(url);
