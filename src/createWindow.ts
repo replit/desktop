@@ -28,9 +28,9 @@ function getWindowBounds() {
   return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
 }
 
-type WindowProps = {
+interface WindowProps {
   url: string;
-};
+}
 
 export default function createWindow(props?: WindowProps): void {
   const title = "Replit";
