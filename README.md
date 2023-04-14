@@ -2,14 +2,17 @@
 
 ```
 # Install dependencies
-yarn
+pnpm install
 
-# Run app
-yarn start
+# Build the app
+pnpm build
 
-# Build
-yarn build
+# Watch for changes
+pnpm watch
 
-# Watch
-yarn watch
+# Build and run the app locally
+pnpm start
+
+# Build a production version of the app
+pnpm make
 ```

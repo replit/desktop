@@ -1,16 +1,59 @@
-import { BrowserWindow, screen, shell } from "electron";
+import {
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  screen,
+  shell,
+} from "electron";
 import { appIcon as icon, preloadScript as preload } from "./constants";
+import { isMac } from "./platform";
+import store from "./store";
 
-export default function createWindow(url?: string): void {
-  // Create a window that fills the screen's available work area.
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.workAreaSize;
+// var(--background-root) value for dark mode
+const DEFAULT_BG_COLOR = "#0E1525";
+
+// Used to be able to start the app connecting to local Replit instance
+function generateReplitURL() {
+  const path = "/login?goto=/desktop?isInDesktopApp=true";
+
+  if (process.env.USE_LOCAL_URL) {
+    return `http://localhost:3000${path}`;
+  } else {
+    return `https://replit.com${path}`;
+  }
+}
+
+function getWindowBounds() {
+  const windowBounds = store.get("bounds");
+
+  return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
+}
+
+type WindowProps = {
+  url: string;
+};
+
+export default function createWindow(props?: WindowProps): void {
   const title = "Replit";
-  url = url || "https://replit.com/login?goto=/desktop?isInDesktopApp=true";
-  // var(--background-root) value in Dark mode
-  const backgroundColor = "#0E1525";
+  const url = props?.url || generateReplitURL();
+  const backgroundColor = (store.get("lastSeenBackgroundColor") ||
+    DEFAULT_BG_COLOR) as string;
+
   // MacOS only
   const scrollBounce = true;
+
+  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
+  // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
+  const platformStyling: BrowserWindowConstructorOptions = isMac()
+    ? {
+        titleBarStyle: "hidden",
+        titleBarOverlay: {
+          color: "var(--background-root)",
+          symbolColor: "var(--foreground-default)",
+          height: 60,
+        },
+        trafficLightPosition: { x: 20, y: 22 },
+      }
+    : {};
 
   const window = new BrowserWindow({
     webPreferences: {
@@ -20,9 +63,10 @@ export default function createWindow(url?: string): void {
     backgroundColor,
     title,
     icon,
-    width,
-    height,
+    ...platformStyling,
   });
+
+  window.setBounds(getWindowBounds());
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   window.webContents.setUserAgent(
@@ -37,6 +81,16 @@ export default function createWindow(url?: string): void {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
+  });
+
+  window.on("close", async () => {
+    // We're capturing the background color to use as main browser window background color.
+    const backgroundColor = await window.webContents.executeJavaScript(
+      `getComputedStyle(document.body).getPropertyValue('--background-root');`
+    );
+    store.set("lastSeenBackgroundColor", backgroundColor);
+
+    store.set("bounds", window.getBounds());
   });
 
   window.loadURL(url);

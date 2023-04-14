@@ -1,8 +1,8 @@
 import { app, Menu, BrowserWindow } from "electron";
 import createWindow from "./createWindow";
-import createMenu from "./createMenu";
-import { appIcon } from "./constants";
+import { macAppIcon } from "./constants";
 import { isMac } from "./platform";
+import { createApplicationMenu, createDockMenu } from "./createMenu";
 
 // This should run as early in the main process as possible
 if (require("electron-squirrel-startup")) app.quit();
@@ -23,9 +23,10 @@ if (!instanceLock) {
   app.quit();
 }
 
-const menu = createMenu();
+const applicationMenu = createApplicationMenu();
+const dockMenu = createDockMenu();
 
-Menu.setApplicationMenu(menu);
+Menu.setApplicationMenu(applicationMenu);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -33,8 +34,8 @@ Menu.setApplicationMenu(menu);
 app.whenReady().then(() => {
   // MacOS only APIs
   if (isMac()) {
-    app.dock.setIcon(appIcon);
-    app.dock.setMenu(menu);
+    app.dock.setIcon(macAppIcon);
+    app.dock.setMenu(dockMenu);
   }
 
   createWindow();
@@ -56,6 +57,3 @@ app.on("window-all-closed", () => {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
