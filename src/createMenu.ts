@@ -9,6 +9,8 @@ import {
 import createWindow from "./createWindow";
 import { isMac } from "./platform";
 
+const replUrlRegExp = new RegExp("https://replit.com/@[^/]+/.+");
+
 const newWindowMenuItem = {
   label: "New Window",
   accelerator: "CommandOrControl+Shift+N",
@@ -19,8 +21,7 @@ const openReplFromClipboardMenuItem = {
   label: "Open Repl URL from Clipboard",
   click: () => {
     const clipboardText = clipboard.readText();
-    const replUrlRegex = new RegExp("https://replit.com/@[^/]+/.+");
-    const isReplUrl = replUrlRegex.test(clipboardText);
+    const isReplUrl = replUrlRegExp.test(clipboardText);
 
     if (isReplUrl) {
       createWindow({ url: clipboardText });
