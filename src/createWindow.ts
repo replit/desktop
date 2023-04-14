@@ -23,15 +23,14 @@ function generateReplitURL() {
 }
 
 function getWindowBounds() {
-  const windowBounds = store.get("bounds");
-
+  const windowBounds = store.getBounds();
   return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
 }
 
 export default function createWindow(): void {
   const title = "Replit";
   const url = generateReplitURL();
-  const backgroundColor = (store.get("lastSeenBackgroundColor") ||
+  const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;
 
   // MacOS only
@@ -84,9 +83,8 @@ export default function createWindow(): void {
     const backgroundColor = await window.webContents.executeJavaScript(
       `getComputedStyle(document.body).getPropertyValue('--background-root');`
     );
-    store.set("lastSeenBackgroundColor", backgroundColor);
-
-    store.set("bounds", window.getBounds());
+    store.setLastSeenBackgroundColor(backgroundColor);
+    store.setBounds(window.getBounds());
   });
 
   window.loadURL(url);
