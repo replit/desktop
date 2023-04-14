@@ -1,17 +1,44 @@
-import { app, Menu, MenuItem, MenuItemConstructorOptions } from "electron";
+import {
+  app,
+  clipboard,
+  dialog,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+} from "electron";
 import createWindow from "./createWindow";
 import { isMac } from "./platform";
+
+const replUrlRegExp = new RegExp("https://replit.com/@[^/]+/.+");
+
+const newWindowMenuItem = {
+  label: "New Window",
+  accelerator: "CommandOrControl+Shift+N",
+  click: () => createWindow(),
+};
+
+const openReplFromClipboardMenuItem = {
+  label: "Open Repl URL from Clipboard",
+  click: () => {
+    const clipboardText = clipboard.readText();
+    const isReplUrl = replUrlRegExp.test(clipboardText);
+
+    if (isReplUrl) {
+      createWindow({ url: clipboardText });
+    } else {
+      dialog.showMessageBox({
+        type: "warning",
+        message: "The URL in Clipboard is not a Repl URL",
+      });
+    }
+  },
+};
 
 export function createDockMenu(): Menu {
   const menu = new Menu();
 
-  menu.append(
-    new MenuItem({
-      label: "New Window",
-      accelerator: "CommandOrControl+Shift+N",
-      click: () => createWindow(),
-    })
-  );
+  menu.append(new MenuItem(newWindowMenuItem));
+  menu.append(new MenuItem(openReplFromClipboardMenuItem));
 
   return menu;
 }
@@ -41,11 +68,9 @@ export function createApplicationMenu(): Menu {
   template.push({
     label: "File",
     submenu: [
-      {
-        label: "New Window",
-        accelerator: "CommandOrControl+Shift+N",
-        click: () => createWindow(),
-      },
+      newWindowMenuItem,
+      openReplFromClipboardMenuItem,
+      { type: "separator" },
       isMac() ? { role: "close" } : { role: "quit" },
     ],
   });

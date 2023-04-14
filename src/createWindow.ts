@@ -27,11 +27,15 @@ function getWindowBounds() {
   return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
 }
 
-export default function createWindow(): void {
+interface WindowProps {
+  url: string;
+}
+
+export default function createWindow(props?: WindowProps): void {
   const title = "Replit";
-  const url = generateReplitURL();
   const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;
+  const url = props?.url || generateReplitURL();
 
   // MacOS only
   const scrollBounce = true;

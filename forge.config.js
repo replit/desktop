@@ -70,4 +70,16 @@ module.exports = {
       config: {},
     },
   ],
+  publishers: [
+    {
+      name: "@electron-forge/publisher-github",
+      authToken: process.env.GH_TOKEN,
+      config: {
+        repository: {
+          owner: "replit",
+          name: "desktop",
+        },
+      },
+    },
+  ],
 };
