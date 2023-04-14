@@ -13,14 +13,14 @@ function createStore() {
     setLastSeenBackgroundColor(color: string) {
       store.set(keys.LAST_SEEN_BACKGROUND_COLOR, color);
     },
-    getLastSeenBackgroundColor() {
-      return store.get(keys.LAST_SEEN_BACKGROUND_COLOR);
+    getLastSeenBackgroundColor(): string {
+      return store.get(keys.LAST_SEEN_BACKGROUND_COLOR) as string;
     },
     setBounds(bounds: Rectangle) {
       store.set(keys.BOUNDS, bounds);
     },
-    getBounds() {
-      return store.get(keys.BOUNDS);
+    getBounds(): Rectangle {
+      return store.get(keys.BOUNDS) as Rectangle;
     },
   };
 }
