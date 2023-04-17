@@ -75,8 +75,14 @@ export default function createWindow(props?: WindowProps): void {
   window.webContents.on("will-navigate", (event, navigationUrl) => {
     const url = new URL(navigationUrl);
 
+    const isReplit = url.origin === "https://replit.com";
+    const isLocalReplit = process.env.USE_LOCAL_URL
+      ? url.origin === "http://localhost:3000"
+      : false;
+    const isSignup = url.pathname === "/signup";
+
     // Prevent navigation away from Replit or to the signup page.
-    if (url.origin !== "https://replit.com" || url.pathname === "/signup") {
+    if (!(isReplit || isLocalReplit) || isSignup) {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
