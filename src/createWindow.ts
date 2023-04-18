@@ -27,10 +27,6 @@ function getWindowBounds() {
   return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
 }
 
-interface WindowProps {
-  url: string;
-}
-
 export function createSplashWindow(): void {
   const title = "Replit";
 
@@ -45,7 +41,6 @@ export function createSplashWindow(): void {
       preload,
       scrollBounce,
     },
-    backgroundColor,
     title,
     icon,
     titleBarStyle: "hidden",
@@ -53,6 +48,13 @@ export function createSplashWindow(): void {
     minimizable: false,
     maximizable: false,
     fullscreen: false,
+
+    // backgroundColor
+    // macOS 'vibrancy':
+    transparent: true,
+    backgroundColor: "#00000000",
+    visualEffectState: "followWindow",
+    vibrancy: "titlebar",
   });
 
   const workArea = screen.getPrimaryDisplay().workArea;
@@ -71,11 +73,14 @@ export function createSplashWindow(): void {
   window.loadURL(generateReplitDesktopUrl());
 }
 
-export default function createWindow(props?: WindowProps): void {
+interface FullWindowProps {
+  url: string;
+}
+
+export function createFullWindow({ url }: FullWindowProps): void {
   const title = "Replit";
   const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;
-  const url = props?.url || generateReplitDesktopUrl();
 
   // MacOS only
   const scrollBounce = true;
