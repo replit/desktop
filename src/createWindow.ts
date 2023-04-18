@@ -12,7 +12,7 @@ import store from "./store";
 const DEFAULT_BG_COLOR = "#0E1525";
 
 // Used to be able to start the app connecting to local Replit instance
-function generateReplitURL() {
+function generateReplitDesktopUrl() {
   const path = "/login?goto=/desktop?isInDesktopApp=true";
 
   if (process.env.USE_LOCAL_URL) {
@@ -31,11 +31,51 @@ interface WindowProps {
   url: string;
 }
 
+export function createSplashWindow(): void {
+  const title = "Replit";
+
+  const backgroundColor = (store.getLastSeenBackgroundColor() ||
+    DEFAULT_BG_COLOR) as string;
+
+  // MacOS only
+  const scrollBounce = true;
+
+  const window = new BrowserWindow({
+    webPreferences: {
+      preload,
+      scrollBounce,
+    },
+    backgroundColor,
+    title,
+    icon,
+    titleBarStyle: "hidden",
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    fullscreen: false,
+  });
+
+  const workArea = screen.getPrimaryDisplay().workArea;
+  const width = 340;
+  const height = 500;
+
+  const bounds = {
+    x: Math.round(workArea.width / 2 - width / 2),
+    y: Math.round(workArea.height / 2 - height / 2),
+    width,
+    height,
+  };
+
+  window.setBounds(bounds);
+  window.setWindowButtonVisibility(false);
+  window.loadURL(generateReplitDesktopUrl());
+}
+
 export default function createWindow(props?: WindowProps): void {
   const title = "Replit";
   const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;
-  const url = props?.url || generateReplitURL();
+  const url = props?.url || generateReplitDesktopUrl();
 
   // MacOS only
   const scrollBounce = true;

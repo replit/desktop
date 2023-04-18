@@ -1,5 +1,5 @@
 import { app, Menu, BrowserWindow } from "electron";
-import createWindow from "./createWindow";
+import { createSplashWindow } from "./createWindow";
 import { macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
@@ -38,13 +38,15 @@ app.whenReady().then(() => {
     app.dock.setMenu(dockMenu);
   }
 
-  createWindow();
+  // createWindow();
+  createSplashWindow();
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      // createWindow();
+      createSplashWindow();
     }
   });
 });
