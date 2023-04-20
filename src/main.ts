@@ -3,6 +3,7 @@ import createWindow from "./createWindow";
 import { macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
+import checkForUpdates from "./checkForUpdates";
 
 // This should run as early in the main process as possible
 if (require("electron-squirrel-startup")) app.quit();
@@ -39,6 +40,7 @@ app.whenReady().then(() => {
   }
 
   createWindow();
+  checkForUpdates();
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
