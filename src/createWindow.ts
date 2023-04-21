@@ -58,8 +58,8 @@ export function createSplashWindow(): void {
   });
 
   const workArea = screen.getPrimaryDisplay().workArea;
-  const width = 340;
-  const height = 500;
+  const width = 480;
+  const height = 540;
 
   const bounds = {
     x: Math.round(workArea.width / 2 - width / 2),

@@ -13,7 +13,7 @@ const replUrlRegExp = new RegExp("https://replit.com/@[^/]+/.+");
 
 const newWindowMenuItem = {
   label: "New Window",
-  accelerator: "CommandOrControl+Shift+N",
+  accelerator: "CommandOrControl+N",
   click: () => createSplashWindow(),
 };
 
