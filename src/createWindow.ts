@@ -4,7 +4,11 @@ import {
   screen,
   shell,
 } from "electron";
-import { appIcon as icon, preloadScript as preload } from "./constants";
+import {
+  appIcon as icon,
+  baseUrl,
+  preloadScript as preload,
+} from "./constants";
 import { isMac } from "./platform";
 import store from "./store";
 
@@ -13,13 +17,7 @@ const DEFAULT_BG_COLOR = "#0E1525";
 
 // Used to be able to start the app connecting to local Replit instance
 function generateReplitDesktopUrl() {
-  const path = "/login?goto=/desktop?isInDesktopApp=true";
-
-  if (process.env.USE_LOCAL_URL) {
-    return `http://localhost:3000${path}`;
-  } else {
-    return `https://replit.com${path}`;
-  }
+  return `${baseUrl}/login?goto=/desktop?isInDesktopApp=true`;
 }
 
 function getWindowBounds() {
@@ -43,18 +41,20 @@ export function createSplashWindow(): void {
     },
     title,
     icon,
+    backgroundColor,
     titleBarStyle: "hidden",
     resizable: false,
     minimizable: false,
     maximizable: false,
     fullscreen: false,
 
-    // backgroundColor
-    // macOS 'vibrancy':
-    transparent: true,
-    backgroundColor: "#00000000",
-    visualEffectState: "followWindow",
-    vibrancy: "titlebar",
+    // Note: experimental macOS 'vibrancy' settings below, note that this requires us to
+    // _not_ use a background-color for things that we want to be transparent
+    //
+    // transparent: true,
+    // backgroundColor: "#00000000",
+    // visualEffectState: "followWindow",
+    // vibrancy: "titlebar",
   });
 
   const workArea = screen.getPrimaryDisplay().workArea;

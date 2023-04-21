@@ -1,6 +1,6 @@
 import { app, Menu, BrowserWindow, ipcMain } from "electron";
-import { createSplashWindow } from "./createWindow";
-import { macAppIcon } from "./constants";
+import { createFullWindow, createSplashWindow } from "./createWindow";
+import { baseUrl, macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
@@ -42,7 +42,7 @@ app.whenReady().then(() => {
   createSplashWindow();
   checkForUpdates();
 
-  app.on("activate", function () {
+  app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -50,11 +50,16 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.on("WINDOW_CLOSE", function (event) {
+  ipcMain.on("CLOSE_THIS_WINDOW", (event) => {
     const senderWindow = BrowserWindow.getAllWindows().find(
       (win) => win.webContents.id === event.sender.id
     );
     senderWindow.close();
+  });
+
+  ipcMain.on("OPEN_REPL_WINDOW", (_, replSlug) => {
+    const url = `${baseUrl}${replSlug}`;
+    createFullWindow({ url });
   });
 });
 
