@@ -20,15 +20,16 @@ function getWindowBounds() {
   return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
 }
 
-interface WindowProps {
+interface BaseWindowProps {
   url: string;
+  constructorOptions?: BrowserWindowConstructorOptions;
 }
 
-export function createSplashWindow(props?: WindowProps): void {
+function createBaseWindow({
+  url,
+  constructorOptions,
+}: BaseWindowProps): BrowserWindow {
   const title = "Replit";
-  const url =
-    props?.url || `${baseUrl}/login?goto=/desktop?isInDesktopApp=true`;
-
   const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;
 
@@ -43,16 +44,59 @@ export function createSplashWindow(props?: WindowProps): void {
     title,
     icon,
     backgroundColor,
-    titleBarStyle: "hidden",
-    resizable: false,
-    minimizable: false,
-    maximizable: false,
-    fullscreen: false,
+    ...constructorOptions,
+  });
+
+  // Add a custom string to user agent to make it easier to differentiate requests from desktop app
+  window.webContents.setUserAgent(
+    `${window.webContents.getUserAgent()} ReplitDesktop`
+  );
+
+  window.webContents.on("will-navigate", (event, navigationUrl) => {
+    const url = new URL(navigationUrl);
+
+    const isReplit = url.origin === "https://replit.com";
+    const isLocalReplit = process.env.USE_LOCAL_URL
+      ? url.origin === "http://localhost:3000"
+      : false;
+    const isSignup = url.pathname === "/signup";
+    const isSupport = url.pathname === "/support";
+
+    // Prevent navigation away from Replit
+    if (!(isReplit || isLocalReplit) || isSignup || isSupport) {
+      event.preventDefault();
+      shell.openExternal(navigationUrl);
+    }
+  });
+
+  window.loadURL(url);
+
+  return window;
+}
+
+interface WindowProps {
+  url: string;
+}
+
+export function createSplashWindow(props?: WindowProps): void {
+  const url =
+    props?.url ||
+    `${baseUrl}/login?isInDesktopApp=true&goto=/desktop?isInDesktopApp=true`;
+
+  const window = createBaseWindow({
+    url,
+    constructorOptions: {
+      titleBarStyle: "hidden",
+      resizable: false,
+      minimizable: false,
+      maximizable: false,
+      fullscreen: false,
+    },
   });
 
   const workArea = screen.getPrimaryDisplay().workArea;
   const width = 480;
-  const height = 540;
+  const height = 640;
 
   const bounds = {
     x: Math.round(workArea.width / 2 - width / 2),
@@ -68,17 +112,9 @@ export function createSplashWindow(props?: WindowProps): void {
 
   window.setBounds(bounds);
   window.setWindowButtonVisibility(false);
-  window.loadURL(url);
 }
 
 export function createFullWindow({ url }: WindowProps): void {
-  const title = "Replit";
-  const backgroundColor = (store.getLastSeenBackgroundColor() ||
-    DEFAULT_BG_COLOR) as string;
-
-  // MacOS only
-  const scrollBounce = true;
-
   // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
   // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
   const platformStyling: BrowserWindowConstructorOptions = isMac()
@@ -93,39 +129,12 @@ export function createFullWindow({ url }: WindowProps): void {
       }
     : {};
 
-  const window = new BrowserWindow({
-    webPreferences: {
-      preload,
-      scrollBounce,
-    },
-    backgroundColor,
-    title,
-    icon,
-    ...platformStyling,
+  const window = createBaseWindow({
+    url,
+    constructorOptions: platformStyling,
   });
 
   window.setBounds(getWindowBounds());
-
-  // Add a custom string to user agent to make it easier to differentiate requests from desktop app
-  window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`
-  );
-
-  window.webContents.on("will-navigate", (event, navigationUrl) => {
-    const url = new URL(navigationUrl);
-
-    const isReplit = url.origin === "https://replit.com";
-    const isLocalReplit = process.env.USE_LOCAL_URL
-      ? url.origin === "http://localhost:3000"
-      : false;
-    const isSignup = url.pathname === "/signup";
-
-    // Prevent navigation away from Replit or to the signup page.
-    if (!(isReplit || isLocalReplit) || isSignup) {
-      event.preventDefault();
-      shell.openExternal(navigationUrl);
-    }
-  });
 
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
@@ -135,6 +144,4 @@ export function createFullWindow({ url }: WindowProps): void {
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setBounds(window.getBounds());
   });
-
-  window.loadURL(url);
 }
