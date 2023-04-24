@@ -58,7 +58,7 @@ app.whenReady().then(() => {
   });
 
   ipcMain.on("OPEN_REPL_WINDOW", (_, replSlug) => {
-    const url = `${baseUrl}${replSlug}`;
+    const url = `${baseUrl}${replSlug}?isInDesktopApp=true`;
     createFullWindow({ url });
   });
 });
