@@ -61,6 +61,14 @@ app.whenReady().then(() => {
     const url = `${baseUrl}${replSlug}?isInDesktopApp=true`;
     createFullWindow({ url });
   });
+
+  // When logging out we have to close all the windows, and do the actual logout navigation in a splash window
+  ipcMain.on("LOGOUT", () => {
+    const url = `${baseUrl}/logout?goto=/login?isInDesktopApp=true`;
+
+    BrowserWindow.getAllWindows().forEach((win) => win.close());
+    createSplashWindow({ url });
+  });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

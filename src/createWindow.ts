@@ -20,8 +20,14 @@ function getWindowBounds() {
   return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
 }
 
-export function createSplashWindow(): void {
+interface WindowProps {
+  url: string;
+}
+
+export function createSplashWindow(props?: WindowProps): void {
   const title = "Replit";
+  const url =
+    props?.url || `${baseUrl}/login?goto=/desktop?isInDesktopApp=true`;
 
   const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;
@@ -62,14 +68,10 @@ export function createSplashWindow(): void {
 
   window.setBounds(bounds);
   window.setWindowButtonVisibility(false);
-  window.loadURL(`${baseUrl}/login?goto=/desktop?isInDesktopApp=true`);
+  window.loadURL(url);
 }
 
-interface FullWindowProps {
-  url: string;
-}
-
-export function createFullWindow({ url }: FullWindowProps): void {
+export function createFullWindow({ url }: WindowProps): void {
   const title = "Replit";
   const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;

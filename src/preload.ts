@@ -11,4 +11,5 @@ contextBridge.exposeInMainWorld("desktopAppApi", {
   closeThisWindow: () => ipcRenderer.send("CLOSE_THIS_WINDOW"),
   openReplWindow: (replSlug: string) =>
     ipcRenderer.send("OPEN_REPL_WINDOW", replSlug),
+  logout: () => ipcRenderer.send("LOGOUT"),
 });
