@@ -65,6 +65,24 @@ export default function createWindow(props?: WindowProps): void {
     ...platformStyling,
   });
 
+  window.webContents.setWindowOpenHandler((details) => {
+    const url = new URL(details.url);
+    const isReplit = url.origin === "https://replit.com";
+    const isReplCo = url.host.endsWith("repl.co");
+
+    if (!isReplit && !isReplCo) {
+      shell.openExternal(details.url);
+
+      return {
+        action: "deny",
+      };
+    }
+
+    return {
+      action: "allow",
+    };
+  });
+
   window.setBounds(getWindowBounds());
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
