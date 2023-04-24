@@ -15,11 +15,6 @@ import store from "./store";
 // var(--background-root) value for dark mode
 const DEFAULT_BG_COLOR = "#0E1525";
 
-// Used to be able to start the app connecting to local Replit instance
-function generateReplitDesktopUrl() {
-  return `${baseUrl}/login?goto=/desktop?isInDesktopApp=true`;
-}
-
 function getWindowBounds() {
   const windowBounds = store.getBounds();
   return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
@@ -47,14 +42,6 @@ export function createSplashWindow(): void {
     minimizable: false,
     maximizable: false,
     fullscreen: false,
-
-    // Note: experimental macOS 'vibrancy' settings below, note that this requires us to
-    // _not_ use a background-color for things that we want to be transparent
-    //
-    // transparent: true,
-    // backgroundColor: "#00000000",
-    // visualEffectState: "followWindow",
-    // vibrancy: "titlebar",
   });
 
   const workArea = screen.getPrimaryDisplay().workArea;
@@ -68,9 +55,14 @@ export function createSplashWindow(): void {
     height,
   };
 
+  // Add a custom string to user agent to make it easier to differentiate requests from desktop app
+  window.webContents.setUserAgent(
+    `${window.webContents.getUserAgent()} ReplitDesktop`
+  );
+
   window.setBounds(bounds);
   window.setWindowButtonVisibility(false);
-  window.loadURL(generateReplitDesktopUrl());
+  window.loadURL(`${baseUrl}/login?goto=/desktop?isInDesktopApp=true`);
 }
 
 interface FullWindowProps {
