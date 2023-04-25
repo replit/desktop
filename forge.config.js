@@ -58,11 +58,11 @@ module.exports = {
     {
       name: "@electron-forge/maker-deb",
       config: {
-        mimeType: ["x-scheme-handler/replit"],
         options: {
           name: "replit",
           productName: "Replit",
           maintainer: "Replit",
+          mimeType: ["x-scheme-handler/replit"],
           homepage: "https://replit.com",
           description: "Replit desktop app",
           icon: "./assets/logo.png",
