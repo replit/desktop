@@ -17,6 +17,7 @@ export enum events {
 }
 
 export const appName = "Replit";
+export const protocol = "replit";
 
 export const appIcon = nativeImage.createFromPath(
   path.join(__dirname, "assets", "logo.png")

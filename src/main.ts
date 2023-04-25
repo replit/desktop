@@ -4,6 +4,7 @@ import { appName, baseUrl, events, macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
+import { registerDeeplinkProtocol, setOpenDeeplinkListeners } from "./deeplink";
 
 // Handles Squirrel (https://github.com/Squirrel/Squirrel.Windows) events on Windows.
 // This should run as early in the main process as possible.
@@ -11,6 +12,7 @@ import checkForUpdates from "./checkForUpdates";
 if (require("electron-squirrel-startup")) app.quit();
 
 app.setName(appName);
+registerDeeplinkProtocol();
 
 process.on("unhandledRejection", (rejection: Error) => {
   console.error(`[Unhandled Promise Rejction] ${rejection.stack}`);
@@ -38,6 +40,7 @@ app.whenReady().then(() => {
     app.dock.setMenu(createDockMenu());
   }
 
+  setOpenDeeplinkListeners();
   createSplashScreenWindow();
   checkForUpdates();
 
