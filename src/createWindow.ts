@@ -4,66 +4,53 @@ import {
   screen,
   shell,
 } from "electron";
-import { appIcon as icon, preloadScript as preload } from "./constants";
+import {
+  appIcon as icon,
+  baseUrl,
+  preloadScript as preload,
+} from "./constants";
 import { isMac } from "./platform";
 import store from "./store";
 
 // var(--background-root) value for dark mode
 const DEFAULT_BG_COLOR = "#0E1525";
 
-// Used to be able to start the app connecting to local Replit instance
-function generateReplitURL() {
-  const path = "/login?goto=/desktop?isInDesktopApp=true";
-
-  if (process.env.USE_LOCAL_URL) {
-    return `http://localhost:3000${path}`;
-  } else {
-    return `https://replit.com${path}`;
-  }
-}
-
 function getWindowBounds() {
   const windowBounds = store.getBounds();
   return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
 }
 
-interface WindowProps {
+interface BaseWindowProps {
   url: string;
+  constructorOptions?: BrowserWindowConstructorOptions;
 }
 
-export default function createWindow(props?: WindowProps): void {
+function createBaseWindow({
+  url,
+  constructorOptions,
+}: BaseWindowProps): BrowserWindow {
   const title = "Replit";
   const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;
-  const url = props?.url || generateReplitURL();
 
   // MacOS only
   const scrollBounce = true;
-
-  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
-  // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
-  const platformStyling: BrowserWindowConstructorOptions = isMac()
-    ? {
-        titleBarStyle: "hidden",
-        titleBarOverlay: {
-          color: "var(--background-root)",
-          symbolColor: "var(--foreground-default)",
-          height: 60,
-        },
-        trafficLightPosition: { x: 20, y: 22 },
-      }
-    : {};
 
   const window = new BrowserWindow({
     webPreferences: {
       preload,
       scrollBounce,
     },
-    backgroundColor,
     title,
     icon,
-    ...platformStyling,
+    backgroundColor,
+    ...constructorOptions,
   });
+
+  // Add a custom string to user agent to make it easier to differentiate requests from desktop app
+  window.webContents.setUserAgent(
+    `${window.webContents.getUserAgent()} ReplitDesktop`
+  );
 
   window.webContents.setWindowOpenHandler((details) => {
     const url = new URL(details.url);
@@ -83,28 +70,84 @@ export default function createWindow(props?: WindowProps): void {
     };
   });
 
-  window.setBounds(getWindowBounds());
-
-  // Add a custom string to user agent to make it easier to differentiate requests from desktop app
-  window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`
-  );
-
   window.webContents.on("will-navigate", (event, navigationUrl) => {
     const url = new URL(navigationUrl);
 
-    const isReplit = url.origin === "https://replit.com";
-    const isLocalReplit = process.env.USE_LOCAL_URL
-      ? url.origin === "http://localhost:3000"
-      : false;
+    const isReplit = url.origin === baseUrl;
     const isSignup = url.pathname === "/signup";
+    const isSupport = url.pathname === "/support";
 
-    // Prevent navigation away from Replit or to the signup page.
-    if (!(isReplit || isLocalReplit) || isSignup) {
+    // Prevent navigation away from Replit
+    if (!isReplit || isSignup || isSupport) {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
   });
+
+  window.loadURL(url);
+
+  return window;
+}
+
+interface WindowProps {
+  url: string;
+}
+
+export function createSplashScreenWindow(props?: WindowProps): void {
+  const url =
+    props?.url ||
+    `${baseUrl}/login?isInDesktopApp=true&goto=/desktop?isInDesktopApp=true`;
+
+  const window = createBaseWindow({
+    url,
+    constructorOptions: {
+      frame: false,
+      resizable: false,
+      minimizable: false,
+      maximizable: false,
+      fullscreen: false,
+    },
+  });
+
+  const workArea = screen.getPrimaryDisplay().workArea;
+  const width = 480;
+  const height = 640;
+
+  const bounds = {
+    x: Math.round(workArea.width / 2 - width / 2),
+    y: Math.round(workArea.height / 2 - height / 2),
+    width,
+    height,
+  };
+
+  window.setBounds(bounds);
+
+  if (isMac()) {
+    window.setWindowButtonVisibility(false);
+  }
+}
+
+export function createFullWindow({ url }: WindowProps): void {
+  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
+  // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
+  const platformStyling: BrowserWindowConstructorOptions = isMac()
+    ? {
+        titleBarStyle: "hidden",
+        titleBarOverlay: {
+          color: "var(--background-root)",
+          symbolColor: "var(--foreground-default)",
+          height: 60,
+        },
+        trafficLightPosition: { x: 20, y: 22 },
+      }
+    : {};
+
+  const window = createBaseWindow({
+    url,
+    constructorOptions: platformStyling,
+  });
+
+  window.setBounds(getWindowBounds());
 
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
@@ -114,6 +157,4 @@ export default function createWindow(props?: WindowProps): void {
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setBounds(window.getBounds());
   });
-
-  window.loadURL(url);
 }
