@@ -4,12 +4,13 @@ import { protocol } from "./constants";
 import path from "path";
 
 export function registerDeeplinkProtocol(): void {
-  if (process.defaultApp) {
-    if (process.argv.length >= 2) {
-      app.setAsDefaultProtocolClient(protocol, process.execPath, [
-        path.resolve(process.argv[1]),
-      ]);
-    }
+  if (process.defaultApp && isWindows() && process.argv.length >= 2) {
+    // Set the path of electron.exe and your app.
+    // These two additional parameters are only available on windows.
+    // Setting this is required to get this working in dev mode.
+    app.setAsDefaultProtocolClient(protocol, process.execPath, [
+      path.resolve(process.argv[1]),
+    ]);
   } else {
     app.setAsDefaultProtocolClient(protocol);
   }
