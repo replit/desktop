@@ -13,14 +13,6 @@ import {
 import { isMac } from "./platform";
 import store from "./store";
 
-// var(--background-root) value for dark mode
-const DEFAULT_BG_COLOR = "#0E1525";
-
-function getWindowBounds() {
-  const windowBounds = store.getBounds();
-  return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
-}
-
 interface BaseWindowProps {
   url: string;
   constructorOptions?: BrowserWindowConstructorOptions;
@@ -30,8 +22,7 @@ function createBaseWindow({
   url,
   constructorOptions,
 }: BaseWindowProps): BrowserWindow {
-  const backgroundColor = (store.getLastSeenBackgroundColor() ||
-    DEFAULT_BG_COLOR) as string;
+  const backgroundColor = store.getLastSeenBackgroundColor();
 
   // MacOS only
   const scrollBounce = true;
@@ -148,7 +139,7 @@ export function createFullWindow({ url }: WindowProps): void {
     constructorOptions: platformStyling,
   });
 
-  window.setBounds(getWindowBounds());
+  window.setBounds(store.getBounds());
 
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
