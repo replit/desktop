@@ -101,7 +101,7 @@ export function createSplashScreenWindow(props?: WindowProps): void {
   const window = createBaseWindow({
     url,
     constructorOptions: {
-      titleBarStyle: "hidden",
+      frame: false,
       resizable: false,
       minimizable: false,
       maximizable: false,
