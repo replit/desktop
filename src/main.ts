@@ -4,11 +4,13 @@ import { baseUrl, macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
+import { registerDeeplinkProtocol, setOpenDeeplinkListeners } from "./deeplink";
 
 // This should run as early in the main process as possible
 if (require("electron-squirrel-startup")) app.quit();
 
 app.setName("Replit");
+registerDeeplinkProtocol();
 
 process.on("unhandledRejection", (rejection: Error) => {
   console.error(`[Unhandled Promise Rejction] ${rejection.stack}`);
@@ -39,6 +41,7 @@ app.whenReady().then(() => {
     app.dock.setMenu(dockMenu);
   }
 
+  setOpenDeeplinkListeners();
   createSplashScreenWindow();
   checkForUpdates();
 

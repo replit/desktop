@@ -14,3 +14,5 @@ export const preloadScript = path.join(__dirname, "preload.js");
 export const baseUrl = process.env.USE_LOCAL_URL
   ? `http://localhost:3000`
   : `https://replit.com`;
+
+export const protocol = "replit";

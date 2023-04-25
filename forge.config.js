@@ -23,6 +23,12 @@ module.exports = {
     icon: "./assets/logo",
     osxSign,
     osxNotarize,
+    protocols: [
+      {
+        name: "Replit",
+        schemes: ["replit"],
+      },
+    ],
   },
   rebuildConfig: {},
   hooks: {
@@ -52,6 +58,7 @@ module.exports = {
     {
       name: "@electron-forge/maker-deb",
       config: {
+        mimeType: ["x-scheme-handler/replit"],
         options: {
           name: "replit",
           productName: "Replit",
