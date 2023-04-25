@@ -73,15 +73,12 @@ function createBaseWindow({
   window.webContents.on("will-navigate", (event, navigationUrl) => {
     const url = new URL(navigationUrl);
 
-    const isReplit = url.origin === "https://replit.com";
-    const isLocalReplit = process.env.USE_LOCAL_URL
-      ? url.origin === "http://localhost:3000"
-      : false;
+    const isReplit = url.origin === baseUrl;
     const isSignup = url.pathname === "/signup";
     const isSupport = url.pathname === "/support";
 
     // Prevent navigation away from Replit
-    if (!(isReplit || isLocalReplit) || isSignup || isSupport) {
+    if (!isReplit || isSignup || isSupport) {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
