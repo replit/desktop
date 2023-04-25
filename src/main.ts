@@ -1,6 +1,6 @@
 import { app, Menu, BrowserWindow, ipcMain } from "electron";
 import { createFullWindow, createSplashScreenWindow } from "./createWindow";
-import { baseUrl, events, macAppIcon } from "./constants";
+import { appName, baseUrl, events, macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
@@ -10,7 +10,7 @@ import checkForUpdates from "./checkForUpdates";
 // See docs: https://github.com/electron-archive/grunt-electron-installer#handling-squirrel-events
 if (require("electron-squirrel-startup")) app.quit();
 
-app.setName("Replit");
+app.setName(appName);
 
 process.on("unhandledRejection", (rejection: Error) => {
   console.error(`[Unhandled Promise Rejction] ${rejection.stack}`);

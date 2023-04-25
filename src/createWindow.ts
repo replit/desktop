@@ -6,6 +6,7 @@ import {
 } from "electron";
 import {
   appIcon as icon,
+  appName as title,
   baseUrl,
   preloadScript as preload,
 } from "./constants";
@@ -29,7 +30,6 @@ function createBaseWindow({
   url,
   constructorOptions,
 }: BaseWindowProps): BrowserWindow {
-  const title = "Replit";
   const backgroundColor = (store.getLastSeenBackgroundColor() ||
     DEFAULT_BG_COLOR) as string;
 

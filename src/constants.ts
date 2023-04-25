@@ -16,6 +16,8 @@ export enum events {
   LOGOUT = "LOGOUT",
 }
 
+export const appName = "Replit";
+
 export const appIcon = nativeImage.createFromPath(
   path.join(__dirname, "assets", "logo.png")
 );
