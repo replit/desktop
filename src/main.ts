@@ -5,7 +5,9 @@ import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
 
-// This should run as early in the main process as possible
+// Handles Squirrel (https://github.com/Squirrel/Squirrel.Windows) events on Windows.
+// This should run as early in the main process as possible.
+// See docs: https://github.com/electron-archive/grunt-electron-installer#handling-squirrel-events
 if (require("electron-squirrel-startup")) app.quit();
 
 app.setName("Replit");
