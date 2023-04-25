@@ -52,6 +52,24 @@ function createBaseWindow({
     `${window.webContents.getUserAgent()} ReplitDesktop`
   );
 
+  window.webContents.setWindowOpenHandler((details) => {
+    const url = new URL(details.url);
+    const isReplit = url.origin === "https://replit.com";
+    const isReplCo = url.host.endsWith("repl.co");
+
+    if (!isReplit && !isReplCo) {
+      shell.openExternal(details.url);
+
+      return {
+        action: "deny",
+      };
+    }
+
+    return {
+      action: "allow",
+    };
+  });
+
   window.webContents.on("will-navigate", (event, navigationUrl) => {
     const url = new URL(navigationUrl);
 
