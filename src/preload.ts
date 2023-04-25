@@ -1,15 +1,26 @@
 import { contextBridge, ipcRenderer } from "electron";
 
+/**
+ * Events that correspond to the protocol we use when communicating
+ * with the main process via IPC.
+ *
+ * Note this must match the events enum declared in `constants.ts`.
+ * Code cannot be shared between the two since they exist in
+ * different contexts when `nodeIntegration` is turned off so
+ * we must maintain a separate copy here.
+ */
+enum events {
+  CLOSE_CURRENT_WINDOW = "CLOSE_CURRENT_WINDOW",
+  OPEN_REPL_WINDOW = "OPEN_REPL_WINDOW",
+  LOGOUT = "LOGOUT",
+}
+
 // Set `window.isDesktopApp`
 contextBridge.exposeInMainWorld("isDesktopApp", true);
 
-// Note that it might be tempting to move the keys used in `ipcRenderer.send()`,
-// and import that file in `main.ts` as well, but then we'd have to turn on `nodeIntegration`,
-// as the `preload` script would need to `require` som other file!
-// We hardcode things in here instead, at least until we find a better solution.
 contextBridge.exposeInMainWorld("desktopAppApi", {
-  closeCurrentWindow: () => ipcRenderer.send("CLOSE_CURRENT_WINDOW"),
+  closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openReplWindow: (replSlug: string) =>
-    ipcRenderer.send("OPEN_REPL_WINDOW", replSlug),
-  logout: () => ipcRenderer.send("LOGOUT"),
+    ipcRenderer.send(events.OPEN_REPL_WINDOW, replSlug),
+  logout: () => ipcRenderer.send(events.LOGOUT),
 });

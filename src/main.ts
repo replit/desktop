@@ -1,6 +1,6 @@
 import { app, Menu, BrowserWindow, ipcMain } from "electron";
 import { createFullWindow, createSplashScreenWindow } from "./createWindow";
-import { baseUrl, macAppIcon } from "./constants";
+import { baseUrl, events, macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
@@ -50,20 +50,20 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.on("CLOSE_CURRENT_WINDOW", (event) => {
+  ipcMain.on(events.CLOSE_CURRENT_WINDOW, (event) => {
     const senderWindow = BrowserWindow.getAllWindows().find(
       (win) => win.webContents.id === event.sender.id
     );
     senderWindow.close();
   });
 
-  ipcMain.on("OPEN_REPL_WINDOW", (_, replSlug) => {
+  ipcMain.on(events.OPEN_REPL_WINDOW, (_, replSlug) => {
     const url = `${baseUrl}${replSlug}?isInDesktopApp=true`;
     createFullWindow({ url });
   });
 
   // When logging out we have to close all the windows, and do the actual logout navigation in a splash window
-  ipcMain.on("LOGOUT", () => {
+  ipcMain.on(events.LOGOUT, () => {
     const url = `${baseUrl}/logout?goto=/login?isInDesktopApp=true`;
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
