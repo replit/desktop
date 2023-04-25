@@ -27,7 +27,6 @@ if (!instanceLock) {
 }
 
 const applicationMenu = createApplicationMenu();
-const dockMenu = createDockMenu();
 
 Menu.setApplicationMenu(applicationMenu);
 
@@ -38,7 +37,7 @@ app.whenReady().then(() => {
   // MacOS only APIs
   if (isMac()) {
     app.dock.setIcon(macAppIcon);
-    app.dock.setMenu(dockMenu);
+    app.dock.setMenu(createDockMenu());
   }
 
   createSplashScreenWindow();
