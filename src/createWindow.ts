@@ -54,7 +54,7 @@ function createBaseWindow({
 
   window.webContents.setWindowOpenHandler((details) => {
     const url = new URL(details.url);
-    const isReplit = url.origin === "https://replit.com";
+    const isReplit = url.origin === baseUrl;
     const isReplCo = url.host.endsWith("repl.co");
 
     if (!isReplit && !isReplCo) {
@@ -122,6 +122,7 @@ export function createSplashScreenWindow(props?: WindowProps): void {
 
   window.setBounds(bounds);
 
+  // Hide the window traffic light buttons on Mac
   if (isMac()) {
     window.setWindowButtonVisibility(false);
   }

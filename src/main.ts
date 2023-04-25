@@ -26,9 +26,7 @@ if (!instanceLock) {
   app.quit();
 }
 
-const applicationMenu = createApplicationMenu();
-
-Menu.setApplicationMenu(applicationMenu);
+Menu.setApplicationMenu(createApplicationMenu());
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
