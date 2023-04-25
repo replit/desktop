@@ -6,19 +6,12 @@ import {
 } from "electron";
 import {
   appIcon as icon,
+  appName as title,
   baseUrl,
   preloadScript as preload,
 } from "./constants";
 import { isMac } from "./platform";
 import store from "./store";
-
-// var(--background-root) value for dark mode
-const DEFAULT_BG_COLOR = "#0E1525";
-
-function getWindowBounds() {
-  const windowBounds = store.getBounds();
-  return windowBounds ? windowBounds : screen.getPrimaryDisplay().workArea;
-}
 
 interface BaseWindowProps {
   url: string;
@@ -29,9 +22,7 @@ function createBaseWindow({
   url,
   constructorOptions,
 }: BaseWindowProps): BrowserWindow {
-  const title = "Replit";
-  const backgroundColor = (store.getLastSeenBackgroundColor() ||
-    DEFAULT_BG_COLOR) as string;
+  const backgroundColor = store.getLastSeenBackgroundColor();
 
   // MacOS only
   const scrollBounce = true;
@@ -54,7 +45,7 @@ function createBaseWindow({
 
   window.webContents.setWindowOpenHandler((details) => {
     const url = new URL(details.url);
-    const isReplit = url.origin === "https://replit.com";
+    const isReplit = url.origin === baseUrl;
     const isReplCo = url.host.endsWith("repl.co");
 
     if (!isReplit && !isReplCo) {
@@ -122,6 +113,7 @@ export function createSplashScreenWindow(props?: WindowProps): void {
 
   window.setBounds(bounds);
 
+  // Hide the window traffic light buttons on Mac
   if (isMac()) {
     window.setWindowButtonVisibility(false);
   }
@@ -147,7 +139,7 @@ export function createFullWindow({ url }: WindowProps): void {
     constructorOptions: platformStyling,
   });
 
-  window.setBounds(getWindowBounds());
+  window.setBounds(store.getBounds());
 
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.

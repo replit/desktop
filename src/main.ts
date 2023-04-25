@@ -1,15 +1,17 @@
 import { app, Menu, BrowserWindow, ipcMain } from "electron";
 import { createFullWindow, createSplashScreenWindow } from "./createWindow";
-import { baseUrl, macAppIcon } from "./constants";
+import { appName, baseUrl, events, macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
 import { registerDeeplinkProtocol, setOpenDeeplinkListeners } from "./deeplink";
 
-// This should run as early in the main process as possible
+// Handles Squirrel (https://github.com/Squirrel/Squirrel.Windows) events on Windows.
+// This should run as early in the main process as possible.
+// See docs: https://github.com/electron-archive/grunt-electron-installer#handling-squirrel-events
 if (require("electron-squirrel-startup")) app.quit();
 
-app.setName("Replit");
+app.setName(appName);
 registerDeeplinkProtocol();
 
 process.on("unhandledRejection", (rejection: Error) => {
@@ -26,10 +28,7 @@ if (!instanceLock) {
   app.quit();
 }
 
-const applicationMenu = createApplicationMenu();
-const dockMenu = createDockMenu();
-
-Menu.setApplicationMenu(applicationMenu);
+Menu.setApplicationMenu(createApplicationMenu());
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -38,7 +37,7 @@ app.whenReady().then(() => {
   // MacOS only APIs
   if (isMac()) {
     app.dock.setIcon(macAppIcon);
-    app.dock.setMenu(dockMenu);
+    app.dock.setMenu(createDockMenu());
   }
 
   setOpenDeeplinkListeners();
@@ -53,20 +52,20 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.on("CLOSE_CURRENT_WINDOW", (event) => {
+  ipcMain.on(events.CLOSE_CURRENT_WINDOW, (event) => {
     const senderWindow = BrowserWindow.getAllWindows().find(
       (win) => win.webContents.id === event.sender.id
     );
     senderWindow.close();
   });
 
-  ipcMain.on("OPEN_REPL_WINDOW", (_, replSlug) => {
+  ipcMain.on(events.OPEN_REPL_WINDOW, (_, replSlug) => {
     const url = `${baseUrl}${replSlug}?isInDesktopApp=true`;
     createFullWindow({ url });
   });
 
   // When logging out we have to close all the windows, and do the actual logout navigation in a splash window
-  ipcMain.on("LOGOUT", () => {
+  ipcMain.on(events.LOGOUT, () => {
     const url = `${baseUrl}/logout?goto=/login?isInDesktopApp=true`;
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
