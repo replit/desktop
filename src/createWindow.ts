@@ -124,7 +124,10 @@ export function createSplashScreenWindow(props?: WindowProps): void {
   };
 
   window.setBounds(bounds);
-  window.setWindowButtonVisibility(false);
+
+  if (isMac()) {
+    window.setWindowButtonVisibility(false);
+  }
 }
 
 export function createFullWindow({ url }: WindowProps): void {
