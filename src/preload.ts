@@ -8,7 +8,7 @@ contextBridge.exposeInMainWorld("isDesktopApp", true);
 // as the `preload` script would need to `require` som other file!
 // We hardcode things in here instead, at least until we find a better solution.
 contextBridge.exposeInMainWorld("desktopAppApi", {
-  closeThisWindow: () => ipcRenderer.send("CLOSE_THIS_WINDOW"),
+  closeCurrentWindow: () => ipcRenderer.send("CLOSE_CURRENT_WINDOW"),
   openReplWindow: (replSlug: string) =>
     ipcRenderer.send("OPEN_REPL_WINDOW", replSlug),
   logout: () => ipcRenderer.send("LOGOUT"),

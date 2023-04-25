@@ -6,7 +6,7 @@ import {
   MenuItem,
   MenuItemConstructorOptions,
 } from "electron";
-import { createFullWindow, createSplashWindow } from "./createWindow";
+import { createFullWindow, createSplashScreenWindow } from "./createWindow";
 import { isMac } from "./platform";
 
 const replUrlRegExp = new RegExp("https://replit.com/@[^/]+/.+");
@@ -14,7 +14,7 @@ const replUrlRegExp = new RegExp("https://replit.com/@[^/]+/.+");
 const newWindowMenuItem = {
   label: "New Window",
   accelerator: "CommandOrControl+Shift+N",
-  click: () => createSplashWindow(),
+  click: () => createSplashScreenWindow(),
 };
 
 const openReplFromClipboardMenuItem = {

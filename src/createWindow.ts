@@ -78,7 +78,7 @@ interface WindowProps {
   url: string;
 }
 
-export function createSplashWindow(props?: WindowProps): void {
+export function createSplashScreenWindow(props?: WindowProps): void {
   const url =
     props?.url ||
     `${baseUrl}/login?isInDesktopApp=true&goto=/desktop?isInDesktopApp=true`;
@@ -104,11 +104,6 @@ export function createSplashWindow(props?: WindowProps): void {
     width,
     height,
   };
-
-  // Add a custom string to user agent to make it easier to differentiate requests from desktop app
-  window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`
-  );
 
   window.setBounds(bounds);
   window.setWindowButtonVisibility(false);
