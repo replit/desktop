@@ -1,4 +1,5 @@
 import { app, autoUpdater, dialog } from "electron";
+import { isProduction } from "./constants";
 import { isLinux, isWindows } from "./platform";
 
 const server = "https://desktop-app-releases.replit.app";
@@ -6,7 +7,7 @@ const url = `${server}/update/${process.platform}/${app.getVersion()}`;
 
 export default function checkForUpdates(): void {
   // The app must be packaged in order to check for updates.
-  if (!app.isPackaged) {
+  if (!isProduction) {
     return;
   }
 
