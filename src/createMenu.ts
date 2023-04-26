@@ -6,6 +6,7 @@ import {
   MenuItem,
   MenuItemConstructorOptions,
 } from "electron";
+import { isProduction } from "./constants";
 import { createFullWindow, createSplashScreenWindow } from "./createWindow";
 import { isMac } from "./platform";
 
@@ -91,14 +92,20 @@ export function createApplicationMenu(): Menu {
     ],
   });
 
+  const devSubmenu = isProduction
+    ? []
+    : [
+        { role: "reload" },
+        { role: "forceReload" },
+        { role: "toggleDevTools" },
+        { type: "separator" },
+      ];
+
   // View Menu
   template.push({
     label: "View",
     submenu: [
-      { role: "reload" },
-      { role: "forceReload" },
-      { role: "toggleDevTools" },
-      { type: "separator" },
+      ...devSubmenu,
       { role: "resetZoom" },
       { role: "zoomIn" },
       { role: "zoomOut" },
