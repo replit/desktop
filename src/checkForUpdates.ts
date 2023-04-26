@@ -15,7 +15,12 @@ export default function checkForUpdates(): void {
     return;
   }
 
-  autoUpdater.setFeedURL({ url });
+  try {
+    autoUpdater.setFeedURL({ url });
+  } catch {
+    // This function will throw if the app is not signed which should only happen if you build from source without the appropriate env vars set.
+    return;
+  }
 
   autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
     const dialogOpts = {
