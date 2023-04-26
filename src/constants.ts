@@ -1,4 +1,4 @@
-import { nativeImage } from "electron";
+import { app, nativeImage } from "electron";
 import * as path from "path";
 
 /**
@@ -32,3 +32,6 @@ export const preloadScript = path.join(__dirname, "preload.js");
 export const baseUrl = process.env.USE_LOCAL_URL
   ? `http://localhost:3000`
   : `https://replit.com`;
+
+// https://www.electronjs.org/docs/latest/api/app#appispackaged-readonly
+export const isProduction = app.isPackaged;
