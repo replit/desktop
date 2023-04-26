@@ -112,11 +112,6 @@ export function createSplashScreenWindow(props?: WindowProps): void {
   };
 
   window.setBounds(bounds);
-
-  // Hide the window traffic light buttons on Mac
-  if (isMac()) {
-    window.setWindowButtonVisibility(false);
-  }
 }
 
 export function createFullWindow({ url }: WindowProps): void {
