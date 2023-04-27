@@ -8,10 +8,11 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "yarn build && electron-forge start",
+    "start": "pnpm build && electron-forge start",
+    "start:local": "pnpm build && USE_LOCAL_URL=true electron-forge start",
     "package": "electron-forge package",
     "publish": "electron-forge publish",
-    "make": "electron-forge make"
+    "make": "pnpm build && electron-forge make"
   },
   "author": "Replit",
   "main": "./dist/main.js",
@@ -22,15 +23,21 @@
     "@electron-forge/maker-rpm": "^6.0.5",
     "@electron-forge/maker-squirrel": "^6.0.5",
     "@electron-forge/maker-zip": "^6.0.5",
+    "@electron-forge/publisher-github": "^6.1.1",
+    "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "cpy": "^9.0.1",
-    "electron": "^23.1.3",
+    "electron": "^24.0.0",
     "electron-winstaller": "^5.1.0",
     "eslint": "^7.32.0",
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "conf": "10.2.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.1.0",
+    "json-schema-typed": "^8.0.1",
+    "type-fest": "^3.8.0"
   }
 }

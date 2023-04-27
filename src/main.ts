@@ -1,7 +1,18 @@
-import { app, BrowserWindow, nativeImage, screen, shell } from "electron";
-import * as path from "path";
+import { app, Menu, BrowserWindow, ipcMain } from "electron";
+import { createFullWindow, createSplashScreenWindow } from "./createWindow";
+import { appName, baseUrl, events, macAppIcon } from "./constants";
+import { isMac } from "./platform";
+import { createApplicationMenu, createDockMenu } from "./createMenu";
+import checkForUpdates from "./checkForUpdates";
+import { registerDeeplinkProtocol, setOpenDeeplinkListeners } from "./deeplink";
 
-app.setName("Replit");
+// Handles Squirrel (https://github.com/Squirrel/Squirrel.Windows) events on Windows.
+// This should run as early in the main process as possible.
+// See docs: https://github.com/electron-archive/grunt-electron-installer#handling-squirrel-events
+if (require("electron-squirrel-startup")) app.quit();
+
+app.setName(appName);
+registerDeeplinkProtocol();
 
 process.on("unhandledRejection", (rejection: Error) => {
   console.error(`[Unhandled Promise Rejction] ${rejection.stack}`);
@@ -17,64 +28,48 @@ if (!instanceLock) {
   app.quit();
 }
 
-const icon = nativeImage.createFromPath(
-  path.join(__dirname, "assets", "logo.png")
-);
-
-function createWindow() {
-  // Create a window that fills the screen's available work area.
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.workAreaSize;
-  const title = "Replit";
-  const url = "https://replit.com/login?goto=/desktop?isInDesktopApp=true";
-  const preload = path.join(__dirname, "preload.js");
-  // var(--background-root) value in Dark mode
-  const backgroundColor = "#0E1525";
-  // MacOS only
-  const scrollBounce = true;
-
-  const mainWindow = new BrowserWindow({
-    webPreferences: {
-      preload,
-      scrollBounce,
-    },
-    backgroundColor,
-    title,
-    icon,
-    width,
-    height,
-  });
-
-  mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
-    const url = new URL(navigationUrl);
-
-    // Prevent navigation away from Replit or to the signup page.
-    if (url.origin !== "https://replit.com" || url.pathname === "/signup") {
-      event.preventDefault();
-      shell.openExternal(navigationUrl);
-    }
-  });
-
-  mainWindow.loadURL(url);
-}
+Menu.setApplicationMenu(createApplicationMenu());
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  if (process.platform === "darwin") {
-    // MacOS only API
-    app.dock.setIcon(icon);
+  // MacOS only APIs
+  if (isMac()) {
+    app.dock.setIcon(macAppIcon);
+    app.dock.setMenu(createDockMenu());
   }
 
-  createWindow();
+  setOpenDeeplinkListeners();
+  createSplashScreenWindow();
+  checkForUpdates();
 
-  app.on("activate", function () {
+  app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      createSplashScreenWindow();
     }
+  });
+
+  ipcMain.on(events.CLOSE_CURRENT_WINDOW, (event) => {
+    const senderWindow = BrowserWindow.getAllWindows().find(
+      (win) => win.webContents.id === event.sender.id
+    );
+    senderWindow.close();
+  });
+
+  ipcMain.on(events.OPEN_REPL_WINDOW, (_, replSlug) => {
+    const url = `${baseUrl}${replSlug}?isInDesktopApp=true`;
+    createFullWindow({ url });
+  });
+
+  // When logging out we have to close all the windows, and do the actual logout navigation in a splash window
+  ipcMain.on(events.LOGOUT, () => {
+    const url = `${baseUrl}/logout?goto=/login?isInDesktopApp=true`;
+
+    BrowserWindow.getAllWindows().forEach((win) => win.close());
+    createSplashScreenWindow({ url });
   });
 });
 
@@ -82,10 +77,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+  if (!isMac()) {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
