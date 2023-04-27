@@ -43,7 +43,7 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Make
-        run: pnpm make --arch=${{ matrix.arch }})
+        run: pnpm make --arch=${{ matrix.arch }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
