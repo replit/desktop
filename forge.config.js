@@ -23,6 +23,7 @@ module.exports = {
     icon: "./assets/logo",
     osxSign,
     osxNotarize,
+    executableName: "Replit",
     protocols: [
       {
         name: "Replit",
