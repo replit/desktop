@@ -48,12 +48,10 @@ jobs:
         env:
           MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
           MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
-      - name: Make
-        run: pnpm make --arch=${{ matrix.arch }}
+      - name: Publish
+        run: pnpm run publish --arch=${{ matrix.arch }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Publish
-        run: pnpm run publish
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
