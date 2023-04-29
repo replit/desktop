@@ -21,6 +21,7 @@ if (!osxNotarize) {
 module.exports = {
   packagerConfig: {
     icon: "./assets/logo",
+    executableName: "Replit",
     osxSign,
     osxNotarize,
     protocols: [
