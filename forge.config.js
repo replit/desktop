@@ -61,6 +61,7 @@ module.exports = {
       config: {
         options: {
           name: "replit",
+          bin: "Replit",
           productName: "Replit",
           maintainer: "Replit",
           mimeType: ["x-scheme-handler/replit"],
