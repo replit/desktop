@@ -81,7 +81,7 @@ module.exports = {
   publishers: [
     {
       name: "@electron-forge/publisher-github",
-      authToken: process.env.GH_TOKEN,
+      authToken: process.env.GITHUB_TOKEN,
       config: {
         repository: {
           owner: "replit",
