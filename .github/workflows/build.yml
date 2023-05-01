@@ -1,0 +1,52 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+jobs:
+  publish:
+    name: Publish (${{ matrix.os }} - ${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, ubuntu-latest, windows-latest ]
+        arch: [ x64, arm64 ]
+        # Publishing artifacts for multiple Windows architectures has
+        # a bug which can cause the wrong architecture to be downloaded
+        # for an update, so until that is fixed, only build Windows x64
+        exclude:
+        - os: windows-latest
+          arch: arm64
+        - os: ubuntu-latest
+          arch: arm64
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ^7.29.1
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: pnpm
+      - name: Install
+        run: pnpm install
+      - name: Build
+        run: pnpm build
+      - name: Add MacOS signing cert
+        if: matrix.os == 'macOS-latest'
+        run: ./scripts/add-macos-cert.sh
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+      - name: Publish
+        run: pnpm run publish --arch=${{ matrix.arch }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
