@@ -6,11 +6,11 @@ import {
   MenuItem,
   MenuItemConstructorOptions,
 } from "electron";
-import { isProduction } from "./constants";
+import { baseUrl, isProduction } from "./constants";
 import { createFullWindow, createSplashScreenWindow } from "./createWindow";
 import { isMac } from "./platform";
 
-const replUrlRegExp = new RegExp("https://replit.com/@[^/]+/.+");
+const replUrlRegExp = new RegExp(`${baseUrl}/@[^/]+/.+`);
 
 const newWindowMenuItem = {
   label: "New Window",
