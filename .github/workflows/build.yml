@@ -4,8 +4,10 @@ on:
   push:
     branches:
       - main
-    tags:
-      - v*
+  pull_request:
+    branches:
+      - main
+
 jobs:
   publish:
     name: Publish (${{ matrix.os }} - ${{ matrix.arch }})
