@@ -1,20 +1,10 @@
 # Why
 
-<!-- Describe what prompted you to make this change, link relevant resources:
-
-- Asana task
-- Bug report
-- Design docs
-- Slack discussions
-- Figma link
-
-...etc -->
+<!-- Describe what prompted you to make this change, link relevant resources: Asana tasks, Canny report, Slack discussions, etc -->
 
 # What changed
 
-<!-- Describe what changed to a level of detail that someone with no context with your PR could be able to review it -->
-
-<!-- Put screenshots/recordings of the change if relevant -->
+<!-- Describe what changed to a level of detail that someone with no context with your PR could be able to review it (including screenshots if relevant) -->
 
 # Test plan 
 
