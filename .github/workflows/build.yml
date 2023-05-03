@@ -26,4 +26,4 @@ jobs:
       - name: Install
         run: pnpm install
       - name: Build and lint
-        run: npm-run-all --parallel lint build
+        run: pnpm run ci 

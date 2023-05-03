@@ -8,6 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "ci": "npm-run-all --parallel build lint",
     "start": "pnpm build && electron-forge start",
     "start:local": "pnpm build && USE_LOCAL_URL=true electron-forge start",
     "package": "electron-forge package",
