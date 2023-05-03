@@ -25,7 +25,5 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install
-      - name: Lint
-        run: pnpm lint
-      - name: Build
-        run: pnpm build
+      - name: Build and Lint
+        run: concurrently "pnpm build" "pnpm lint"
