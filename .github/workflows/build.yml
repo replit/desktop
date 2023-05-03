@@ -25,5 +25,7 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install
-      - name: Build and lint
-        run: npm-run-all --parallel lint build
+      - name: Lint
+        run: pnpm lint
+      - name: Build
+        run: pnpm build
