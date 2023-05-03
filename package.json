@@ -8,6 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "ci": "npm-run-all --parallel build lint",
     "start": "pnpm build && electron-forge start",
     "start:local": "pnpm build && USE_LOCAL_URL=true electron-forge start",
     "package": "electron-forge package",
@@ -31,6 +32,7 @@
     "electron": "^24.0.0",
     "electron-winstaller": "^5.1.0",
     "eslint": "^7.32.0",
+    "npm-run-all": "^4.1.5",
     "typescript": "^4.9.5"
   },
   "dependencies": {
