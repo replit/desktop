@@ -28,8 +28,9 @@ jobs:
         with:
           fileName: 'windows-certificate.pfx'
           encodedString: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE }}
-      - name: Build
-        run: pnpm run make --platform=win32 --arch=x64
+      - name: Publish
+        run: pnpm run publish --platform=win32 --arch=x64
         env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           WINDOWS_CERTIFICATE_FILE: ${{ steps.write_file.outputs.filePath }}
           WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_PASSWORD }}
