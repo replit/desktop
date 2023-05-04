@@ -22,6 +22,8 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install
+      - name: Build
+        run: pnpm build
       - name: Generate certificate 
         id: write_file
         uses: timheuer/base64-to-file@v1.2
