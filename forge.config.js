@@ -18,6 +18,16 @@ if (!osxNotarize) {
   );
 }
 
+console.log(
+  "RUNNING MAKE WITH WINDOWS CERT: ",
+  process.env.WINDOWS_CERTIFICATE_FILE
+);
+
+console.log(
+  "WINDOWS CERT PASSWORD SET: ",
+  Boolean(process.env.WINDOWS_CERTIFICATE_PASSWORD)
+);
+
 module.exports = {
   packagerConfig: {
     icon: "./assets/logo",
