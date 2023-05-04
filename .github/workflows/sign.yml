@@ -1,0 +1,35 @@
+name: Sign Windows App
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sign:
+    name: Build and Sign
+    runs-on: windows-latest 
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ^7.29.1
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: pnpm
+      - name: Install
+        run: pnpm install
+      - name: Generate certificate 
+        id: write_file
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: 'windows-certificate.pfx'
+          encodedString: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE }}
+      - name: Build
+        run: pnpm run make --platform=win32 --arch=x64
+        env:
+          WINDOWS_CERTIFICATE_FILE: ${{ steps.write_file.outputs.filePath }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_PASSWORD }}
