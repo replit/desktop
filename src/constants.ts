@@ -35,3 +35,6 @@ export const baseUrl = process.env.USE_LOCAL_URL
 
 // https://www.electronjs.org/docs/latest/api/app#appispackaged-readonly
 export const isProduction = app.isPackaged;
+
+// do we show the dev submenu ("Reload", "Toggle Developer Tools") also on production builds
+export const isDevSubmenuAlwaysVisible = true;
