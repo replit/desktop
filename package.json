@@ -10,7 +10,8 @@
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "ci": "npm-run-all --parallel build lint",
     "start": "pnpm build && electron-forge start",
-    "start:local": "pnpm build && USE_LOCAL_URL=true electron-forge start",
+    "start:local": "pnpm build && cross-env REPLIT_URL=http://localhost:3000 electron-forge start",
+    "start:staging": "pnpm build && cross-env REPLIT_URL=https://staging.replit.com/ electron-forge start",
     "package": "electron-forge package",
     "publish": "electron-forge publish",
     "make": "pnpm build && electron-forge make"
@@ -29,6 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "cpy": "^9.0.1",
+    "cross-env": "^7.0.3",
     "electron": "^24.0.0",
     "electron-winstaller": "^5.1.0",
     "eslint": "^7.32.0",

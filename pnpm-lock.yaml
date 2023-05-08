@@ -13,6 +13,7 @@ specifiers:
   '@typescript-eslint/parser': ^4.33.0
   conf: 10.2.0
   cpy: ^9.0.1
+  cross-env: ^7.0.3
   electron: ^24.0.0
   electron-squirrel-startup: ^1.0.0
   electron-store: ^8.1.0
@@ -42,6 +43,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 4.33.0_s2qqtxhzmb7vugvfoyripfgp7i
   '@typescript-eslint/parser': 4.33.0_jofidmxrjzhj7l6vknpw5ecvfe
   cpy: 9.0.1
+  cross-env: 7.0.3
   electron: 24.1.1
   electron-winstaller: 5.1.0
   eslint: 7.32.0
@@ -1382,6 +1384,14 @@ packages:
       nested-error-stacks: 2.1.1
       p-filter: 3.0.0
       p-map: 5.5.0
+    dev: true
+
+  /cross-env/7.0.3:
+    resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
+    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.3
     dev: true
 
   /cross-spawn-windows-exe/1.2.0:
