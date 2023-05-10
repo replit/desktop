@@ -14,6 +14,7 @@
     "start:staging": "pnpm build && cross-env REPLIT_URL=https://staging.replit.com electron-forge start",
     "package": "electron-forge package",
     "publish": "electron-forge publish",
+    "release": "./scripts/release.sh",
     "make": "pnpm build && electron-forge make"
   },
   "author": "Replit",
