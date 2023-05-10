@@ -27,7 +27,9 @@ If you need to build a production version of the app, you can run:
 pnpm make
 ```
 
-You can then launch a packaged version of the app (needed to test certain features like auto-updating) by running the outputted binary locally (e.g. on an M1 Mac: `./out/Replit-darwin-arm64/Replit.app/Contents/MacOS/Replit`)
+You can then launch a packaged version of the app (needed to test certain features like auto-updating) by running the outputted binary locally (e.g. on an M1 Mac: `./out/Replit-darwin-arm64/Replit.app/Contents/MacOS/Replit`).
+
+To test your changes on other platforms, we recommend using a Virtual Machine host like [UTM](https://mac.getutm.app).
 
 ## Release
 
