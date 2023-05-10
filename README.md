@@ -36,9 +36,10 @@ To test your changes on other platforms, we recommend using a Virtual Machine ho
 To publish a new release of the app, run the release script like so:
 
 ```bash
-# The version parameter here is anything that `npm version` accepts (e.g. major, minor, patch, or a version like v1.0.0) 
 pnpm release $version 
 ```
+
+where `$version` is anything that either a semver release keyword like major, minor, or patch, or an exact version like `v1.0.0`.
 
 This will trigger a GitHub workflow that builds the artifacts for each platform and uploads them to a new [Release](https://github.com/replit/desktop/releases).
 
