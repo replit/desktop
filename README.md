@@ -33,7 +33,15 @@ To test your changes on other platforms, we recommend using a Virtual Machine ho
 
 ## Release
 
-To publish a new release of the app, push a tagged commit to `main`. This will trigger a GitHub workflow that builds the artifacts for each platform and uploads them to a new [Release](https://github.com/replit/desktop/releases).
+To publish a new release of the app, run the release script like so:
+
+```bash
+pnpm release $version 
+```
+
+where `version` is either a semver release keyword like major, minor, or patch, or an exact version like `v1.0.0`.
+
+This will trigger a GitHub workflow that builds the artifacts for each platform and uploads them to a new [Release](https://github.com/replit/desktop/releases).
 
 Note that the Release will be in a draft state until you manually publish it. Make sure you add release notes to describe what changed since the last published version as they will be displayed to users when they download updates.
 
