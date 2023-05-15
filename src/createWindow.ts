@@ -100,13 +100,11 @@ export function createSplashScreenWindow(props?: WindowProps): void {
     },
   });
 
-  const workArea = screen.getPrimaryDisplay().workArea;
   const width = 480;
   const height = 640;
 
   const bounds = {
-    x: Math.round(workArea.width / 2 - width / 2),
-    y: Math.round(workArea.height / 2 - height / 2),
+    ...store.getBounds(),
     width,
     height,
   };
