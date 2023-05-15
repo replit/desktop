@@ -15,6 +15,14 @@ enum events {
   LOGOUT = "LOGOUT",
 }
 
+// Passed in as an entry to the `additionalArguments` array in `webPreferences`
+const versionArg = process.argv.find((arg) => arg.includes("app-version"));
+
+if (versionArg) {
+  const [, version] = versionArg.split("=");
+  contextBridge.exposeInMainWorld("desktopAppVersion", version);
+}
+
 // Set `window.isDesktopApp`
 contextBridge.exposeInMainWorld("isDesktopApp", true);
 
