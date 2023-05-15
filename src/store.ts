@@ -26,10 +26,12 @@ function createStore() {
       store.set(keys.BOUNDS, bounds);
     },
     getBounds(): Rectangle {
-      return store.get(
-        keys.BOUNDS,
-        screen.getPrimaryDisplay().workArea
-      ) as Rectangle;
+      // We're assuming that the active screen is the one with the mouse cursor.
+      // This fixes the bug where opening a Repl from a Splash Screen opens it on some other display.
+      const mousePosition = screen.getCursorScreenPoint();
+      const mouseScreen = screen.getDisplayNearestPoint(mousePosition);
+
+      return store.get(keys.BOUNDS, mouseScreen.workArea) as Rectangle;
     },
   };
 }
