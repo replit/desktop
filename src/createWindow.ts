@@ -1,7 +1,6 @@
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
-  screen,
   shell,
 } from "electron";
 import {
