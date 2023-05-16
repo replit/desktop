@@ -3,6 +3,7 @@ import {
   BrowserWindowConstructorOptions,
   screen,
   shell,
+  app,
 } from "electron";
 import {
   appIcon as icon,
@@ -30,6 +31,7 @@ function createBaseWindow({
   const window = new BrowserWindow({
     webPreferences: {
       preload,
+      additionalArguments: [`--app-version=${app.getVersion()}`],
       scrollBounce,
     },
     title,
