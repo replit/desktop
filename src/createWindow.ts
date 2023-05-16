@@ -105,12 +105,16 @@ export function createSplashScreenWindow(props?: WindowProps): void {
   const height = 640;
 
   const bounds = {
-    ...store.getBounds(),
+    ...store.getSplashScreenWindowBounds(),
     width,
     height,
   };
 
   window.setBounds(bounds);
+
+  window.on("close", () => {
+    store.setSplashScreenWindowBounds(window.getBounds());
+  });
 }
 
 export function createFullWindow({ url }: WindowProps): void {
@@ -133,7 +137,7 @@ export function createFullWindow({ url }: WindowProps): void {
     constructorOptions: platformStyling,
   });
 
-  window.setBounds(store.getBounds());
+  window.setBounds(store.getFullWindowBounds());
 
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
@@ -141,6 +145,6 @@ export function createFullWindow({ url }: WindowProps): void {
       `getComputedStyle(document.body).getPropertyValue('--background-root');`
     );
     store.setLastSeenBackgroundColor(backgroundColor);
-    store.setBounds(window.getBounds());
+    store.setFullWindowBounds(window.getBounds());
   });
 }
