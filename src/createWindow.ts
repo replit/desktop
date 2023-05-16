@@ -1,7 +1,6 @@
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
-  screen,
   shell,
   app,
 } from "electron";
@@ -102,18 +101,20 @@ export function createSplashScreenWindow(props?: WindowProps): void {
     },
   });
 
-  const workArea = screen.getPrimaryDisplay().workArea;
   const width = 480;
   const height = 640;
 
   const bounds = {
-    x: Math.round(workArea.width / 2 - width / 2),
-    y: Math.round(workArea.height / 2 - height / 2),
+    ...store.getSplashScreenWindowBounds(),
     width,
     height,
   };
 
   window.setBounds(bounds);
+
+  window.on("close", () => {
+    store.setSplashScreenWindowBounds(window.getBounds());
+  });
 }
 
 export function createFullWindow({ url }: WindowProps): void {
@@ -136,7 +137,7 @@ export function createFullWindow({ url }: WindowProps): void {
     constructorOptions: platformStyling,
   });
 
-  window.setBounds(store.getBounds());
+  window.setBounds(store.getFullWindowBounds());
 
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
@@ -144,6 +145,6 @@ export function createFullWindow({ url }: WindowProps): void {
       `getComputedStyle(document.body).getPropertyValue('--background-root');`
     );
     store.setLastSeenBackgroundColor(backgroundColor);
-    store.setBounds(window.getBounds());
+    store.setFullWindowBounds(window.getBounds());
   });
 }
