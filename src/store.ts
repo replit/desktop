@@ -41,9 +41,20 @@ function createStore() {
       store.set(keys.SPLASH_SCREEN_WINDOW_BOUNDS, bounds);
     },
     getSplashScreenWindowBounds(): Rectangle {
+      const { workArea } = screen.getPrimaryDisplay();
+      const width = 480;
+      const height = 640;
+
+      const defaultBounds = {
+        x: Math.round(workArea.width / 2 - width / 2),
+        y: Math.round(workArea.height / 2 - height / 2),
+        width,
+        height,
+      };
+
       return store.get(
         keys.SPLASH_SCREEN_WINDOW_BOUNDS,
-        screen.getPrimaryDisplay().workArea
+        defaultBounds
       ) as Rectangle;
     },
   };
