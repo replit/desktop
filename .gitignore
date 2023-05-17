@@ -5,3 +5,4 @@ out/
 .lefthook-local
 lefthook-local.yml
 lefthook.yml
+*.pfx
