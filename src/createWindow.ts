@@ -86,9 +86,7 @@ interface WindowProps {
 }
 
 export function createSplashScreenWindow(props?: WindowProps): void {
-  const url =
-    props?.url ||
-    `${baseUrl}/login?isInDesktopApp=true&goto=/desktopApp/landingPage?isInDesktopApp=true`;
+  const url = props?.url || `${baseUrl}/desktopApp/login?isInDesktopApp=true`;
 
   const window = createBaseWindow({
     url,
