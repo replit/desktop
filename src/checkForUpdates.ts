@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/electron";
 import { app, autoUpdater, dialog } from "electron";
 import { isProduction } from "./constants";
 import { isLinux, isWindows } from "./platform";
@@ -49,6 +50,14 @@ export default function checkForUpdates(): void {
   autoUpdater.on("error", (message) => {
     console.error("There was a problem updating the application");
     console.error(message);
+
+    const error = new Error("Failed to auto-update the application");
+
+    Sentry.captureException(error, {
+      extra: {
+        message,
+      },
+    });
   });
 
   autoUpdater.checkForUpdates();
