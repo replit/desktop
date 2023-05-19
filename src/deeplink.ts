@@ -1,4 +1,4 @@
-import { app, dialog } from "electron";
+import { app } from "electron";
 import { isWindows } from "./platform";
 import { protocol } from "./constants";
 import path from "path";
@@ -18,7 +18,7 @@ export function registerDeeplinkProtocol(): void {
 
 function handleDeeplink(url: string): void {
   // TODO: Redirect somewhere in the app
-  dialog.showErrorBox("Welcome Back", `You arrived from: ${url}`);
+  console.log(`You arrived from: ${url}`);
 }
 
 export function setOpenDeeplinkListeners(): void {
