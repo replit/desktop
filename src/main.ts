@@ -1,4 +1,4 @@
-import { app, Menu, BrowserWindow, ipcMain } from "electron";
+import { app, Menu, BrowserWindow, ipcMain, shell } from "electron";
 import { createFullWindow, createSplashScreenWindow } from "./createWindow";
 import { appName, baseUrl, events, macAppIcon } from "./constants";
 import { isMac } from "./platform";
@@ -65,6 +65,10 @@ app.whenReady().then(() => {
 
   ipcMain.on(events.OPEN_SPLASH_SCREEN_WINDOW, () => {
     createSplashScreenWindow();
+  });
+
+  ipcMain.on(events.OPEN_EXTERNAL_URL, (_, url) => {
+    shell.openExternal(url);
   });
 
   // When logging out we have to close all the windows, and do the actual logout navigation in a splash window

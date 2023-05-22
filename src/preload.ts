@@ -13,6 +13,7 @@ enum events {
   CLOSE_CURRENT_WINDOW = "CLOSE_CURRENT_WINDOW",
   OPEN_REPL_WINDOW = "OPEN_REPL_WINDOW",
   OPEN_SPLASH_SCREEN_WINDOW = "OPEN_SPLASH_SCREEN_WINDOW",
+  OPEN_EXTERNAL_URL = "OPEN_EXTERNAL_URL",
   LOGOUT = "LOGOUT",
 }
 
@@ -33,5 +34,7 @@ contextBridge.exposeInMainWorld("desktopAppApi", {
     ipcRenderer.send(events.OPEN_REPL_WINDOW, replSlug),
   openSplashScreenWindow: () =>
     ipcRenderer.send(events.OPEN_SPLASH_SCREEN_WINDOW),
+  openExternalUrl: (url: string) =>
+    ipcRenderer.send(events.OPEN_EXTERNAL_URL, url),
   logout: () => ipcRenderer.send(events.LOGOUT),
 });
