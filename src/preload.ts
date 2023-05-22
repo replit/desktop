@@ -20,15 +20,13 @@ enum events {
 // Passed in as an entry to the `additionalArguments` array in `webPreferences`
 const versionArg = process.argv.find((arg) => arg.includes("app-version"));
 
-if (versionArg) {
-  const [, version] = versionArg.split("=");
-  contextBridge.exposeInMainWorld("desktopAppVersion", version);
+if (!versionArg) {
+  throw new Error("Expected app-version argument");
 }
 
-// Set `window.isDesktopApp`
-contextBridge.exposeInMainWorld("isDesktopApp", true);
+const [, version] = versionArg.split("=");
 
-contextBridge.exposeInMainWorld("desktopAppApi", {
+contextBridge.exposeInMainWorld("replitDesktop", {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openReplWindow: (replSlug: string) =>
     ipcRenderer.send(events.OPEN_REPL_WINDOW, replSlug),
@@ -37,4 +35,5 @@ contextBridge.exposeInMainWorld("desktopAppApi", {
   openExternalUrl: (url: string) =>
     ipcRenderer.send(events.OPEN_EXTERNAL_URL, url),
   logout: () => ipcRenderer.send(events.LOGOUT),
+  version,
 });
