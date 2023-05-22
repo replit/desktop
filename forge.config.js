@@ -43,6 +43,7 @@ module.exports = {
       name: "@electron-forge/maker-squirrel",
       config: {
         setupIcon: "./assets/logo.ico",
+        iconURL: "https://replit.com/public/images/logo.ico",
         certificateFile: process.env.WINDOWS_CERTIFICATE_FILE,
         certificatePassword: process.env.WINDOWS_CERTIFICATE_PASSWORD,
       },
