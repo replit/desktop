@@ -12,6 +12,7 @@ import { contextBridge, ipcRenderer } from "electron";
 enum events {
   CLOSE_CURRENT_WINDOW = "CLOSE_CURRENT_WINDOW",
   OPEN_REPL_WINDOW = "OPEN_REPL_WINDOW",
+  OPEN_SPLASH_SCREEN_WINDOW = "OPEN_SPLASH_SCREEN_WINDOW",
   LOGOUT = "LOGOUT",
 }
 
@@ -30,5 +31,7 @@ contextBridge.exposeInMainWorld("desktopAppApi", {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openReplWindow: (replSlug: string) =>
     ipcRenderer.send(events.OPEN_REPL_WINDOW, replSlug),
+  openSplashScreenWindow: () =>
+    ipcRenderer.send(events.OPEN_SPLASH_SCREEN_WINDOW),
   logout: () => ipcRenderer.send(events.LOGOUT),
 });

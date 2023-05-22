@@ -63,6 +63,10 @@ app.whenReady().then(() => {
     createFullWindow({ url });
   });
 
+  ipcMain.on(events.OPEN_SPLASH_SCREEN_WINDOW, () => {
+    createSplashScreenWindow();
+  });
+
   // When logging out we have to close all the windows, and do the actual logout navigation in a splash window
   ipcMain.on(events.LOGOUT, () => {
     const url = `${baseUrl}/logout?goto=/desktopApp/login`;
