@@ -24,18 +24,16 @@ function createBaseWindow({
 }: BaseWindowProps): BrowserWindow {
   const backgroundColor = store.getLastSeenBackgroundColor();
 
-  // MacOS only
-  const scrollBounce = true;
-
   const window = new BrowserWindow({
     webPreferences: {
       preload,
       additionalArguments: [`--app-version=${app.getVersion()}`],
-      scrollBounce,
+      scrollBounce: true, // MacOS only
     },
     title,
     icon,
     backgroundColor,
+    autoHideMenuBar: true, // Window & Linux only, hides the menubar unless `Alt` is held
     ...constructorOptions,
   });
 
