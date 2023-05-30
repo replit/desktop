@@ -22,7 +22,7 @@ function handleDeeplink(deeplink: string): void {
 
   const url = new URL(deeplink);
 
-  // Remove trailing :
+  // Remove trailing ":"
   if (url.protocol.slice(0, -1) !== protocol) {
     throw new Error("Invalid protocol");
   }
