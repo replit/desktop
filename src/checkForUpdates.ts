@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/electron";
 import { app, autoUpdater, dialog } from "electron";
 import { isProduction } from "./constants";
-import { isLinux, isWindows } from "./platform";
+import { isLinux } from "./platform";
 
 const server = "https://desktop-app-releases.replit.app";
 const url = `${server}/update/${process.platform}/${app.getVersion()}`;
@@ -29,13 +29,12 @@ export default function checkForUpdates(): void {
     return;
   }
 
-  autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
+  autoUpdater.on("update-downloaded", () => {
     const dialogOpts = {
       type: "info",
-      buttons: ["Restart", "Later"],
+      buttons: ["Restart"],
       title: "Application Update",
-      // On Windows only releaseName is available.
-      message: isWindows() ? releaseName : releaseNotes,
+      message: "New Update Available",
       detail:
         "A new version has been downloaded. Restart the application to apply the updates.",
     };
