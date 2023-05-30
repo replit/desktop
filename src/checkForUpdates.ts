@@ -31,7 +31,7 @@ export default function checkForUpdates(): void {
 
   autoUpdater.on("update-downloaded", () => {
     const dialogOpts = {
-      type: "info",
+      type: "info" as const,
       buttons: ["Restart"],
       title: "Application Update",
       message: "New Update Available",

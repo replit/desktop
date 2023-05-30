@@ -28,7 +28,7 @@ const openReplFromClipboardMenuItem = {
       createFullWindow({ url: clipboardText });
     } else {
       dialog.showMessageBox({
-        type: "warning",
+        type: "warning" as const,
         message: "The URL in Clipboard is not a Repl URL",
       });
     }
