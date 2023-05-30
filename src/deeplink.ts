@@ -1,7 +1,8 @@
 import { app } from "electron";
 import { isWindows } from "./platform";
-import { protocol } from "./constants";
+import { baseUrl, protocol } from "./constants";
 import path from "path";
+import { createSplashScreenWindow } from "./createWindow";
 
 export function registerDeeplinkProtocol(): void {
   if (process.defaultApp && isWindows() && process.argv.length >= 2) {
@@ -16,9 +17,31 @@ export function registerDeeplinkProtocol(): void {
   }
 }
 
-function handleDeeplink(url: string): void {
-  // TODO: Redirect somewhere in the app
-  console.log(`You arrived from: ${url}`);
+function handleDeeplink(deeplink: string): void {
+  console.log(`You arrived from: ${deeplink}`);
+
+  const url = new URL(deeplink);
+
+  // Remove trailing ":"
+  if (url.protocol.slice(0, -1) !== protocol) {
+    throw new Error("Invalid protocol");
+  }
+
+  switch (url.hostname) {
+    case "authComplete":
+      handleAuthComplete(url.searchParams.get("authToken"));
+
+      break;
+    default:
+      console.log("Unrecognized hostname");
+  }
+}
+
+function handleAuthComplete(authToken: string) {
+  const url = `${baseUrl}/desktopApp/login?authToken=${authToken}`;
+  createSplashScreenWindow({
+    url,
+  });
 }
 
 export function setOpenDeeplinkListeners(): void {
