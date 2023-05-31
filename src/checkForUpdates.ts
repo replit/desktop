@@ -3,7 +3,7 @@ import { app, autoUpdater, dialog } from "electron";
 import { isProduction } from "./constants";
 import { isLinux } from "./platform";
 
-const server = "https://desktop-app-releases.replit.app";
+const server = "https://desktop.replit.com";
 const url = `${server}/update/${process.platform}/${app.getVersion()}`;
 
 export default function checkForUpdates(): void {
