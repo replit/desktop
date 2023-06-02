@@ -24,6 +24,7 @@ module.exports = {
     executableName: "Replit",
     osxSign,
     osxNotarize,
+    asar: true,
     protocols: [
       {
         name: "Replit",
