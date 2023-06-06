@@ -42,7 +42,7 @@ function handleAuthComplete(authToken: string) {
   const authUrl = `${baseUrl}/desktopApp/auth`;
 
   // If we already have the auth window open which triggered
-  // this flow, then we will pass the auth token via IPC
+  // this flow, then we will pass the auth token to it via IPC.
   const window = windows.find(
     (window) => window.webContents.getURL() === authUrl
   );
@@ -57,7 +57,7 @@ function handleAuthComplete(authToken: string) {
   });
 
   // Otherwise, if that window was closed for some reason, simply
-  // open a new auth window with the token passed as a query param.
+  // open a new auth window with the token passed in via a query param.
   if (!window) {
     const url = `${authUrl}?authToken=${authToken}`;
 
