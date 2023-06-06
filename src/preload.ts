@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
 
 /**
  * Events that correspond to the protocol we use when communicating
@@ -36,9 +36,15 @@ contextBridge.exposeInMainWorld("replitDesktop", {
   openExternalUrl: (url: string) =>
     ipcRenderer.send(events.OPEN_EXTERNAL_URL, url),
   onAuthTokenReceived: (callback: (token: string) => void) => {
-    ipcRenderer.once(events.AUTH_TOKEN_RECEIVED, (_event, token) => {
+    function listener(_event: IpcRendererEvent, token: string) {
       callback(token);
-    });
+    }
+
+    ipcRenderer.once(events.AUTH_TOKEN_RECEIVED, listener);
+
+    return () => {
+      ipcRenderer.removeListener(events.AUTH_TOKEN_RECEIVED, listener);
+    };
   },
   logout: () => ipcRenderer.send(events.LOGOUT),
   version,
