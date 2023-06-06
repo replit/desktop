@@ -24,7 +24,21 @@ module.exports = {
     executableName: "Replit",
     osxSign,
     osxNotarize,
+
     asar: true,
+    ignore: [
+      /^\/assets\//,
+      /^\/scripts\//,
+      /^\/src\//,
+      /^\/\..*/,
+      "README.md",
+      "forge.config.js",
+      "lefthook-local.yml",
+      "lefthook.yml",
+      "pnpm-lock.yaml",
+      "tsconfig.json",
+    ],
+
     protocols: [
       {
         name: "Replit",
