@@ -6,7 +6,7 @@
   "productName": "Replit",
   "scripts": {
     "build": "tsc",
-    "build:prod": "rm -rf dist/ && pnpm build:prod",
+    "build:prod": "rm -rf dist/ && tsc --sourceMap false",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "ci": "npm-run-all --parallel build lint",
