@@ -6,16 +6,17 @@
   "productName": "Replit",
   "scripts": {
     "build": "tsc",
+    "build:prod": "rm -rf dist/ && pnpm build:prod",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "ci": "npm-run-all --parallel build lint",
     "start": "pnpm build && electron-forge start",
     "start:local": "pnpm build && cross-env REPLIT_URL=http://localhost:3000 electron-forge start",
     "start:staging": "pnpm build && cross-env REPLIT_URL=https://staging.replit.com electron-forge start",
-    "package": "electron-forge package",
-    "publish": "electron-forge publish",
+    "package": "pnpm build:prod && electron-forge package",
+    "publish": "pnpm build:prod && electron-forge publish",
     "release": "./scripts/release.sh",
-    "make": "pnpm build && electron-forge make"
+    "make": "pnpm build:prod && electron-forge make"
   },
   "author": "Replit",
   "main": "./dist/main.js",

@@ -25,6 +25,33 @@ module.exports = {
     osxSign,
     osxNotarize,
     asar: true,
+
+    // ignore development files like README, typescript sources, etc.
+    ignore: (path) => {
+      if (path === "") {
+        return false;
+      }
+
+      // dist folder is necessary for the app to run
+      if (path.startsWith("/dist")) {
+        return false;
+      }
+
+      // package.json is necessary for the app to run
+      if (path === "/package.json") {
+        return false;
+      }
+
+      // node_modules are necessary, but we have to strip binaries
+      if (path.includes("node_modules")) {
+        const ignoreNodeBinaries = "/node_modules/\\.bin($|/)";
+        return path.match(ignoreNodeBinaries);
+      }
+
+      // otherwise, ignore the file
+      return true;
+    },
+
     protocols: [
       {
         name: "Replit",
