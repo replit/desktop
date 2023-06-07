@@ -86,7 +86,7 @@ interface WindowProps {
   url: string;
 }
 
-export function createSplashScreenWindow(props?: WindowProps): void {
+export function createSplashScreenWindow(props?: WindowProps): BrowserWindow {
   const url = props?.url || `${baseUrl}/desktopApp/login`;
 
   const window = createBaseWindow({
@@ -114,9 +114,11 @@ export function createSplashScreenWindow(props?: WindowProps): void {
   window.on("close", () => {
     store.setSplashScreenWindowBounds(window.getBounds());
   });
+
+  return window;
 }
 
-export function createFullWindow({ url }: WindowProps): void {
+export function createFullWindow({ url }: WindowProps): BrowserWindow {
   // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
   // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
   const platformStyling: BrowserWindowConstructorOptions = isMac()
@@ -146,4 +148,6 @@ export function createFullWindow({ url }: WindowProps): void {
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setFullWindowBounds(window.getBounds());
   });
+
+  return window;
 }
