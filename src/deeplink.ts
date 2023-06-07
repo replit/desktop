@@ -1,6 +1,6 @@
-import { app } from "electron";
+import { app, BrowserWindow } from "electron";
 import { isWindows } from "./platform";
-import { baseUrl, protocol } from "./constants";
+import { baseUrl, events, protocol } from "./constants";
 import path from "path";
 import { createSplashScreenWindow } from "./createWindow";
 
@@ -38,10 +38,37 @@ function handleDeeplink(deeplink: string): void {
 }
 
 function handleAuthComplete(authToken: string) {
-  const url = `${baseUrl}/desktopApp/login?authToken=${authToken}`;
-  createSplashScreenWindow({
-    url,
+  const windows = BrowserWindow.getAllWindows();
+  const authUrl = `${baseUrl}/desktopApp/auth`;
+
+  // If we already have the auth window open which triggered
+  // this flow, then we will pass the auth token to it via IPC.
+  const authWindow = windows.find(
+    (window) => window.webContents.getURL() === authUrl
+  );
+
+  // Close all other windows that may have been opened during this time.
+  BrowserWindow.getAllWindows().forEach((w) => {
+    if (authWindow && w.id === authWindow.id) {
+      return;
+    }
+
+    w.close();
   });
+
+  // Otherwise, if that window was closed for some reason, simply
+  // open a new auth window with the token passed in via a query param.
+  if (!authWindow) {
+    const url = `${authUrl}?authToken=${authToken}`;
+
+    createSplashScreenWindow({
+      url,
+    });
+
+    return;
+  }
+
+  authWindow.webContents.send(events.AUTH_TOKEN_RECEIVED, authToken);
 }
 
 export function setOpenDeeplinkListeners(): void {

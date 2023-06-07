@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
 
 /**
  * Events that correspond to the protocol we use when communicating
@@ -11,6 +11,7 @@ import { contextBridge, ipcRenderer } from "electron";
  */
 enum events {
   CLOSE_CURRENT_WINDOW = "CLOSE_CURRENT_WINDOW",
+  AUTH_TOKEN_RECEIVED = "AUTH_TOKEN_RECEIVED",
   OPEN_REPL_WINDOW = "OPEN_REPL_WINDOW",
   OPEN_SPLASH_SCREEN_WINDOW = "OPEN_SPLASH_SCREEN_WINDOW",
   OPEN_EXTERNAL_URL = "OPEN_EXTERNAL_URL",
@@ -34,6 +35,17 @@ contextBridge.exposeInMainWorld("replitDesktop", {
     ipcRenderer.send(events.OPEN_SPLASH_SCREEN_WINDOW),
   openExternalUrl: (url: string) =>
     ipcRenderer.send(events.OPEN_EXTERNAL_URL, url),
+  onAuthTokenReceived: (callback: (token: string) => void) => {
+    function listener(_event: IpcRendererEvent, token: string) {
+      callback(token);
+    }
+
+    ipcRenderer.once(events.AUTH_TOKEN_RECEIVED, listener);
+
+    return () => {
+      ipcRenderer.removeListener(events.AUTH_TOKEN_RECEIVED, listener);
+    };
+  },
   logout: () => ipcRenderer.send(events.LOGOUT),
   version,
 });
