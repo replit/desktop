@@ -43,13 +43,13 @@ function handleAuthComplete(authToken: string) {
 
   // If we already have the auth window open which triggered
   // this flow, then we will pass the auth token to it via IPC.
-  const window = windows.find(
+  const authWindow = windows.find(
     (window) => window.webContents.getURL() === authUrl
   );
 
   // Close all other windows that may have been opened during this time.
   BrowserWindow.getAllWindows().forEach((w) => {
-    if (window && w.id === window.id) {
+    if (authWindow && w.id === authWindow.id) {
       return;
     }
 
@@ -58,7 +58,7 @@ function handleAuthComplete(authToken: string) {
 
   // Otherwise, if that window was closed for some reason, simply
   // open a new auth window with the token passed in via a query param.
-  if (!window) {
+  if (!authWindow) {
     const url = `${authUrl}?authToken=${authToken}`;
 
     createSplashScreenWindow({
@@ -68,7 +68,7 @@ function handleAuthComplete(authToken: string) {
     return;
   }
 
-  window.webContents.send(events.AUTH_TOKEN_RECEIVED, authToken);
+  authWindow.webContents.send(events.AUTH_TOKEN_RECEIVED, authToken);
 }
 
 export function setOpenDeeplinkListeners(): void {
