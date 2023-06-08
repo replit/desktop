@@ -12,6 +12,7 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
 enum events {
   CLOSE_CURRENT_WINDOW = "CLOSE_CURRENT_WINDOW",
   AUTH_TOKEN_RECEIVED = "AUTH_TOKEN_RECEIVED",
+  NATIVE_WINDOW_EVENT = "NATIVE_WINDOW_EVENT",
   OPEN_REPL_WINDOW = "OPEN_REPL_WINDOW",
   OPEN_SPLASH_SCREEN_WINDOW = "OPEN_SPLASH_SCREEN_WINDOW",
   OPEN_EXTERNAL_URL = "OPEN_EXTERNAL_URL",
@@ -44,6 +45,17 @@ contextBridge.exposeInMainWorld("replitDesktop", {
 
     return () => {
       ipcRenderer.removeListener(events.AUTH_TOKEN_RECEIVED, listener);
+    };
+  },
+  onNativeWindowEvent: (callback: (event: string) => void) => {
+    function listener(_event: IpcRendererEvent, event: string) {
+      callback(event);
+    }
+
+    ipcRenderer.on(events.NATIVE_WINDOW_EVENT, listener);
+
+    return () => {
+      ipcRenderer.removeListener(events.NATIVE_WINDOW_EVENT, listener);
     };
   },
   logout: () => ipcRenderer.send(events.LOGOUT),
