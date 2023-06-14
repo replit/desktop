@@ -8,13 +8,12 @@ import checkForUpdates from "./checkForUpdates";
 import { registerDeeplinkProtocol, setOpenDeeplinkListeners } from "./deeplink";
 import { setIpcEventListeners } from "./ipc";
 
-initSentry();
-
 // Handles Squirrel (https://github.com/Squirrel/Squirrel.Windows) events on Windows.
 // This should run as early in the main process as possible.
 // See docs: https://github.com/electron-archive/grunt-electron-installer#handling-squirrel-events
 if (require("electron-squirrel-startup")) app.quit();
 
+initSentry();
 app.setName(appName);
 registerDeeplinkProtocol();
 
