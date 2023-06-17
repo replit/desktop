@@ -87,7 +87,7 @@ interface WindowProps {
 }
 
 export function createSplashScreenWindow(props?: WindowProps): BrowserWindow {
-  const url = props?.url || `${baseUrl}/desktopApp/auth`;
+  const url = props?.url || `${baseUrl}/desktopApp/login`;
 
   const window = createBaseWindow({
     url,

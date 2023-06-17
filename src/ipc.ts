@@ -33,7 +33,7 @@ export function setIpcEventListeners(): void {
 
   // When logging out we have to close all the windows, and do the actual logout navigation in a splash window
   ipcMain.on(events.LOGOUT, () => {
-    const url = `${baseUrl}/logout?goto=/desktopApp/auth`;
+    const url = `${baseUrl}/logout?goto=/desktopApp/login`;
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
     createSplashScreenWindow({ url });
