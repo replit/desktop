@@ -31,12 +31,21 @@ You can then launch a packaged version of the app (needed to test certain featur
 
 To test your changes on other platforms, we recommend using a Virtual Machine host like [UTM](https://mac.getutm.app).
 
+### API Versioning
+
+The Electron app communicates with the web frontend through `replitDesktop` global object defined in `src/preload.ts`. As we develop both applications, this API has to be able to adapt, but at the same time can't break already existing clients. The main failure mode we're trying to avoid is someone opening an older version of the Electron app and loading a newer version of the web client which requires a new API, that's not supported by the old Electron client.
+
+We're following a set of principles inspired by protobuf versioning:
+- don't remove the existing APIs
+- don't modify existing API call signatures; instead create a new API with a number added to the end, for example: `replitDesktop.logout2(NEW_ARGUMENTS)`
+- adding new APIs in the Electron app is ok, in the web client these should be optionally typed, and checked for existence dynamically (`if ('logout2' in replitDesktop) { ... }`)
+
 ## Release
 
 To publish a new release of the app, run the release script like so:
 
 ```bash
-pnpm release $version 
+pnpm release $version
 ```
 
 where `version` is either a semver release keyword like major, minor, or patch, or an exact version like `v1.0.0`.
@@ -59,7 +68,7 @@ This is done to verify that the app comes from us and to prevent users from seei
 
 ### MacOS
 
-To sign the app on MacOS, you need to set the `APPLE_ID`, `APPLE_PASSWORD`, and `APPLE_TEAM_ID` environment variables before you run `pnpm make`. Those are accessible in 1Password. 
+To sign the app on MacOS, you need to set the `APPLE_ID`, `APPLE_PASSWORD`, and `APPLE_TEAM_ID` environment variables before you run `pnpm make`. Those are accessible in 1Password.
 
 Alternatively, if you are a member of the company's Apple Developer Team, you can use your own Apple ID and app-specific password.
 
