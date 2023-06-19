@@ -12,11 +12,12 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
 enum events {
   CLOSE_CURRENT_WINDOW = "CLOSE_CURRENT_WINDOW",
   AUTH_TOKEN_RECEIVED = "AUTH_TOKEN_RECEIVED",
-  NATIVE_WINDOW_EVENT = "NATIVE_WINDOW_EVENT",
   OPEN_REPL_WINDOW = "OPEN_REPL_WINDOW",
   OPEN_SPLASH_SCREEN_WINDOW = "OPEN_SPLASH_SCREEN_WINDOW",
   OPEN_EXTERNAL_URL = "OPEN_EXTERNAL_URL",
   LOGOUT = "LOGOUT",
+  ON_ENTER_FULLSCREEN = "ON_ENTER_FULLSCREEN",
+  ON_LEAVE_FULLSCREEN = "ON_LEAVE_FULLSCREEN",
 }
 
 // Passed in as an entry to the `additionalArguments` array in `webPreferences`
@@ -27,6 +28,16 @@ if (!versionArg) {
 }
 
 const [, version] = versionArg.split("=");
+
+function makeEventHandler(event: events) {
+  return function (callback: () => void) {
+    ipcRenderer.on(event, callback);
+
+    return () => {
+      ipcRenderer.removeListener(event, callback);
+    };
+  };
+}
 
 contextBridge.exposeInMainWorld("replitDesktop", {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
@@ -47,17 +58,8 @@ contextBridge.exposeInMainWorld("replitDesktop", {
       ipcRenderer.removeListener(events.AUTH_TOKEN_RECEIVED, listener);
     };
   },
-  onNativeWindowEvent: (callback: (event: string) => void) => {
-    function listener(_event: IpcRendererEvent, event: string) {
-      callback(event);
-    }
-
-    ipcRenderer.on(events.NATIVE_WINDOW_EVENT, listener);
-
-    return () => {
-      ipcRenderer.removeListener(events.NATIVE_WINDOW_EVENT, listener);
-    };
-  },
+  onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
+  onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
   logout: () => ipcRenderer.send(events.LOGOUT),
   version,
 });

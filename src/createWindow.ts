@@ -151,11 +151,11 @@ export function createFullWindow({ url }: WindowProps): BrowserWindow {
   });
 
   window.on("enter-full-screen", () => {
-    window.webContents.send(events.NATIVE_WINDOW_EVENT, "enter-full-screen");
+    window.webContents.send(events.ON_ENTER_FULLSCREEN);
   });
 
   window.on("leave-full-screen", () => {
-    window.webContents.send(events.NATIVE_WINDOW_EVENT, "leave-full-screen");
+    window.webContents.send(events.ON_LEAVE_FULLSCREEN);
   });
 
   return window;
