@@ -1,10 +1,13 @@
 import * as Sentry from "@sentry/electron";
 import { app, autoUpdater, dialog } from "electron";
 import { isProduction } from "./constants";
-import { isLinux } from "./platform";
+import { isLinux, isMac } from "./platform";
 
+// We need this to differentiate between M1 and Intel Macs
+const platform =
+  isMac() && process.arch === "arm64" ? "darwin_arm64" : process.platform;
 const server = "https://desktop.replit.com";
-const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+const url = `${server}/update/${platform}/${app.getVersion()}`;
 
 export default function checkForUpdates(): void {
   // The app must be packaged in order to check for updates.

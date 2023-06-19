@@ -1,19 +1,19 @@
-import { app, Menu, BrowserWindow, ipcMain, shell } from "electron";
-import { createFullWindow, createSplashScreenWindow } from "./createWindow";
-import { appName, baseUrl, events, macAppIcon } from "./constants";
+import { app, Menu, BrowserWindow } from "electron";
+import { createSplashScreenWindow } from "./createWindow";
+import { appName, macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { initSentry } from "./sentry";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
 import { registerDeeplinkProtocol, setOpenDeeplinkListeners } from "./deeplink";
-
-initSentry();
+import { setIpcEventListeners } from "./ipc";
 
 // Handles Squirrel (https://github.com/Squirrel/Squirrel.Windows) events on Windows.
 // This should run as early in the main process as possible.
 // See docs: https://github.com/electron-archive/grunt-electron-installer#handling-squirrel-events
 if (require("electron-squirrel-startup")) app.quit();
 
+initSentry();
 app.setName(appName);
 registerDeeplinkProtocol();
 
@@ -40,6 +40,7 @@ app.whenReady().then(() => {
   }
 
   setOpenDeeplinkListeners();
+  setIpcEventListeners();
   createSplashScreenWindow();
   checkForUpdates();
 
@@ -49,34 +50,6 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createSplashScreenWindow();
     }
-  });
-
-  ipcMain.on(events.CLOSE_CURRENT_WINDOW, (event) => {
-    const senderWindow = BrowserWindow.getAllWindows().find(
-      (win) => win.webContents.id === event.sender.id
-    );
-    senderWindow.close();
-  });
-
-  ipcMain.on(events.OPEN_REPL_WINDOW, (_, replSlug) => {
-    const url = `${baseUrl}${replSlug}`;
-    createFullWindow({ url });
-  });
-
-  ipcMain.on(events.OPEN_SPLASH_SCREEN_WINDOW, () => {
-    createSplashScreenWindow();
-  });
-
-  ipcMain.on(events.OPEN_EXTERNAL_URL, (_, url) => {
-    shell.openExternal(url);
-  });
-
-  // When logging out we have to close all the windows, and do the actual logout navigation in a splash window
-  ipcMain.on(events.LOGOUT, () => {
-    const url = `${baseUrl}/logout?goto=/desktopApp/login`;
-
-    BrowserWindow.getAllWindows().forEach((win) => win.close());
-    createSplashScreenWindow({ url });
   });
 });
 
