@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, shell } from "electron";
+import { BrowserWindow, dialog, ipcMain, shell } from "electron";
 import { createFullWindow, createSplashScreenWindow } from "./createWindow";
 import { baseUrl, events } from "./constants";
 
@@ -16,6 +16,26 @@ export function setIpcEventListeners(): void {
       (win) => win.webContents.id === event.sender.id
     );
     senderWindow.close();
+  });
+
+  ipcMain.on(events.CONFIRM_CLOSE_CURRENT_WINDOW, (event, message) => {
+    const senderWindow = BrowserWindow.getAllWindows().find(
+      (win) => win.webContents.id === event.sender.id
+    );
+
+    dialog
+      .showMessageBox(senderWindow, {
+        type: "warning",
+        message,
+        buttons: ["Close", "Cancel"],
+        defaultId: 1,
+        cancelId: 1,
+      })
+      .then((result) => {
+        if (result.response === 0) {
+          senderWindow.close();
+        }
+      });
   });
 
   ipcMain.on(events.OPEN_REPL_WINDOW, (_, replSlug) => {

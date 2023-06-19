@@ -16,6 +16,7 @@ enum events {
   OPEN_SPLASH_SCREEN_WINDOW = "OPEN_SPLASH_SCREEN_WINDOW",
   OPEN_EXTERNAL_URL = "OPEN_EXTERNAL_URL",
   LOGOUT = "LOGOUT",
+  CONFIRM_CLOSE_CURRENT_WINDOW = "CONFIRM_CLOSE_CURRENT_WINDOW",
 }
 
 // Passed in as an entry to the `additionalArguments` array in `webPreferences`
@@ -47,5 +48,7 @@ contextBridge.exposeInMainWorld("replitDesktop", {
     };
   },
   logout: () => ipcRenderer.send(events.LOGOUT),
+  confirmCloseCurrentWindow: (message: string) =>
+    ipcRenderer.send(events.CONFIRM_CLOSE_CURRENT_WINDOW, message),
   version,
 });
