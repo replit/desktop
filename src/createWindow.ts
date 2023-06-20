@@ -8,6 +8,7 @@ import {
   appIcon as icon,
   appName as title,
   baseUrl,
+  events,
   preloadScript as preload,
 } from "./constants";
 import { isMac } from "./platform";
@@ -147,6 +148,14 @@ export function createFullWindow({ url }: WindowProps): BrowserWindow {
     );
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setFullWindowBounds(window.getBounds());
+  });
+
+  window.on("enter-full-screen", () => {
+    window.webContents.send(events.ON_ENTER_FULLSCREEN);
+  });
+
+  window.on("leave-full-screen", () => {
+    window.webContents.send(events.ON_LEAVE_FULLSCREEN);
   });
 
   return window;
