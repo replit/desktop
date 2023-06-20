@@ -76,9 +76,8 @@ export function setOpenDeeplinkListeners(): void {
   // See docs: https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
   if (isWindows()) {
     app.on("second-instance", (_event, commandLine) => {
-      // the commandLine is array of strings in which last element is deep link url
-      // the url str ends with /
-      const url = commandLine.pop().slice(0, -1);
+      // the commandLine is array of strings in which last element is the deep link url
+      const url = commandLine.pop();
 
       handleDeeplink(url);
     });
