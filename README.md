@@ -37,7 +37,7 @@ The Electron app communicates with the web frontend through the `replitDesktop` 
 
 We're following a set of principles inspired by protobuf versioning:
 - don't remove the existing APIs
-- don't modify existing API call signatures; instead create a new API with a number added to the end, for example: `replitDesktop.logout2(NEW_ARGUMENTS)`
+- don't modify existing API call signatures
 - adding new APIs in the Electron app is ok, in the web client these should be optionally typed, and checked for existence dynamically (`if ('logout2' in replitDesktop) { ... }`)
 
 ## Release
