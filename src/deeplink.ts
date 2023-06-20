@@ -78,7 +78,7 @@ export function setOpenDeeplinkListeners(): void {
     app.on("second-instance", (_event, commandLine) => {
       // the commandLine is array of strings in which last element is deep link url
       // the url str ends with /
-      const url = commandLine.pop().slice(0, 1);
+      const url = commandLine.pop().slice(0, -1);
 
       handleDeeplink(url);
     });
