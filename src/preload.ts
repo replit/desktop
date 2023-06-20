@@ -52,7 +52,7 @@ contextBridge.exposeInMainWorld("replitDesktop", {
       callback(token);
     }
 
-    ipcRenderer.once(events.AUTH_TOKEN_RECEIVED, listener);
+    ipcRenderer.on(events.AUTH_TOKEN_RECEIVED, listener);
 
     return () => {
       ipcRenderer.removeListener(events.AUTH_TOKEN_RECEIVED, listener);
