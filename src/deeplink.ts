@@ -68,6 +68,12 @@ function handleAuthComplete(authToken: string) {
     return;
   }
 
+  if (authWindow.isMinimized()) {
+    authWindow.restore();
+  }
+
+  authWindow.focus();
+
   authWindow.webContents.send(events.AUTH_TOKEN_RECEIVED, authToken);
 }
 
