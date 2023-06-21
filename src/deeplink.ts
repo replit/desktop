@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from "electron";
-import { isWindows } from "./platform";
+import { isWindows, isLinux } from "./platform";
 import { baseUrl, events, protocol } from "./constants";
 import path from "path";
 import { createSplashScreenWindow } from "./createWindow";
@@ -78,9 +78,9 @@ function handleAuthComplete(authToken: string) {
 }
 
 export function setOpenDeeplinkListeners(): void {
-  // Windows fires a different event when deeplinks are opened
+  // Windows and Linux fire a different event when deeplinks are opened
   // See docs: https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
-  if (isWindows()) {
+  if (isWindows() || isLinux()) {
     app.on("second-instance", (_event, commandLine) => {
       // the commandLine is an array of strings in which the last element is the deep link url
       const url = commandLine.pop();
@@ -91,7 +91,6 @@ export function setOpenDeeplinkListeners(): void {
     return;
   }
 
-  // Handle the protocol. In this case, we choose to show an Error Box.
   app.on("open-url", (_event, url) => {
     handleDeeplink(url);
   });
