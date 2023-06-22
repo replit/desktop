@@ -1,6 +1,7 @@
 import { BrowserWindow, ipcMain, shell } from "electron";
 import { createFullWindow, createSplashScreenWindow } from "./createWindow";
-import { baseUrl, events } from "./constants";
+import { baseUrl } from "./constants";
+import { events } from "./events";
 
 /**
  * Set listeners for IPC, or inter-process communication, events that are

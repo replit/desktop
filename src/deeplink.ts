@@ -1,8 +1,9 @@
 import { app, BrowserWindow } from "electron";
 import { isWindows, isLinux } from "./platform";
-import { baseUrl, events, protocol } from "./constants";
+import { baseUrl, protocol } from "./constants";
 import path from "path";
 import { createSplashScreenWindow } from "./createWindow";
+import { events } from "./events";
 
 export function registerDeeplinkProtocol(): void {
   if (process.defaultApp && isWindows() && process.argv.length >= 2) {

@@ -5,18 +5,18 @@
   "description": "Replit Desktop App",
   "productName": "Replit",
   "scripts": {
-    "build": "tsc",
-    "build:prod": "rm -rf dist/ && tsc --sourceMap false",
-    "watch": "tsc -w",
+    "build": "./scripts/build.sh",
+    "ts:check": "tsc --noEmit",
+    "ts:watch": "tsc --noEmit -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "ci": "npm-run-all --parallel build lint",
+    "ci": "npm-run-all --parallel build ts:check lint",
     "start": "pnpm build && electron-forge start",
     "start:local": "pnpm build && cross-env REPLIT_URL=http://localhost:3000 electron-forge start",
     "start:staging": "pnpm build && cross-env REPLIT_URL=https://staging.replit.com electron-forge start",
-    "package": "pnpm build:prod && electron-forge package",
-    "publish": "pnpm build:prod && electron-forge publish",
+    "package": "pnpm build && electron-forge package",
+    "publish": "pnpm build && electron-forge publish",
     "release": "./scripts/release.sh",
-    "make": "pnpm build:prod && electron-forge make"
+    "make": "pnpm build && electron-forge make"
   },
   "author": "Replit",
   "main": "./dist/main.js",
@@ -24,7 +24,6 @@
     "@electron-forge/cli": "^6.1.0",
     "@electron-forge/maker-deb": "^6.0.5",
     "@electron-forge/maker-dmg": "^6.1.0",
-    "@electron-forge/maker-rpm": "^6.0.5",
     "@electron-forge/maker-squirrel": "^6.0.5",
     "@electron-forge/maker-zip": "^6.0.5",
     "@electron-forge/publisher-github": "^6.1.1",
@@ -35,16 +34,14 @@
     "cross-env": "^7.0.3",
     "electron": "^24.0.0",
     "electron-winstaller": "^5.1.0",
+    "esbuild": "^0.18.6",
     "eslint": "^7.32.0",
     "npm-run-all": "^4.1.5",
     "typescript": "^4.9.5"
   },
   "dependencies": {
     "@sentry/electron": "^4.5.0",
-    "conf": "10.2.0",
     "electron-squirrel-startup": "^1.0.0",
-    "electron-store": "^8.1.0",
-    "json-schema-typed": "^8.0.1",
-    "type-fest": "^3.8.0"
+    "electron-store": "^8.1.0"
   }
 }
