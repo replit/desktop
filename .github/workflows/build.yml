@@ -1,17 +1,23 @@
 name: Build and lint
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: pull_request
 
 jobs:
-  build:
-    name: Build and lint
-    runs-on: ubuntu-latest 
+  make:
+    name: Make (${{ matrix.os }} - ${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macOS-latest, ubuntu-latest, windows-latest ]
+        arch: [ x64, arm64 ]
+        # Publishing artifacts for multiple Windows architectures has
+        # a bug which can cause the wrong architecture to be downloaded
+        # for an update, so until that is fixed, only build Windows x64
+        exclude:
+        - os: windows-latest
+          arch: arm64
+        - os: ubuntu-latest
+          arch: arm64
 
     steps:
       - uses: actions/checkout@v3
@@ -25,5 +31,27 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install
-      - name: Build and lint
-        run: pnpm run ci 
+      - name: Build
+        run: pnpm build
+      - name: Generate Windows code signing certificate 
+        if: matrix.os == 'windows-latest'
+        id: write_file
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: 'windows-certificate.pfx'
+          encodedString: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE }}
+      - name: Generate MacOS code signing certificate
+        if: matrix.os == 'macOS-latest'
+        run: ./scripts/add-macos-cert.sh
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+      - name: Make and Publish
+        run: pnpm run make --arch=${{ matrix.arch }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          WINDOWS_CERTIFICATE_FILE: ${{ steps.write_file.outputs.filePath }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
