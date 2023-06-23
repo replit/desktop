@@ -16,7 +16,7 @@
     "package": "pnpm build && electron-forge package",
     "publish": "pnpm build && electron-forge publish",
     "release": "./scripts/release.sh",
-    "make": "pnpm build && electron-forge make "
+    "make": "pnpm build && electron-forge make"
   },
   "author": "Replit",
   "main": "./dist/main.js",
