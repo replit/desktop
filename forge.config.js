@@ -28,6 +28,7 @@ module.exports = {
 
     // ignore development files like README, typescript sources, etc.
     ignore: (path) => {
+      // testing
       if (path === "") {
         return false;
       }

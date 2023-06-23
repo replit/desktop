@@ -3,8 +3,6 @@ import { createFullWindow, createSplashScreenWindow } from "./createWindow";
 import { baseUrl } from "./constants";
 import { events } from "./events";
 
-// hi
-
 /**
  * Set listeners for IPC, or inter-process communication, events that are
  * emitted by the renderer process via the API defined in the preload script.
