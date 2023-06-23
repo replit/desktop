@@ -8,9 +8,9 @@ import {
   appIcon as icon,
   appName as title,
   baseUrl,
-  events,
   preloadScript as preload,
 } from "./constants";
+import { events } from "./events";
 import { isMac } from "./platform";
 import store from "./store";
 
