@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build and lint
+    name: Static checks
     runs-on: ubuntu-latest 
 
     steps:
@@ -28,8 +28,25 @@ jobs:
       - name: Build and lint
         run: pnpm run ci 
 
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      config: ${{ steps.filter.outputs.config }}
+    steps:
+      - uses: actions/checkout@v3
+        if: ${{ github.event_name == 'push' }}
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            config: 'package\.json|forge\.config\.js'
+
   make:
     name: Make (${{ matrix.os }} - ${{ matrix.arch }})
+    if: ${{ needs.changes.outputs.config == 'true' }}
+    needs: changes
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -44,7 +61,6 @@ jobs:
         - os: ubuntu-latest
           arch: arm64
 
-    steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
         with:
