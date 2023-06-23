@@ -61,6 +61,7 @@ jobs:
         - os: ubuntu-latest
           arch: arm64
 
+    steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
         with:
