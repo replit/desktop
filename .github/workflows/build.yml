@@ -41,7 +41,7 @@ jobs:
         id: filter
         with:
           filters: |
-            config: 'package\.json|forge\.config\.js'
+            config: 'package.json|forge.config.js'
 
   make:
     name: Make (${{ matrix.os }} - ${{ matrix.arch }})
