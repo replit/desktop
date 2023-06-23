@@ -55,9 +55,7 @@ jobs:
       matrix:
         os: [ macOS-latest, ubuntu-latest, windows-latest ]
         arch: [ x64, arm64 ]
-        # Publishing artifacts for multiple Windows architectures has
-        # a bug which can cause the wrong architecture to be downloaded
-        # for an update, so until that is fixed, only build Windows x64
+        # Exclude platforms we don't support
         exclude:
         - os: windows-latest
           arch: arm64
