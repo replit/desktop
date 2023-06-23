@@ -29,6 +29,7 @@ jobs:
         run: pnpm run ci 
 
   changes:
+    name: Check changed files
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
@@ -41,7 +42,9 @@ jobs:
         id: filter
         with:
           filters: |
-            config: 'package.json|forge.config.js'
+            config:
+              - package.json
+              - forge.config.js
 
   make:
     name: Make (${{ matrix.os }} - ${{ matrix.arch }})
