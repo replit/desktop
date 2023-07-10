@@ -90,20 +90,19 @@ interface WindowProps {
 export function createSplashScreenWindow(props?: WindowProps): BrowserWindow {
   const url = props?.url || `${baseUrl}/desktopApp/auth`;
 
-  const width = 480;
-  const height = 640;
-
   const window = createBaseWindow({
     url,
     constructorOptions: {
       frame: false,
+      resizable: false,
       minimizable: false,
       maximizable: false,
       fullscreen: false,
-      minWidth: width,
-      minHeight: height,
     },
   });
+
+  const width = 480;
+  const height = 640;
 
   const bounds = {
     ...store.getSplashScreenWindowBounds(),
