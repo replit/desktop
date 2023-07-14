@@ -30,6 +30,7 @@ function createBaseWindow({
       preload,
       additionalArguments: [`--app-version=${app.getVersion()}`],
       scrollBounce: true, // MacOS only
+      webviewTag: true,
     },
     title,
     icon,
@@ -40,7 +41,7 @@ function createBaseWindow({
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`
+    `${window.webContents.getUserAgent()} ReplitDesktop`,
   );
 
   window.webContents.setWindowOpenHandler((details) => {
@@ -144,7 +145,7 @@ export function createFullWindow({ url }: WindowProps): BrowserWindow {
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
     const backgroundColor = await window.webContents.executeJavaScript(
-      `getComputedStyle(document.body).getPropertyValue('--background-root');`
+      `getComputedStyle(document.body).getPropertyValue('--background-root');`,
     );
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setFullWindowBounds(window.getBounds());
