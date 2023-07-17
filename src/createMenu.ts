@@ -7,7 +7,7 @@ import {
   MenuItemConstructorOptions,
 } from "electron";
 import { baseUrl } from "./constants";
-import { createFullWindow, createSplashScreenWindow } from "./createWindow";
+import { createWindow } from "./createWindow";
 import { isMac } from "./platform";
 
 const replUrlRegExp = new RegExp(`${baseUrl}/@[^/]+/.+`);
@@ -15,7 +15,7 @@ const replUrlRegExp = new RegExp(`${baseUrl}/@[^/]+/.+`);
 const newWindowMenuItem = {
   label: "New Window",
   accelerator: "CommandOrControl+Shift+N",
-  click: () => createSplashScreenWindow(),
+  click: () => createWindow(),
 };
 
 const openReplFromClipboardMenuItem = {
@@ -25,7 +25,7 @@ const openReplFromClipboardMenuItem = {
     const isReplUrl = replUrlRegExp.test(clipboardText);
 
     if (isReplUrl) {
-      createFullWindow({ url: clipboardText });
+      createWindow({ url: clipboardText });
     } else {
       dialog.showMessageBox({
         type: "warning" as const,

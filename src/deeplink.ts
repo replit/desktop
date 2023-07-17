@@ -2,7 +2,7 @@ import { app, BrowserWindow } from "electron";
 import { isWindows, isLinux } from "./platform";
 import { baseUrl, protocol } from "./constants";
 import path from "path";
-import { createSplashScreenWindow } from "./createWindow";
+import { createWindow } from "./createWindow";
 import { events } from "./events";
 
 export function registerDeeplinkProtocol(): void {
@@ -62,7 +62,7 @@ function handleAuthComplete(authToken: string) {
   if (!authWindow) {
     const url = `${authUrl}?authToken=${authToken}`;
 
-    createSplashScreenWindow({
+    createWindow({
       url,
     });
 

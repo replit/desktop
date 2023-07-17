@@ -14,16 +14,27 @@ import { events } from "./events";
 import { isMac } from "./platform";
 import store from "./store";
 
-interface BaseWindowProps {
-  url: string;
-  constructorOptions?: BrowserWindowConstructorOptions;
+interface WindowProps {
+  url?: string;
 }
 
-function createBaseWindow({
-  url,
-  constructorOptions,
-}: BaseWindowProps): BrowserWindow {
+export function createWindow(props?: WindowProps): BrowserWindow {
   const backgroundColor = store.getLastSeenBackgroundColor();
+  const url = props?.url || `${baseUrl}/desktopApp/auth`;
+
+  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
+  // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
+  const platformStyling: BrowserWindowConstructorOptions = isMac()
+    ? {
+        titleBarStyle: "hidden",
+        titleBarOverlay: {
+          color: "var(--background-root)",
+          symbolColor: "var(--foreground-default)",
+          height: 60,
+        },
+        trafficLightPosition: { x: 20, y: 22 },
+      }
+    : {};
 
   const window = new BrowserWindow({
     webPreferences: {
@@ -35,7 +46,7 @@ function createBaseWindow({
     icon,
     backgroundColor,
     autoHideMenuBar: true, // Window & Linux only, hides the menubar unless `Alt` is held
-    ...constructorOptions,
+    ...platformStyling,
   });
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
@@ -75,71 +86,7 @@ function createBaseWindow({
     }
   });
 
-  // Bypass the browser's cache when initially loading the remote URL
-  // in order to ensure that we load the latest web build.
-  // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
-  window.loadURL(url, { extraHeaders: "pragma: no-cache\n" });
-
-  return window;
-}
-
-interface WindowProps {
-  url: string;
-}
-
-export function createSplashScreenWindow(props?: WindowProps): BrowserWindow {
-  const url = props?.url || `${baseUrl}/desktopApp/auth`;
-
-  const window = createBaseWindow({
-    url,
-    constructorOptions: {
-      frame: false,
-      resizable: false,
-      minimizable: false,
-      maximizable: false,
-      fullscreen: false,
-    },
-  });
-
-  const width = 480;
-  const height = 640;
-
-  const bounds = {
-    ...store.getSplashScreenWindowBounds(),
-    width,
-    height,
-  };
-
-  window.setBounds(bounds);
-
-  window.on("close", () => {
-    store.setSplashScreenWindowBounds(window.getBounds());
-  });
-
-  return window;
-}
-
-export function createFullWindow({ url }: WindowProps): BrowserWindow {
-  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
-  // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
-  const platformStyling: BrowserWindowConstructorOptions = isMac()
-    ? {
-        titleBarStyle: "hidden",
-        titleBarOverlay: {
-          color: "var(--background-root)",
-          symbolColor: "var(--foreground-default)",
-          height: 60,
-        },
-        trafficLightPosition: { x: 20, y: 22 },
-      }
-    : {};
-
-  const window = createBaseWindow({
-    url,
-    constructorOptions: platformStyling,
-  });
-
-  window.setBounds(store.getFullWindowBounds());
+  window.setBounds(store.getWindowBounds());
 
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
@@ -147,7 +94,7 @@ export function createFullWindow({ url }: WindowProps): BrowserWindow {
       `getComputedStyle(document.body).getPropertyValue('--background-root');`
     );
     store.setLastSeenBackgroundColor(backgroundColor);
-    store.setFullWindowBounds(window.getBounds());
+    store.setWindowBounds(window.getBounds());
   });
 
   window.on("enter-full-screen", () => {
@@ -157,6 +104,11 @@ export function createFullWindow({ url }: WindowProps): BrowserWindow {
   window.on("leave-full-screen", () => {
     window.webContents.send(events.ON_LEAVE_FULLSCREEN);
   });
+
+  // Bypass the browser's cache when initially loading the remote URL
+  // in order to ensure that we load the latest web build.
+  // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
+  window.loadURL(url, { extraHeaders: "pragma: no-cache\n" });
 
   return window;
 }
