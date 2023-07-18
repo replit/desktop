@@ -24,8 +24,6 @@ contextBridge.exposeInMainWorld("replitDesktop", {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openReplWindow: (replSlug: string) =>
     ipcRenderer.send(events.OPEN_REPL_WINDOW, replSlug),
-  openSplashScreenWindow: () =>
-    ipcRenderer.send(events.OPEN_SPLASH_SCREEN_WINDOW),
   openExternalUrl: (url: string) =>
     ipcRenderer.send(events.OPEN_EXTERNAL_URL, url),
   onAuthTokenReceived: (callback: (token: string) => void) => {

@@ -24,10 +24,6 @@ export function setIpcEventListeners(): void {
     createWindow({ url });
   });
 
-  ipcMain.on(events.OPEN_SPLASH_SCREEN_WINDOW, () => {
-    createWindow();
-  });
-
   ipcMain.on(events.OPEN_EXTERNAL_URL, (_, url) => {
     shell.openExternal(url);
   });
