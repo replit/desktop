@@ -1,5 +1,5 @@
 import { app, Menu, BrowserWindow } from "electron";
-import { createSplashScreenWindow } from "./createWindow";
+import { createWindow } from "./createWindow";
 import { appName, macAppIcon } from "./constants";
 import { isMac } from "./platform";
 import { initSentry } from "./sentry";
@@ -41,14 +41,14 @@ app.whenReady().then(() => {
 
   setOpenDeeplinkListeners();
   setIpcEventListeners();
-  createSplashScreenWindow();
+  createWindow();
   checkForUpdates();
 
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      createSplashScreenWindow();
+      createWindow();
     }
   });
 });

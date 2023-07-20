@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain, shell } from "electron";
-import { createFullWindow, createSplashScreenWindow } from "./createWindow";
+import { createWindow } from "./createWindow";
 import { baseUrl } from "./constants";
 import { events } from "./events";
 
@@ -21,11 +21,7 @@ export function setIpcEventListeners(): void {
 
   ipcMain.on(events.OPEN_REPL_WINDOW, (_, replSlug) => {
     const url = `${baseUrl}${replSlug}`;
-    createFullWindow({ url });
-  });
-
-  ipcMain.on(events.OPEN_SPLASH_SCREEN_WINDOW, () => {
-    createSplashScreenWindow();
+    createWindow({ url });
   });
 
   ipcMain.on(events.OPEN_EXTERNAL_URL, (_, url) => {
@@ -37,6 +33,6 @@ export function setIpcEventListeners(): void {
     const url = `${baseUrl}/logout?goto=/desktopApp/auth`;
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
-    createSplashScreenWindow({ url });
+    createWindow({ url });
   });
 }
