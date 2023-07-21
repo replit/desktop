@@ -44,8 +44,8 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     },
     title,
     icon,
-    minWidth: 875,
-    minHeight: 580,
+    minWidth: 500,
+    minHeight: 420,
     backgroundColor,
     autoHideMenuBar: true, // Window & Linux only, hides the menubar unless `Alt` is held
     ...platformStyling,
