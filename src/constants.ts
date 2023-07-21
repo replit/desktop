@@ -16,5 +16,7 @@ export const preloadScript = path.join(__dirname, "preload.js");
 
 export const baseUrl = process.env.REPLIT_URL || "https://replit.com";
 
+export const workspaceUrlRegex = /^\/@\S+\/\S+/;
+
 // https://www.electronjs.org/docs/latest/api/app#appispackaged-readonly
 export const isProduction = app.isPackaged;

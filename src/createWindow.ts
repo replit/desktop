@@ -9,6 +9,7 @@ import {
   appName as title,
   baseUrl,
   preloadScript as preload,
+  workspaceUrlRegex,
 } from "./constants";
 import { events } from "./events";
 import { isMac } from "./platform";
@@ -70,6 +71,26 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     return {
       action: "allow",
     };
+  });
+
+  window.webContents.on("did-navigate-in-page", (_event, url) => {
+    const u = new URL(url);
+
+    if (u.origin !== baseUrl) {
+      return;
+    }
+
+    if (!workspaceUrlRegex.test(u.pathname)) {
+      return;
+    }
+
+    const lastOpenRepl = store.getLastOpenRepl();
+
+    if (lastOpenRepl === u.pathname) {
+      return;
+    }
+
+    store.setLastOpenRepl(u.pathname);
   });
 
   window.webContents.on("will-navigate", (event, navigationUrl) => {

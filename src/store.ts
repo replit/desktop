@@ -3,6 +3,7 @@ import Store from "electron-store";
 
 const keys = {
   LAST_SEEN_BACKGROUND_COLOR: "LAST_SEEN_BACKGROUND_COLOR",
+  LAST_OPEN_REPL: "LAST_OPEN_REPL",
   WINDOW_BOUNDS: "WINDOW_BOUNDS",
 };
 
@@ -32,6 +33,12 @@ function createStore() {
       const mouseScreen = screen.getDisplayNearestPoint(mousePosition);
 
       return store.get(keys.WINDOW_BOUNDS, mouseScreen.workArea) as Rectangle;
+    },
+    setLastOpenRepl(path: string | null) {
+      store.set(keys.LAST_OPEN_REPL, path);
+    },
+    getLastOpenRepl(): string | null {
+      return store.get(keys.LAST_OPEN_REPL, null) as string | null;
     },
   };
 }
