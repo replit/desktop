@@ -10,6 +10,7 @@ import {
   baseUrl,
   preloadScript as preload,
   workspaceUrlRegex,
+  homePage,
 } from "./constants";
 import { events } from "./events";
 import { isMac } from "./platform";
@@ -77,6 +78,14 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     const u = new URL(url);
 
     if (u.origin !== baseUrl) {
+      return;
+    }
+
+    if (u.pathname === homePage) {
+      if (store.getLastOpenRepl() != null) {
+        store.setLastOpenRepl(null);
+      }
+
       return;
     }
 
