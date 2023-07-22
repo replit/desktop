@@ -30,9 +30,9 @@ export function createWindow(props?: WindowProps): BrowserWindow {
         titleBarOverlay: {
           color: "var(--background-root)",
           symbolColor: "var(--foreground-default)",
-          height: 60,
+          height: 48,
         },
-        trafficLightPosition: { x: 20, y: 22 },
+        trafficLightPosition: { x: 20, y: 16 },
       }
     : {};
 
