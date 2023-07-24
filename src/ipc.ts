@@ -2,6 +2,7 @@ import { BrowserWindow, ipcMain, shell } from "electron";
 import { createWindow } from "./createWindow";
 import { baseUrl } from "./constants";
 import { events } from "./events";
+import store from "./store";
 
 /**
  * Set listeners for IPC, or inter-process communication, events that are
@@ -17,6 +18,7 @@ export function setIpcEventListeners(): void {
       (win) => win.webContents.id === event.sender.id
     );
     senderWindow.close();
+    store.setLastOpenRepl(null);
   });
 
   ipcMain.on(events.OPEN_REPL_WINDOW, (_, replSlug) => {
@@ -31,6 +33,7 @@ export function setIpcEventListeners(): void {
   // When logging out we have to close all the windows, and do the actual logout navigation in a splash window
   ipcMain.on(events.LOGOUT, () => {
     const url = `${baseUrl}/logout?goto=/desktopApp/auth`;
+    store.setLastOpenRepl(null);
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
     createWindow({ url });
