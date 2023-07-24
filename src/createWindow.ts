@@ -18,9 +18,19 @@ interface WindowProps {
   url?: string;
 }
 
+const defaultUrl = `${baseUrl}/desktopApp/auth`;
+
+function createURL(url?: string) {
+  if (url) {
+    return url.startsWith("/") ? `${baseUrl}${url}` : url;
+  }
+
+  return defaultUrl;
+}
+
 export function createWindow(props?: WindowProps): BrowserWindow {
   const backgroundColor = store.getLastSeenBackgroundColor();
-  const url = props?.url || `${baseUrl}/desktopApp/auth`;
+  const url = createURL(props?.url);
 
   // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
   // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
