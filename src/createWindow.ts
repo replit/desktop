@@ -11,6 +11,7 @@ import {
   preloadScript as preload,
   workspaceUrlRegex,
   homePage,
+  authPage,
 } from "./constants";
 import { events } from "./events";
 import { isMac } from "./platform";
@@ -20,7 +21,7 @@ interface WindowProps {
   url?: string;
 }
 
-const defaultUrl = `${baseUrl}/desktopApp/auth`;
+const defaultUrl = `${baseUrl}${authPage}`;
 
 function createURL(url?: string) {
   if (url) {
