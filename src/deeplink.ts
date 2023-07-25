@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import { isWindows, isLinux } from "./platform";
-import { baseUrl, protocol } from "./constants";
+import { baseUrl, protocol, workspaceUrlRegex, authPage } from "./constants";
 import path from "path";
 import { createWindow } from "./createWindow";
 import { events } from "./events";
@@ -29,18 +29,47 @@ function handleDeeplink(deeplink: string): void {
   }
 
   switch (url.hostname) {
-    case "authComplete":
+    case "authComplete": {
       handleAuthComplete(url.searchParams.get("authToken"));
 
       break;
-    default:
-      console.log("Unrecognized hostname");
+    }
+
+    case "repl": {
+      handleRepl(url.pathname);
+
+      break;
+    }
+
+    default: {
+      console.error("Unrecognized hostname");
+    }
   }
+}
+
+function handleRepl(url: string) {
+  if (!workspaceUrlRegex.test(url)) {
+    console.error("Expected URL of the format /@username/slug");
+
+    return;
+  }
+
+  const focused = BrowserWindow.getFocusedWindow();
+
+  if (focused) {
+    focused.loadURL(`${baseUrl}${url}`);
+
+    return;
+  }
+
+  createWindow({
+    url,
+  });
 }
 
 function handleAuthComplete(authToken: string) {
   const windows = BrowserWindow.getAllWindows();
-  const authUrl = `${baseUrl}/desktopApp/auth`;
+  const authUrl = `${baseUrl}${authPage}`;
 
   // If we already have the auth window open which triggered
   // this flow, then we will pass the auth token to it via IPC.
