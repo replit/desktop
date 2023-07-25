@@ -20,6 +20,7 @@ export const workspaceUrlRegex = /^\/@\S+\/\S+/;
 
 export const homePage = "/desktopApp/home";
 export const authPage = "/desktopApp/auth";
+export const desktopAppPrefix = "/desktopApp";
 
 // https://www.electronjs.org/docs/latest/api/app#appispackaged-readonly
 export const isProduction = app.isPackaged;
