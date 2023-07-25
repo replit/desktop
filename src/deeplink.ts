@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import { isWindows, isLinux } from "./platform";
-import { baseUrl, protocol, workspaceUrlRegex } from "./constants";
+import { baseUrl, protocol, workspaceUrlRegex, authPage } from "./constants";
 import path from "path";
 import { createWindow } from "./createWindow";
 import { events } from "./events";
@@ -69,7 +69,7 @@ function handleRepl(url: string) {
 
 function handleAuthComplete(authToken: string) {
   const windows = BrowserWindow.getAllWindows();
-  const authUrl = `${baseUrl}/desktopApp/auth`;
+  const authUrl = `${baseUrl}${authPage}`;
 
   // If we already have the auth window open which triggered
   // this flow, then we will pass the auth token to it via IPC.
