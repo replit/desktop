@@ -11,8 +11,10 @@ import {
   preloadScript as preload,
   workspaceUrlRegex,
   homePage,
+  authPage,
 } from "./constants";
 import { events } from "./events";
+import isSupportedPage from "./isSupportedPage";
 import { isMac } from "./platform";
 import store from "./store";
 
@@ -20,7 +22,7 @@ interface WindowProps {
   url?: string;
 }
 
-const defaultUrl = `${baseUrl}/desktopApp/auth`;
+const defaultUrl = `${baseUrl}${authPage}`;
 
 function createURL(url?: string) {
   if (url) {
@@ -118,11 +120,9 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     const url = new URL(navigationUrl);
 
     const isReplit = url.origin === baseUrl;
-    const isSignup = url.pathname === "/signup";
-    const isSupport = url.pathname === "/support";
 
-    // Prevent navigation away from Replit
-    if (!isReplit || isSignup || isSupport) {
+    // Prevent navigation away from Replit or supported pages
+    if (!isReplit || !isSupportedPage(url.pathname)) {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
