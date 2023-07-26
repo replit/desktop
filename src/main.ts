@@ -7,6 +7,7 @@ import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
 import { registerDeeplinkProtocol, setOpenDeeplinkListeners } from "./deeplink";
 import { setIpcEventListeners } from "./ipc";
+import store from "./store";
 
 // Handles Squirrel (https://github.com/Squirrel/Squirrel.Windows) events on Windows.
 // This should run as early in the main process as possible.
@@ -41,7 +42,8 @@ app.whenReady().then(() => {
 
   setOpenDeeplinkListeners();
   setIpcEventListeners();
-  createWindow();
+
+  createWindow({ url: store.getLastOpenRepl() });
   checkForUpdates();
 
   app.on("activate", () => {

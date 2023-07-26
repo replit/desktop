@@ -19,12 +19,12 @@ import { isMac } from "./platform";
 import store from "./store";
 
 interface WindowProps {
-  url?: string;
+  url?: string | null;
 }
 
 const defaultUrl = `${baseUrl}${authPage}`;
 
-function createURL(url?: string) {
+function createURL(url?: string | null) {
   if (url) {
     return url.startsWith("/") ? `${baseUrl}${url}` : url;
   }
