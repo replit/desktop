@@ -1,6 +1,11 @@
 import { BrowserWindow, ipcMain, shell } from "electron";
 import { createWindow } from "./createWindow";
-import { authPage, baseUrl } from "./constants";
+import {
+  authPage,
+  baseUrl,
+  desktopAppPrefix,
+  workspaceUrlRegex,
+} from "./constants";
 import { events } from "./events";
 import store from "./store";
 
@@ -23,8 +28,17 @@ export function setIpcEventListeners(): void {
     store.setLastOpenRepl(null);
   });
 
-  ipcMain.on(events.OPEN_REPL_WINDOW, (_, replSlug) => {
-    const url = `${baseUrl}${replSlug}`;
+  ipcMain.on(events.OPEN_REPL_WINDOW, (_, slug) => {
+    const isSupportedPage =
+      slug.startsWith(desktopAppPrefix) ||
+      workspaceUrlRegex.test(slug) ||
+      slug === "/logout";
+
+    if (!isSupportedPage) {
+      throw new Error("Page not supported");
+    }
+
+    const url = `${baseUrl}${slug}`;
     createWindow({ url });
   });
 
