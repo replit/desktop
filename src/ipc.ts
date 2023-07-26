@@ -1,13 +1,9 @@
 import { BrowserWindow, ipcMain, shell } from "electron";
 import { createWindow } from "./createWindow";
-import {
-  authPage,
-  baseUrl,
-  desktopAppPrefix,
-  workspaceUrlRegex,
-} from "./constants";
+import { authPage, baseUrl } from "./constants";
 import { events } from "./events";
 import store from "./store";
+import isSupportedPage from "./isSupportedPage";
 
 /**
  * Set listeners for IPC, or inter-process communication, events that are
@@ -29,12 +25,7 @@ export function setIpcEventListeners(): void {
   });
 
   ipcMain.on(events.OPEN_REPL_WINDOW, (_, slug) => {
-    const isSupportedPage =
-      slug.startsWith(desktopAppPrefix) ||
-      workspaceUrlRegex.test(slug) ||
-      slug === "/logout";
-
-    if (!isSupportedPage) {
+    if (!isSupportedPage(slug)) {
       throw new Error("Page not supported");
     }
 
