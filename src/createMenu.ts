@@ -6,7 +6,7 @@ import {
   MenuItem,
   MenuItemConstructorOptions,
 } from "electron";
-import { baseUrl } from "./constants";
+import { baseUrl, isProduction } from "./constants";
 import { createWindow } from "./createWindow";
 import { isMac } from "./platform";
 
@@ -98,7 +98,8 @@ export function createApplicationMenu(): Menu {
     submenu: [
       { role: "reload" },
       { role: "forceReload" },
-      { role: "toggleDevTools" },
+      // Don't expose dev tools in production
+      ...(!isProduction ? [{ role: "toggleDevTools" }] : []),
       { type: "separator" },
       { type: "separator" },
       { role: "togglefullscreen" },
