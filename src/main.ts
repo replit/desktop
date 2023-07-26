@@ -42,11 +42,9 @@ app.whenReady().then(() => {
 
   setOpenDeeplinkListeners();
   setIpcEventListeners();
-  checkForUpdates();
 
-  const lastOpenRepl = store.getLastOpenRepl();
-  const url = lastOpenRepl || "/desktopApp/auth";
-  createWindow({ url });
+  createWindow({ url: store.getLastOpenRepl() });
+  checkForUpdates();
 
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
