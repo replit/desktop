@@ -24,7 +24,7 @@ interface WindowProps {
 
 const defaultUrl = `${baseUrl}${authPage}`;
 
-function createURL(url?: string) {
+function createURL(url?: string | null) {
   if (url) {
     return url.startsWith("/") ? `${baseUrl}${url}` : url;
   }
