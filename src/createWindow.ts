@@ -12,6 +12,7 @@ import {
   workspaceUrlRegex,
   homePage,
   authPage,
+  desktopAppPrefix,
 } from "./constants";
 import { events } from "./events";
 import { isMac } from "./platform";
@@ -119,11 +120,13 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     const url = new URL(navigationUrl);
 
     const isReplit = url.origin === baseUrl;
-    const isSignup = url.pathname === "/signup";
-    const isSupport = url.pathname === "/support";
+    const isSupportedPage =
+      url.pathname.startsWith(desktopAppPrefix) ||
+      workspaceUrlRegex.test(url.pathname) ||
+      url.pathname === "/logout";
 
-    // Prevent navigation away from Replit
-    if (!isReplit || isSignup || isSupport) {
+    // Prevent navigation away from Replit or supported pages
+    if (!isReplit || !isSupportedPage) {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
