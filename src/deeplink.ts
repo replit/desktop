@@ -1,6 +1,12 @@
 import { app, BrowserWindow } from "electron";
 import { isWindows, isLinux } from "./platform";
-import { baseUrl, protocol, workspaceUrlRegex, authPage } from "./constants";
+import {
+  baseUrl,
+  protocol,
+  workspaceUrlRegex,
+  semverRegex,
+  authPage,
+} from "./constants";
 import path from "path";
 import { createWindow } from "./createWindow";
 import { events } from "./events";
@@ -114,6 +120,11 @@ export function setOpenDeeplinkListeners(): void {
     app.on("second-instance", (_event, commandLine) => {
       // the commandLine is an array of strings in which the last element is the deep link url
       const url = commandLine.pop();
+
+      // On Windows, the app emits the "second-instance" event after the app auto-updates.
+      if (semverRegex.test(url)) {
+        return;
+      }
 
       handleDeeplink(url);
     });

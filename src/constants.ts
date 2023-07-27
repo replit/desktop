@@ -22,5 +22,8 @@ export const homePage = "/desktopApp/home";
 export const authPage = "/desktopApp/auth";
 export const desktopAppPrefix = "/desktopApp";
 
+export const semverRegex =
+  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/;
+
 // https://www.electronjs.org/docs/latest/api/app#appispackaged-readonly
 export const isProduction = app.isPackaged;
