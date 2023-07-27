@@ -1,6 +1,7 @@
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
+  screen,
   shell,
   app,
 } from "electron";
@@ -128,6 +129,13 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     }
   });
 
+  // If the number of displays doesn't match what we saw last time we opened
+  // the app, then don't try to restore the previous bounds and fallback to the
+  // default behavior to avoid the app being overly stretched out or misaligned.
+  if (screen.getAllDisplays().length !== store.getNumDisplays()) {
+    store.clearWindowBounds();
+  }
+
   window.setBounds(store.getWindowBounds());
 
   window.on("close", async () => {
@@ -137,6 +145,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     );
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setWindowBounds(window.getBounds());
+    store.setNumDisplays(screen.getAllDisplays().length);
   });
 
   window.on("enter-full-screen", () => {

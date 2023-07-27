@@ -5,6 +5,7 @@ const keys = {
   LAST_SEEN_BACKGROUND_COLOR: "LAST_SEEN_BACKGROUND_COLOR",
   LAST_OPEN_REPL: "LAST_OPEN_REPL",
   WINDOW_BOUNDS: "WINDOW_BOUNDS",
+  NUM_DISPLAYS: "NUM_DISPLAYS",
 };
 
 // var(--background-root) value for dark mode
@@ -23,6 +24,9 @@ function createStore() {
         defaultBgColor
       ) as string;
     },
+    clearWindowBounds() {
+      store.delete(keys.WINDOW_BOUNDS);
+    },
     setWindowBounds(bounds: Rectangle) {
       store.set(keys.WINDOW_BOUNDS, bounds);
     },
@@ -39,6 +43,12 @@ function createStore() {
     },
     getLastOpenRepl(): string | null {
       return store.get(keys.LAST_OPEN_REPL, null) as string | null;
+    },
+    setNumDisplays(numDisplays: number) {
+      store.set(keys.NUM_DISPLAYS, numDisplays);
+    },
+    getNumDisplays(): number {
+      return store.get(keys.NUM_DISPLAYS, 1) as number;
     },
   };
 }
