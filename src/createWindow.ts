@@ -1,6 +1,7 @@
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
+  screen,
   shell,
   app,
 } from "electron";
@@ -127,6 +128,26 @@ export function createWindow(props?: WindowProps): BrowserWindow {
       shell.openExternal(navigationUrl);
     }
   });
+
+  // If the previous bounds are no longer in-bounds with the current set of
+  // displays, then bail and fallback to the defaul behavior to prevent the app
+  // from opening stretched out or sticking outside the screens.
+  const prevBounds = store.getWindowBounds();
+  const isInBounds = screen.getAllDisplays().some((display) => {
+    const { bounds } = display;
+    // Allow some leeway in case the app is barely off the screen
+    const maxX = bounds.x + bounds.width + 100;
+    const maxY = bounds.y + bounds.height + 100;
+
+    return (
+      maxX >= prevBounds.x + prevBounds.width &&
+      maxY >= prevBounds.y + prevBounds.height
+    );
+  });
+
+  if (!isInBounds) {
+    store.clearWindowBounds();
+  }
 
   window.setBounds(store.getWindowBounds());
 

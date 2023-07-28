@@ -5,6 +5,7 @@ const keys = {
   LAST_SEEN_BACKGROUND_COLOR: "LAST_SEEN_BACKGROUND_COLOR",
   LAST_OPEN_REPL: "LAST_OPEN_REPL",
   WINDOW_BOUNDS: "WINDOW_BOUNDS",
+  NUM_DISPLAYS: "NUM_DISPLAYS",
 };
 
 // var(--background-root) value for dark mode
@@ -22,6 +23,9 @@ function createStore() {
         keys.LAST_SEEN_BACKGROUND_COLOR,
         defaultBgColor
       ) as string;
+    },
+    clearWindowBounds() {
+      store.delete(keys.WINDOW_BOUNDS);
     },
     setWindowBounds(bounds: Rectangle) {
       store.set(keys.WINDOW_BOUNDS, bounds);
