@@ -22,6 +22,7 @@ export const homePage = "/desktopApp/home";
 export const authPage = "/desktopApp/auth";
 export const desktopAppPrefix = "/desktopApp";
 
+// from https://stackoverflow.com/a/72900791/
 export const semverRegex =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/;
 
