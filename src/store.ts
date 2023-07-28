@@ -44,12 +44,6 @@ function createStore() {
     getLastOpenRepl(): string | null {
       return store.get(keys.LAST_OPEN_REPL, null) as string | null;
     },
-    setNumDisplays(numDisplays: number) {
-      store.set(keys.NUM_DISPLAYS, numDisplays);
-    },
-    getNumDisplays(): number {
-      return store.get(keys.NUM_DISPLAYS, 1) as number;
-    },
   };
 }
 

@@ -129,10 +129,23 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     }
   });
 
-  // If the number of displays doesn't match what we saw last time we opened
-  // the app, then don't try to restore the previous bounds and fallback to the
-  // default behavior to avoid the app being overly stretched out or misaligned.
-  if (screen.getAllDisplays().length !== store.getNumDisplays()) {
+  // If the previous bounds are no longer in-bounds with the current set of
+  // displays, then bail and fallback to the defaul behavior to prevent the app
+  // from opening stretched out or sticking outside the screens.
+  const prevBounds = store.getWindowBounds();
+  const isInBounds = screen.getAllDisplays().some((display) => {
+    const { bounds } = display;
+    // Allow some leeway in case the app is barely off the screen
+    const maxX = bounds.x + bounds.width + 100;
+    const maxY = bounds.y + bounds.height + 100;
+
+    return (
+      maxX >= prevBounds.x + prevBounds.width &&
+      maxY >= prevBounds.y + prevBounds.height
+    );
+  });
+
+  if (!isInBounds) {
     store.clearWindowBounds();
   }
 
@@ -145,7 +158,6 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     );
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setWindowBounds(window.getBounds());
-    store.setNumDisplays(screen.getAllDisplays().length);
   });
 
   window.on("enter-full-screen", () => {
