@@ -30,7 +30,7 @@ jobs:
           node-version: 18.x
           cache: pnpm
       - name: Install
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
       - name: Build
         run: pnpm build
       - name: Generate Windows code signing certificate 

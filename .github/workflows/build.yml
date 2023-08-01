@@ -24,7 +24,7 @@ jobs:
           node-version: 18.x
           cache: pnpm
       - name: Install
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
       - name: Build and lint
         run: pnpm run ci 
 
@@ -73,6 +73,6 @@ jobs:
           node-version: 18.x
           cache: pnpm
       - name: Install
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
       - name: Make
         run: pnpm run make
