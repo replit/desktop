@@ -19,9 +19,6 @@ export function setIpcEventListeners(): void {
       (win) => win.webContents.id === event.sender.id
     );
     senderWindow.close();
-    // We assume that the Repl window is closing. While that may not be the case here,
-    // we reset the state just in case.
-    store.setLastOpenRepl(null);
   });
 
   ipcMain.on(events.OPEN_REPL_WINDOW, (_, slug) => {
