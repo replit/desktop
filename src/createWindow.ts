@@ -33,6 +33,38 @@ function createURL(url?: string | null) {
   return defaultUrl;
 }
 
+function setLastOpenRepl(url: string) {
+  if (!url) {
+    return;
+  }
+
+  const u = new URL(url);
+
+  if (u.origin !== baseUrl) {
+    return;
+  }
+
+  if (u.pathname === homePage) {
+    if (store.getLastOpenRepl() != null) {
+      store.setLastOpenRepl(null);
+    }
+
+    return;
+  }
+
+  if (!workspaceUrlRegex.test(u.pathname)) {
+    return;
+  }
+
+  const lastOpenRepl = store.getLastOpenRepl();
+
+  if (lastOpenRepl === u.pathname) {
+    return;
+  }
+
+  store.setLastOpenRepl(u.pathname);
+}
+
 export function createWindow(props?: WindowProps): BrowserWindow {
   const backgroundColor = store.getLastSeenBackgroundColor();
   const url = createURL(props?.url);
@@ -90,31 +122,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   window.webContents.on("did-navigate-in-page", (_event, url) => {
-    const u = new URL(url);
-
-    if (u.origin !== baseUrl) {
-      return;
-    }
-
-    if (u.pathname === homePage) {
-      if (store.getLastOpenRepl() != null) {
-        store.setLastOpenRepl(null);
-      }
-
-      return;
-    }
-
-    if (!workspaceUrlRegex.test(u.pathname)) {
-      return;
-    }
-
-    const lastOpenRepl = store.getLastOpenRepl();
-
-    if (lastOpenRepl === u.pathname) {
-      return;
-    }
-
-    store.setLastOpenRepl(u.pathname);
+    setLastOpenRepl(url);
   });
 
   window.webContents.on("will-navigate", (event, navigationUrl) => {
@@ -158,6 +166,17 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     );
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setWindowBounds(window.getBounds());
+  });
+
+  window.on("closed", () => {
+    // We assume that the Repl window is closing. While that may not be the case here,
+    // we reset the state just in case.
+    store.setLastOpenRepl(null);
+  });
+
+  window.on("focus", () => {
+    const url = window.webContents.getURL();
+    setLastOpenRepl(url);
   });
 
   window.on("enter-full-screen", () => {
