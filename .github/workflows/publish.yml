@@ -18,8 +18,6 @@ jobs:
         exclude:
         - os: windows-latest
           arch: arm64
-        - os: ubuntu-latest
-          arch: arm64
 
     steps:
       - uses: actions/checkout@v3
