@@ -169,8 +169,6 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   window.on("closed", () => {
-    // We assume that the Repl window is closing. While that may not be the case here,
-    // we reset the state just in case.
     store.setLastOpenRepl(null);
   });
 
