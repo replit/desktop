@@ -18,8 +18,6 @@ if (!osxNotarize) {
   );
 }
 
-console.log("test");
-
 module.exports = {
   packagerConfig: {
     icon: "./assets/logo",
