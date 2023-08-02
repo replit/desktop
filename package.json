@@ -20,6 +20,9 @@
   },
   "author": "Replit",
   "main": "./dist/main.js",
+  "engines": {
+    "pnpm": "8.5.1"
+  },
   "devDependencies": {
     "@electron-forge/cli": "^6.1.0",
     "@electron-forge/maker-deb": "^6.0.5",
