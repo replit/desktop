@@ -168,10 +168,6 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     store.setWindowBounds(window.getBounds());
   });
 
-  window.on("closed", () => {
-    store.setLastOpenRepl(null);
-  });
-
   window.on("focus", () => {
     const url = window.webContents.getURL();
     setLastOpenRepl(url);
