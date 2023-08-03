@@ -116,9 +116,37 @@ export function createWindow(props?: WindowProps): BrowserWindow {
       };
     }
 
+    if (isReplCo) {
+      const bounds = store.getReplCoWindowBounds();
+
+      const overrideBrowserWindowOptions = bounds
+        ? {
+            ...bounds,
+          }
+        : undefined;
+
+      return {
+        action: "allow",
+        overrideBrowserWindowOptions,
+      };
+    }
+
     return {
       action: "allow",
     };
+  });
+
+  window.webContents.on("did-create-window", (newWindow, details) => {
+    const url = new URL(details.url);
+    const isReplCo = url.host.endsWith("repl.co");
+
+    if (!isReplCo) {
+      return;
+    }
+
+    newWindow.on("close", () => {
+      store.setReplCoWindowBounds(newWindow.getBounds());
+    });
   });
 
   window.webContents.on("did-navigate-in-page", (_event, url) => {
