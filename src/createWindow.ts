@@ -116,51 +116,13 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     `${window.webContents.getUserAgent()} ReplitDesktop`
   );
 
+  // Open all URLs opened via a target="_blank" link or `window.open` in the browser
   window.webContents.setWindowOpenHandler((details) => {
-    const url = new URL(details.url);
-    const isReplit = url.origin === baseUrl;
-    const isReplCo = url.host.endsWith("repl.co");
-
-    if (!isReplit && !isReplCo) {
-      shell.openExternal(details.url);
-
-      return {
-        action: "deny",
-      };
-    }
-
-    if (isReplCo) {
-      const bounds = store.getWebviewWindowBounds();
-      const inBounds = Boolean(bounds) && isInBounds(bounds);
-
-      const overrideBrowserWindowOptions = inBounds
-        ? {
-            ...bounds,
-          }
-        : undefined;
-
-      return {
-        action: "allow",
-        overrideBrowserWindowOptions,
-      };
-    }
+    shell.openExternal(details.url);
 
     return {
-      action: "allow",
+      action: "deny",
     };
-  });
-
-  window.webContents.on("did-create-window", (newWindow, details) => {
-    const url = new URL(details.url);
-    const isReplCo = url.host.endsWith("repl.co");
-
-    if (!isReplCo) {
-      return;
-    }
-
-    newWindow.on("close", () => {
-      store.setWebviewWindowBounds(newWindow.getBounds());
-    });
   });
 
   window.webContents.on("did-navigate-in-page", (_event, url) => {
