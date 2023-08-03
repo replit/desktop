@@ -68,9 +68,11 @@ function setLastOpenRepl(url: string) {
 
 function isInBounds(rect: Rectangle) {
   return screen.getAllDisplays().some(({ bounds }) => {
+    const { x, y, width, height } = bounds;
+
     // Allow some leeway in case the app is barely off the screen
-    const maxX = bounds.x + bounds.width + 100;
-    const maxY = bounds.y + bounds.height + 100;
+    const maxX = x + width + 100;
+    const maxY = y + height + 100;
 
     return maxX >= rect.x + rect.width && maxY >= rect.y + rect.height;
   });
