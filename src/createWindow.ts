@@ -116,7 +116,8 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     `${window.webContents.getUserAgent()} ReplitDesktop`
   );
 
-  // Open all URLs opened via a target="_blank" link or `window.open` in the browser
+  // Prevent any URLs opened via a target="_blank" anchor tag or programmatically using `window.open` from
+  // opening in an Electron window and open in the user's external browser instead.
   window.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url);
 
