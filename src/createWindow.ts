@@ -4,6 +4,7 @@ import {
   screen,
   shell,
   app,
+  Rectangle,
 } from "electron";
 import {
   appIcon as icon,
@@ -65,6 +66,16 @@ function setLastOpenRepl(url: string) {
   store.setLastOpenRepl(u.pathname);
 }
 
+function isInBounds(rect: Rectangle) {
+  return screen.getAllDisplays().some(({ bounds }) => {
+    // Allow some leeway in case the app is barely off the screen
+    const maxX = bounds.x + bounds.width + 100;
+    const maxY = bounds.y + bounds.height + 100;
+
+    return maxX >= rect.x + rect.width && maxY >= rect.y + rect.height;
+  });
+}
+
 export function createWindow(props?: WindowProps): BrowserWindow {
   const backgroundColor = store.getLastSeenBackgroundColor();
   const url = createURL(props?.url);
@@ -118,8 +129,9 @@ export function createWindow(props?: WindowProps): BrowserWindow {
 
     if (isReplCo) {
       const bounds = store.getWebviewWindowBounds();
+      const inBounds = Boolean(bounds) && isInBounds(bounds);
 
-      const overrideBrowserWindowOptions = bounds
+      const overrideBrowserWindowOptions = inBounds
         ? {
             ...bounds,
           }
@@ -168,20 +180,9 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   // If the previous bounds are no longer in-bounds with the current set of
   // displays, then bail and fallback to the defaul behavior to prevent the app
   // from opening stretched out or sticking outside the screens.
-  const prevBounds = store.getWindowBounds();
-  const isInBounds = screen.getAllDisplays().some((display) => {
-    const { bounds } = display;
-    // Allow some leeway in case the app is barely off the screen
-    const maxX = bounds.x + bounds.width + 100;
-    const maxY = bounds.y + bounds.height + 100;
+  const inBounds = isInBounds(store.getWindowBounds());
 
-    return (
-      maxX >= prevBounds.x + prevBounds.width &&
-      maxY >= prevBounds.y + prevBounds.height
-    );
-  });
-
-  if (!isInBounds) {
+  if (!inBounds) {
     store.clearWindowBounds();
   }
 
