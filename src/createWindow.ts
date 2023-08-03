@@ -117,7 +117,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     }
 
     if (isReplCo) {
-      const bounds = store.getReplCoWindowBounds();
+      const bounds = store.getWebviewWindowBounds();
 
       const overrideBrowserWindowOptions = bounds
         ? {
@@ -145,7 +145,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     }
 
     newWindow.on("close", () => {
-      store.setReplCoWindowBounds(newWindow.getBounds());
+      store.setWebviewWindowBounds(newWindow.getBounds());
     });
   });
 
