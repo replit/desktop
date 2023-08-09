@@ -20,17 +20,6 @@ function makeEventHandler(event: events) {
   };
 }
 
-// See: https://www.electronjs.org/docs/latest/api/dialog#dialogshowmessageboxbrowserwindow-options
-interface ShowMessageBoxParams {
-  message: string;
-  title?: string;
-  detail?: string;
-  defaultId?: number;
-  cancelId?: number;
-  buttons: Array<string>;
-  type?: "none" | "info" | "error" | "question" | "warning";
-}
-
 contextBridge.exposeInMainWorld("replitDesktop", {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openReplWindow: (replSlug: string) =>
@@ -48,7 +37,7 @@ contextBridge.exposeInMainWorld("replitDesktop", {
       ipcRenderer.removeListener(events.AUTH_TOKEN_RECEIVED, listener);
     };
   },
-  showMessageBox: async (params: ShowMessageBoxParams) =>
+  showMessageBox: async (params: Electron.MessageBoxOptions) =>
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
   onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
   onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
