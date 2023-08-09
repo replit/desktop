@@ -37,6 +37,8 @@ contextBridge.exposeInMainWorld("replitDesktop", {
       ipcRenderer.removeListener(events.AUTH_TOKEN_RECEIVED, listener);
     };
   },
+  showMessageBox: async (params: Electron.MessageBoxOptions) =>
+    ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
   onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
   onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
   logout: () => ipcRenderer.send(events.LOGOUT),

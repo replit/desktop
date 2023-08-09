@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, shell } from "electron";
+import { BrowserWindow, dialog, ipcMain, shell } from "electron";
 import { createWindow } from "./createWindow";
 import { authPage, baseUrl } from "./constants";
 import { events } from "./events";
@@ -41,5 +41,11 @@ export function setIpcEventListeners(): void {
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
     createWindow({ url });
+  });
+
+  ipcMain.handle(events.SHOW_MESSAGE_BOX, async (event, params) => {
+    const { response } = await dialog.showMessageBox(params);
+
+    return response;
   });
 }
