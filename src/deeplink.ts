@@ -6,6 +6,7 @@ import {
   workspaceUrlRegex,
   semverRegex,
   authPage,
+  homePage,
 } from "./constants";
 import path from "path";
 import { createWindow } from "./createWindow";
@@ -41,6 +42,12 @@ function handleDeeplink(deeplink: string): void {
       break;
     }
 
+    case "home": {
+      handleHome();
+
+      break;
+    }
+
     case "repl": {
       handleRepl(url.pathname);
 
@@ -51,6 +58,22 @@ function handleDeeplink(deeplink: string): void {
       console.error("Unrecognized hostname");
     }
   }
+}
+
+function handleHome() {
+  const homeUrl = `${baseUrl}${homePage}`;
+
+  const focused = BrowserWindow.getFocusedWindow();
+
+  if (focused) {
+    focused.loadURL(homeUrl);
+
+    return;
+  }
+
+  createWindow({
+    url: homeUrl,
+  });
 }
 
 function handleRepl(url: string) {
