@@ -21,7 +21,7 @@ export function setIpcEventListeners(): void {
     senderWindow.close();
   });
 
-  ipcMain.on(events.OPEN_REPL_WINDOW, (_, slug) => {
+  ipcMain.on(events.OPEN_WINDOW, (_, slug) => {
     if (!isSupportedPage(slug)) {
       throw new Error("Page not supported");
     }
