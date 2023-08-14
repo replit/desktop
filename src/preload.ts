@@ -22,8 +22,8 @@ function makeEventHandler(event: events) {
 
 contextBridge.exposeInMainWorld("replitDesktop", {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
-  openReplWindow: (replSlug: string) =>
-    ipcRenderer.send(events.OPEN_REPL_WINDOW, replSlug),
+  openWindow: (replSlug: string) =>
+    ipcRenderer.send(events.OPEN_WINDOW, replSlug),
   openExternalUrl: (url: string) =>
     ipcRenderer.send(events.OPEN_EXTERNAL_URL, url),
   onAuthTokenReceived: (callback: (token: string) => void) => {
