@@ -48,6 +48,12 @@ function handleDeeplink(deeplink: string): void {
       break;
     }
 
+    case "new": {
+      handleNew(url.searchParams.get('language') || 'python3');
+
+      break;
+    }
+
     case "repl": {
       handleRepl(url.pathname);
 
@@ -73,6 +79,14 @@ function handleHome() {
 
   createWindow({
     url: homeUrl,
+  });
+}
+
+function handleNew(language: string) {
+  const url = `${baseUrl}${homePage}?language=${language}`;
+
+  createWindow({
+    url,
   });
 }
 
