@@ -99,7 +99,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   const window = new BrowserWindow({
     webPreferences: {
       preload,
-      additionalArguments: [`--app-version=${app.getVersion()}`],
+      additionalArguments: [`--app-version=${app.getVersion()}`, `--platform=${process.platform}`],
       scrollBounce: true, // MacOS only
     },
     title,

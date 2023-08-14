@@ -1,15 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
 import { events } from "./events";
 
-// Passed in as an entry to the `additionalArguments` array in `webPreferences`
-const versionArg = process.argv.find((arg) => arg.includes("app-version"));
-
-if (!versionArg) {
-  throw new Error("Expected app-version argument");
-}
-
-const [, version] = versionArg.split("=");
-
 function makeEventHandler(event: events) {
   return function (callback: () => void) {
     ipcRenderer.on(event, callback);
@@ -19,6 +10,22 @@ function makeEventHandler(event: events) {
     };
   };
 }
+
+function parseArgument(name: string) {
+  // Must be passed in as an entry to the `additionalArguments` array in `webPreferences`
+  const arg = process.argv.find((a) => a.includes(name));
+
+  if (!arg) {
+    throw new Error("Expected app-version argument");
+  }
+
+  const [, value] = arg.split("=");
+
+  return value;
+}
+
+const version = parseArgument('app-version');
+const platform = parseArgument('platform');
 
 contextBridge.exposeInMainWorld("replitDesktop", {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
@@ -42,5 +49,6 @@ contextBridge.exposeInMainWorld("replitDesktop", {
   onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
   onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
   logout: () => ipcRenderer.send(events.LOGOUT),
+  platform,
   version,
 });
