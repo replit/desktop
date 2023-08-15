@@ -117,11 +117,6 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     `${window.webContents.getUserAgent()} ReplitDesktop`,
   );
 
-  // Bypass the browser's cache when initially loading the remote URL
-  // in order to ensure that we load the latest web build.
-  // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
-  window.loadURL(url, { extraHeaders: "pragma: no-cache\n" });
-
   // Prevent any URLs opened via a target="_blank" anchor tag or programmatically using `window.open` from
   // opening in an Electron window and open in the user's external browser instead.
   window.webContents.setWindowOpenHandler((details) => {
@@ -149,7 +144,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   // If the previous bounds are no longer in-bounds with the current set of
-  // displays, then bail and fallback to the defaul behavior to prevent the app
+  // displays, then bail and fallback to the default behavior to prevent the app
   // from opening stretched out or sticking outside the screens.
   const inBounds = isInBounds(store.getWindowBounds());
 
@@ -180,6 +175,11 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   window.on("leave-full-screen", () => {
     window.webContents.send(events.ON_LEAVE_FULLSCREEN);
   });
+  
+  // Bypass the browser's cache when initially loading the remote URL
+  // in order to ensure that we load the latest web build.
+  // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
+  window.loadURL(url, { extraHeaders: "pragma: no-cache\n" });
 
   // We've set up the window, so let's show it!
   window.show();
