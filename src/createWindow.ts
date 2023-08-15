@@ -17,7 +17,7 @@ import {
 } from "./constants";
 import { events } from "./events";
 import isSupportedPage from "./isSupportedPage";
-import { isMac } from "./platform";
+import { isMac, isWindows } from "./platform";
 import store from "./store";
 
 interface WindowProps {
@@ -80,21 +80,35 @@ function isInBounds(rect: Rectangle) {
 
 export function createWindow(props?: WindowProps): BrowserWindow {
   const backgroundColor = store.getLastSeenBackgroundColor();
+  const foregroundColor = store.getLastSeenForegroundColor();
   const url = createURL(props?.url);
 
   // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
   // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
-  const platformStyling: BrowserWindowConstructorOptions = isMac()
-    ? {
-        titleBarStyle: "hidden",
-        titleBarOverlay: {
-          color: "var(--background-root)",
-          symbolColor: "var(--foreground-default)",
-          height: 48,
-        },
-        trafficLightPosition: { x: 20, y: 16 },
-      }
-    : {};
+  let platformStyling: BrowserWindowConstructorOptions = {};
+
+  if (isMac()) {
+    platformStyling = {
+      titleBarStyle: "hidden",
+      titleBarOverlay: {
+        color: backgroundColor,
+        symbolColor: foregroundColor,
+        height: 48,
+      },
+      trafficLightPosition: { x: 20, y: 16 },
+    };
+  }
+
+  if (isWindows()) {
+    platformStyling = {
+      titleBarStyle: "hidden",
+      titleBarOverlay: {
+        color: backgroundColor,
+        symbolColor: foregroundColor,
+        height: 44,
+      },
+    };
+  }
 
   const window = new BrowserWindow({
     webPreferences: {
@@ -113,7 +127,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`
+    `${window.webContents.getUserAgent()} ReplitDesktop`,
   );
 
   // Prevent any URLs opened via a target="_blank" anchor tag or programmatically using `window.open` from
@@ -154,11 +168,17 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   window.setBounds(store.getWindowBounds());
 
   window.on("close", async () => {
-    // We're capturing the background color to use as main browser window background color.
+    // We're capturing the background and foreground colors to use as main
+    // browser window background color, and style the traffic lights/window
+    // buttons.
     const backgroundColor = await window.webContents.executeJavaScript(
-      `getComputedStyle(document.body).getPropertyValue('--background-root');`
+      `getComputedStyle(document.body).getPropertyValue('--background-root');`,
+    );
+    const foregroundColor = await window.webContents.executeJavaScript(
+      `getComputedStyle(document.body).getPropertyValue('--foreground-default');`,
     );
     store.setLastSeenBackgroundColor(backgroundColor);
+    store.setLastSeenForegroundColor(foregroundColor);
     store.setWindowBounds(window.getBounds());
   });
 

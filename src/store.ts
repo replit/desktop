@@ -3,13 +3,15 @@ import Store from "electron-store";
 
 const keys = {
   LAST_SEEN_BACKGROUND_COLOR: "LAST_SEEN_BACKGROUND_COLOR",
+  LAST_SEEN_FOREGROUND_COLOR: "LAST_SEEN_FOREGROUND_COLOR",
   LAST_OPEN_REPL: "LAST_OPEN_REPL",
   WINDOW_BOUNDS: "WINDOW_BOUNDS",
   NUM_DISPLAYS: "NUM_DISPLAYS",
 };
 
-// var(--background-root) value for dark mode
+// Default values for dark mode.
 const defaultBgColor = "#0E1525";
+const defaultFgColor = "#F5F9FC";
 
 function createStore() {
   const store = new Store();
@@ -21,7 +23,16 @@ function createStore() {
     getLastSeenBackgroundColor(): string {
       return store.get(
         keys.LAST_SEEN_BACKGROUND_COLOR,
-        defaultBgColor
+        defaultBgColor,
+      ) as string;
+    },
+    setLastSeenForegroundColor(color: string) {
+      store.set(keys.LAST_SEEN_FOREGROUND_COLOR, color);
+    },
+    getLastSeenForegroundColor(): string {
+      return store.get(
+        keys.LAST_SEEN_FOREGROUND_COLOR,
+        defaultFgColor,
       ) as string;
     },
     clearWindowBounds() {
