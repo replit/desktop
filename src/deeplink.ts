@@ -11,9 +11,12 @@ import {
 import path from "path";
 import { createWindow } from "./createWindow";
 import { events } from "./events";
+import log from "electron-log/main";
 
 export function registerDeeplinkProtocol(): void {
   if (process.defaultApp && isWindows() && process.argv.length >= 2) {
+    log.info("Registering deeplink protocol (Windows): ", protocol);
+
     // Set the path of electron.exe and your app.
     // These two additional parameters are only available on windows.
     // Setting this is required to get this working in dev mode.
@@ -21,12 +24,13 @@ export function registerDeeplinkProtocol(): void {
       path.resolve(process.argv[1]),
     ]);
   } else {
+    log.info("Registering deeplink protocol: ", protocol);
     app.setAsDefaultProtocolClient(protocol);
   }
 }
 
 function handleDeeplink(deeplink: string): void {
-  console.log(`You arrived from: ${deeplink}`);
+  log.info(`Arrived from deeplink: ${deeplink}`);
 
   const url = new URL(deeplink);
 
@@ -49,7 +53,7 @@ function handleDeeplink(deeplink: string): void {
     }
 
     case "new": {
-      handleNew(url.searchParams.get('language') || 'python3');
+      handleNew(url.searchParams.get("language") || "python3");
 
       break;
     }
@@ -61,7 +65,8 @@ function handleDeeplink(deeplink: string): void {
     }
 
     default: {
-      console.error("Unrecognized hostname");
+      const error = `Unrecognized hostname: ${url.hostname}`;
+      log.error(error);
     }
   }
 }
@@ -92,7 +97,7 @@ function handleNew(language: string) {
 
 function handleRepl(url: string) {
   if (!workspaceUrlRegex.test(url)) {
-    console.error("Expected URL of the format /@username/slug");
+    log.error("Expected URL of the format /@username/slug");
 
     return;
   }
@@ -151,6 +156,8 @@ function handleAuthComplete(authToken: string) {
 }
 
 export function setOpenDeeplinkListeners(): void {
+  log.info("Setting deeplink listeners");
+
   // Windows and Linux fire a different event when deeplinks are opened
   // See docs: https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
   if (isWindows() || isLinux()) {

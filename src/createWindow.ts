@@ -15,6 +15,7 @@ import {
   homePage,
   authPage,
 } from "./constants";
+import log from "electron-log/main";
 import { events } from "./events";
 import isSupportedPage from "./isSupportedPage";
 import { isMac } from "./platform";
@@ -82,6 +83,8 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   const backgroundColor = store.getLastSeenBackgroundColor();
   const url = createURL(props?.url);
 
+  log.info("Creating window with URL: ", url);
+
   // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
   // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
   const platformStyling: BrowserWindowConstructorOptions = isMac()
@@ -99,7 +102,10 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   const window = new BrowserWindow({
     webPreferences: {
       preload,
-      additionalArguments: [`--app-version=${app.getVersion()}`, `--platform=${process.platform}`],
+      additionalArguments: [
+        `--app-version=${app.getVersion()}`,
+        `--platform=${process.platform}`,
+      ],
       scrollBounce: true, // MacOS only
     },
     title,
@@ -114,7 +120,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`,
+    `${window.webContents.getUserAgent()} ReplitDesktop`
   );
 
   // Prevent any URLs opened via a target="_blank" anchor tag or programmatically using `window.open` from
@@ -157,7 +163,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
     const backgroundColor = await window.webContents.executeJavaScript(
-      `getComputedStyle(document.body).getPropertyValue('--background-root');`,
+      `getComputedStyle(document.body).getPropertyValue('--background-root');`
     );
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setWindowBounds(window.getBounds());
