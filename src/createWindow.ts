@@ -113,7 +113,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   const window = new BrowserWindow({
     webPreferences: {
       preload,
-      additionalArguments: [`--app-version=${app.getVersion()}`],
+      additionalArguments: [`--app-version=${app.getVersion()}`, `--platform=${process.platform}`],
       scrollBounce: true, // MacOS only
     },
     title,
@@ -122,6 +122,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     minHeight: 420,
     backgroundColor,
     autoHideMenuBar: true, // Window & Linux only, hides the menubar unless `Alt` is held
+    show: false, // We're starting with the window hidden, as we are still setting it up using imperative methods below
     ...platformStyling,
   });
 
@@ -157,7 +158,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   // If the previous bounds are no longer in-bounds with the current set of
-  // displays, then bail and fallback to the defaul behavior to prevent the app
+  // displays, then bail and fallback to the default behavior to prevent the app
   // from opening stretched out or sticking outside the screens.
   const inBounds = isInBounds(store.getWindowBounds());
 
@@ -199,6 +200,9 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   // in order to ensure that we load the latest web build.
   // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
   window.loadURL(url, { extraHeaders: "pragma: no-cache\n" });
+
+  // We've set up the window, so let's show it!
+  window.show();
 
   return window;
 }
