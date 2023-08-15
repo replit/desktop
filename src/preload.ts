@@ -13,10 +13,10 @@ function makeEventHandler(event: events) {
 
 function parseArgument(name: string) {
   // Must be passed in as an entry to the `additionalArguments` array in `webPreferences`
-  const arg = process.argv.find((a) => a.includes(name));
+  const arg = process.argv.find((a) => a.includes(`--${name}=`));
 
   if (!arg) {
-    throw new Error("Expected app-version argument");
+    throw new Error(`Expected ${name} argument`);
   }
 
   const [, value] = arg.split("=");
