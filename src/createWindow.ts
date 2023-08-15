@@ -175,7 +175,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   window.on("leave-full-screen", () => {
     window.webContents.send(events.ON_LEAVE_FULLSCREEN);
   });
-  
+
   // Bypass the browser's cache when initially loading the remote URL
   // in order to ensure that we load the latest web build.
   // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
