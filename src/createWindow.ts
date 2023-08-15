@@ -108,13 +108,19 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     minHeight: 420,
     backgroundColor,
     autoHideMenuBar: true, // Window & Linux only, hides the menubar unless `Alt` is held
+    show: false, // We're starting with the window hidden, as we are still setting it up using imperative methods below
     ...platformStyling,
   });
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`
+    `${window.webContents.getUserAgent()} ReplitDesktop`,
   );
+
+  // Bypass the browser's cache when initially loading the remote URL
+  // in order to ensure that we load the latest web build.
+  // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
+  window.loadURL(url, { extraHeaders: "pragma: no-cache\n" });
 
   // Prevent any URLs opened via a target="_blank" anchor tag or programmatically using `window.open` from
   // opening in an Electron window and open in the user's external browser instead.
@@ -156,7 +162,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   window.on("close", async () => {
     // We're capturing the background color to use as main browser window background color.
     const backgroundColor = await window.webContents.executeJavaScript(
-      `getComputedStyle(document.body).getPropertyValue('--background-root');`
+      `getComputedStyle(document.body).getPropertyValue('--background-root');`,
     );
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setWindowBounds(window.getBounds());
@@ -175,10 +181,8 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     window.webContents.send(events.ON_LEAVE_FULLSCREEN);
   });
 
-  // Bypass the browser's cache when initially loading the remote URL
-  // in order to ensure that we load the latest web build.
-  // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
-  window.loadURL(url, { extraHeaders: "pragma: no-cache\n" });
+  // We've set up the window, so let's show it!
+  window.show();
 
   return window;
 }
