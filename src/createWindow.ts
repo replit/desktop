@@ -79,7 +79,35 @@ function isInBounds(rect: Rectangle) {
   });
 }
 
-export function createWindow(props?: WindowProps): BrowserWindow {
+async function getLastSeenBackgroundColor(
+  window: BrowserWindow
+): Promise<string> {
+  // We're capturing the background color to use as main browser window background color.
+  return window.webContents.executeJavaScript(
+    `getComputedStyle(document.body).getPropertyValue('--background-root');`
+  );
+}
+
+async function updateStoreWithFocusedWindowValues() {
+  const windows = BrowserWindow.getAllWindows();
+
+  // No existing windows open so there's nothing to update
+  if (windows.length === 0) {
+    return;
+  }
+
+  // Grab the focused window or the first we see if there isn't one
+  const window = BrowserWindow.getFocusedWindow() || windows[0];
+
+  const backgroundColor = await getLastSeenBackgroundColor(window);
+  store.setLastSeenBackgroundColor(backgroundColor);
+  store.setWindowBounds(window.getBounds());
+}
+
+export async function createWindow(
+  props?: WindowProps
+): Promise<BrowserWindow> {
+  await updateStoreWithFocusedWindowValues();
   const backgroundColor = store.getLastSeenBackgroundColor();
   const url = createURL(props?.url);
 
@@ -161,10 +189,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   window.setBounds(store.getWindowBounds());
 
   window.on("close", async () => {
-    // We're capturing the background color to use as main browser window background color.
-    const backgroundColor = await window.webContents.executeJavaScript(
-      `getComputedStyle(document.body).getPropertyValue('--background-root');`
-    );
+    const backgroundColor = await getLastSeenBackgroundColor(window);
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setWindowBounds(window.getBounds());
   });
