@@ -5,7 +5,7 @@ import { isMac } from "./platform";
 import { initSentry } from "./sentry";
 import { createApplicationMenu, createDockMenu } from "./createMenu";
 import checkForUpdates from "./checkForUpdates";
-import { registerDeeplinkProtocol, setOpenDeeplinkListeners } from "./deeplink";
+import { initializeDeeplinking } from "./deeplink";
 import { setIpcEventListeners } from "./ipc";
 import store from "./store";
 import log from "electron-log/main";
@@ -30,8 +30,7 @@ if (require("electron-squirrel-startup")) {
 
 initSentry();
 app.setName(appName);
-registerDeeplinkProtocol();
-setOpenDeeplinkListeners();
+initializeDeeplinking();
 setIpcEventListeners();
 
 const instanceLock = app.requestSingleInstanceLock();

@@ -13,7 +13,12 @@ import { createWindow } from "./createWindow";
 import { events } from "./events";
 import log from "electron-log/main";
 
-export function registerDeeplinkProtocol(): void {
+export function initializeDeeplinking(): void {
+  registerDeeplinkProtocol();
+  setOpenDeeplinkListeners();
+}
+
+function registerDeeplinkProtocol(): void {
   log.info("Registering deeplink protocol");
 
   if (process.defaultApp && isWindows() && process.argv.length >= 2) {
@@ -159,7 +164,7 @@ function handleAuthComplete(authToken: string) {
   authWindow.webContents.send(events.AUTH_TOKEN_RECEIVED, authToken);
 }
 
-export function setOpenDeeplinkListeners(): void {
+function setOpenDeeplinkListeners(): void {
   log.info("Setting deeplink listeners");
 
   // Windows and Linux fire a different event when deeplinks are opened
