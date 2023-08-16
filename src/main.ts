@@ -31,6 +31,8 @@ if (require("electron-squirrel-startup")) {
 initSentry();
 app.setName(appName);
 registerDeeplinkProtocol();
+setOpenDeeplinkListeners();
+setIpcEventListeners();
 
 const instanceLock = app.requestSingleInstanceLock();
 
@@ -58,10 +60,11 @@ app.whenReady().then(() => {
     app.dock.setMenu(createDockMenu());
   }
 
-  setOpenDeeplinkListeners();
-  setIpcEventListeners();
-
-  createWindow({ url: store.getLastOpenRepl() });
+  // If we've already opened a window via a deeplink,
+  // we don't need to open a new one.
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow({ url: store.getLastOpenRepl() });
+  }
   checkForUpdates();
 
   app.on("activate", () => {

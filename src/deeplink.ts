@@ -14,9 +14,9 @@ import { events } from "./events";
 import log from "electron-log/main";
 
 export function registerDeeplinkProtocol(): void {
-  if (process.defaultApp && isWindows() && process.argv.length >= 2) {
-    log.info("Registering deeplink protocol (Windows): ", protocol);
+  log.info("Registering deeplink protocol");
 
+  if (process.defaultApp && isWindows() && process.argv.length >= 2) {
     // Set the path of electron.exe and your app.
     // These two additional parameters are only available on windows.
     // Setting this is required to get this working in dev mode.
@@ -24,12 +24,11 @@ export function registerDeeplinkProtocol(): void {
       path.resolve(process.argv[1]),
     ]);
   } else {
-    log.info("Registering deeplink protocol: ", protocol);
     app.setAsDefaultProtocolClient(protocol);
   }
 }
 
-function handleDeeplink(deeplink: string): void {
+async function handleDeeplink(deeplink: string): Promise<void> {
   log.info(`Arrived from deeplink: ${deeplink}`);
 
   const url = new URL(deeplink);
@@ -38,6 +37,11 @@ function handleDeeplink(deeplink: string): void {
   if (url.protocol.slice(0, -1) !== protocol) {
     throw new Error("Invalid protocol");
   }
+
+  // We set the listeners before the app is ready to make sure we don't miss any events
+  // that triggered the launch of the app so we need to check that the app is ready before
+  // using window APIs that will not work until then.
+  await app.whenReady();
 
   switch (url.hostname) {
     case "authComplete": {
