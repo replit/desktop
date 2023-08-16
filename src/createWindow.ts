@@ -35,7 +35,7 @@ function createURL(url?: string | null) {
   return defaultUrl;
 }
 
-function setLastOpenRepl(url: string) {
+function setLastOpenRepl(url: string, lastOpenRepl: string | null) {
   if (!url) {
     return;
   }
@@ -47,7 +47,7 @@ function setLastOpenRepl(url: string) {
   }
 
   if (u.pathname === homePage) {
-    if (store.getLastOpenRepl() != null) {
+    if (lastOpenRepl != null) {
       store.setLastOpenRepl(null);
     }
 
@@ -57,8 +57,6 @@ function setLastOpenRepl(url: string) {
   if (!workspaceUrlRegex.test(u.pathname)) {
     return;
   }
-
-  const lastOpenRepl = store.getLastOpenRepl();
 
   if (lastOpenRepl === u.pathname) {
     return;
@@ -82,6 +80,10 @@ function isInBounds(rect: Rectangle) {
 export function createWindow(props?: WindowProps): BrowserWindow {
   const backgroundColor = store.getLastSeenBackgroundColor();
   const url = createURL(props?.url);
+  let lastOpenRepl = store.getLastOpenRepl();
+  const disposeOnLastOpenReplChange = store.onLastOpenReplChange((newValue) => {
+    lastOpenRepl = newValue;
+  });
 
   log.info("Creating window with URL: ", url);
 
@@ -134,7 +136,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   window.webContents.on("did-navigate-in-page", (_event, url) => {
-    setLastOpenRepl(url);
+    setLastOpenRepl(url, lastOpenRepl);
   });
 
   window.webContents.on("will-navigate", (event, navigationUrl) => {
@@ -167,11 +169,11 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     );
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setWindowBounds(window.getBounds());
+    disposeOnLastOpenReplChange();
   });
 
   window.on("focus", () => {
-    const url = window.webContents.getURL();
-    setLastOpenRepl(url);
+    setLastOpenRepl(url, lastOpenRepl);
   });
 
   window.on("enter-full-screen", () => {
