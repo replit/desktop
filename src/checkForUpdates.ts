@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/electron";
 import { app, autoUpdater, dialog } from "electron";
 import { isProduction } from "./constants";
 import { isLinux, isMac } from "./platform";
+import log from "electron-log/main";
 
 // We need this to differentiate between M1 and Intel Macs
 const platform =
@@ -24,7 +25,7 @@ export default function checkForUpdates(): void {
     autoUpdater.setFeedURL({ url });
   } catch (e) {
     // This function will throw if the app is not signed which should only happen if you build from source without the appropriate env vars set.
-    console.log(
+    log.error(
       "Skipping auto-update. setFeedURL threw with the following error: ",
       e
     );
@@ -42,7 +43,11 @@ export default function checkForUpdates(): void {
         "A new version has been downloaded. Restart the application to apply the updates.",
     };
 
+    log.info("Update downloaded");
+
     dialog.showMessageBox(dialogOpts).then((returnValue) => {
+      log.info("Update dialog selected: ", returnValue);
+
       if (returnValue.response === 0) {
         autoUpdater.quitAndInstall();
       }
@@ -50,8 +55,8 @@ export default function checkForUpdates(): void {
   });
 
   autoUpdater.on("error", (message) => {
-    console.error("There was a problem updating the application");
-    console.error(message);
+    log.error("There was a problem updating the application");
+    log.error(message);
 
     const error = new Error("Failed to auto-update the application");
 
@@ -62,5 +67,6 @@ export default function checkForUpdates(): void {
     });
   });
 
+  log.info("Checking for updates");
   autoUpdater.checkForUpdates();
 }
