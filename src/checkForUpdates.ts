@@ -10,6 +10,7 @@ const platform =
 const server = "https://desktop.replit.com";
 const url = `${server}/update/${platform}/${app.getVersion()}`;
 const thirtyMinInMs = 30 * 60 * 1000;
+const maxCheckLimit = 10;
 
 export default function checkForUpdates(): void {
   // The app must be packaged in order to check for updates.
@@ -78,7 +79,15 @@ export default function checkForUpdates(): void {
   // Check for updates once at startup and then once every 30 mins
   // that the app is open until we receive an update
   checkForUpdates();
+
+  let check = 0;
   interval = setInterval(() => {
+    check++;
+
+    if (check > maxCheckLimit) {
+      return;
+    }
+
     checkForUpdates();
   }, thirtyMinInMs);
 }
