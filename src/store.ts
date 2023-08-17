@@ -44,6 +44,11 @@ function createStore() {
     getLastOpenRepl(): string | null {
       return store.get(keys.LAST_OPEN_REPL, null) as string | null;
     },
+    onLastOpenReplChange(
+      listener: (lastOpenRepl: string | null) => void
+    ): () => void {
+      return store.onDidChange(keys.LAST_OPEN_REPL, listener);
+    },
   };
 }
 
