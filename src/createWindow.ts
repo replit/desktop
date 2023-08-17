@@ -13,7 +13,6 @@ import {
   preloadScript as preload,
   workspaceUrlRegex,
   homePage,
-  authPage,
 } from "./constants";
 import log from "electron-log/main";
 import { events } from "./events";
@@ -25,7 +24,7 @@ interface WindowProps {
   url?: string | null;
 }
 
-const defaultUrl = `${baseUrl}${authPage}`;
+const defaultUrl = `${baseUrl}${homePage}`;
 
 function createURL(url?: string | null) {
   if (url) {
