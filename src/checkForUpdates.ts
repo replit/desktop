@@ -9,6 +9,7 @@ const platform =
   isMac() && process.arch === "arm64" ? "darwin_arm64" : process.platform;
 const server = "https://desktop.replit.com";
 const url = `${server}/update/${platform}/${app.getVersion()}`;
+const thirtyMinInMs = 30 * 60 * 1000;
 
 export default function checkForUpdates(): void {
   // The app must be packaged in order to check for updates.
@@ -33,10 +34,11 @@ export default function checkForUpdates(): void {
     return;
   }
 
+  let interval: NodeJS.Timer = null;
   autoUpdater.on("update-downloaded", () => {
     const dialogOpts = {
       type: "info" as const,
-      buttons: ["Restart"],
+      buttons: ["Restart", "Later"],
       title: "Application Update",
       message: "New Update Available",
       detail:
@@ -44,6 +46,7 @@ export default function checkForUpdates(): void {
     };
 
     log.info("Update downloaded");
+    clearInterval(interval);
 
     dialog.showMessageBox(dialogOpts).then((returnValue) => {
       log.info("Update dialog selected: ", returnValue);
@@ -67,6 +70,15 @@ export default function checkForUpdates(): void {
     });
   });
 
-  log.info("Checking for updates");
-  autoUpdater.checkForUpdates();
+  function checkForUpdates() {
+    log.info("Checking for updates");
+    autoUpdater.checkForUpdates();
+  }
+
+  // Check for updates once at startup and then once every 30 mins
+  // that the app is open until we receive an update
+  checkForUpdates();
+  interval = setInterval(() => {
+    checkForUpdates();
+  }, thirtyMinInMs);
 }
