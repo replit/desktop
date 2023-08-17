@@ -6,8 +6,12 @@ import store from "./store";
 import isSupportedPage from "./isSupportedPage";
 import log from "electron-log/main";
 
-function logEvent(event: events) {
-  log.info(`Recieved IPC event: ${event}`);
+function logEvent(event: events, params?: Record<string, unknown>) {
+  log.info(
+    `Recieved IPC event: ${event}${
+      params ? ` with params ${JSON.stringify(params)}` : ""
+    }`
+  );
 }
 
 /**
@@ -28,7 +32,7 @@ export function setIpcEventListeners(): void {
   });
 
   ipcMain.on(events.OPEN_WINDOW, (_, slug) => {
-    logEvent(events.OPEN_WINDOW);
+    logEvent(events.OPEN_WINDOW, { slug });
     if (!isSupportedPage(slug)) {
       throw new Error("Page not supported");
     }
@@ -38,7 +42,7 @@ export function setIpcEventListeners(): void {
   });
 
   ipcMain.on(events.OPEN_EXTERNAL_URL, (_, url) => {
-    logEvent(events.OPEN_EXTERNAL_URL);
+    logEvent(events.OPEN_EXTERNAL_URL, { url });
     shell.openExternal(url);
   });
 
@@ -53,7 +57,7 @@ export function setIpcEventListeners(): void {
   });
 
   ipcMain.handle(events.SHOW_MESSAGE_BOX, async (event, params) => {
-    logEvent(events.SHOW_MESSAGE_BOX);
+    logEvent(events.SHOW_MESSAGE_BOX, params);
     const { response } = await dialog.showMessageBox(params);
 
     return response;
