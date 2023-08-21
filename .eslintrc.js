@@ -91,14 +91,6 @@ module.exports = {
           },
         ],
         '@typescript-eslint/ban-types': 'warn',
-        '@typescript-eslint/consistent-type-imports': [
-          'error',
-          {
-            prefer: 'type-imports',
-            disallowTypeAnnotations: false,
-            fixStyle: 'separate-type-imports',
-          },
-        ],
         '@typescript-eslint/no-empty-interface': 'off',
         '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-inferrable-types': 'off',

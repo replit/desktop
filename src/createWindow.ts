@@ -162,17 +162,17 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     };
   });
 
-  window.webContents.on('did-navigate-in-page', (_event, url) => {
-    setLastOpenRepl(url, lastOpenRepl);
+  window.webContents.on('did-navigate-in-page', (_event, navigationUrl) => {
+    setLastOpenRepl(navigationUrl, lastOpenRepl);
   });
 
   window.webContents.on('will-navigate', (event, navigationUrl) => {
-    const url = new URL(navigationUrl);
+    const u = new URL(navigationUrl);
 
-    const isReplit = url.origin === baseUrl;
+    const isReplit = u.origin === baseUrl;
 
     // Prevent navigation away from Replit or supported pages
-    if (!isReplit || !isSupportedPage(url.pathname)) {
+    if (!isReplit || !isSupportedPage(u.pathname)) {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
@@ -190,8 +190,8 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   window.setBounds(store.getWindowBounds());
 
   window.on('close', async () => {
-    const backgroundColor = await getLastSeenBackgroundColor(window);
-    store.setLastSeenBackgroundColor(backgroundColor);
+    const bgColor = await getLastSeenBackgroundColor(window);
+    store.setLastSeenBackgroundColor(bgColor);
     store.setWindowBounds(window.getBounds());
     disposeOnLastOpenReplChange();
   });
