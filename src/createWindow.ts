@@ -13,8 +13,8 @@ import {
   preloadScript as preload,
   workspaceUrlRegex,
   homePage,
-  authPage,
 } from "./constants";
+import log from "electron-log/main";
 import { events } from "./events";
 import isSupportedPage from "./isSupportedPage";
 import { isMac, isWindows } from "./platform";
@@ -24,7 +24,7 @@ interface WindowProps {
   url?: string | null;
 }
 
-const defaultUrl = `${baseUrl}${authPage}`;
+const defaultUrl = `${baseUrl}${homePage}`;
 
 function createURL(url?: string | null) {
   if (url) {
@@ -34,7 +34,7 @@ function createURL(url?: string | null) {
   return defaultUrl;
 }
 
-function setLastOpenRepl(url: string) {
+function setLastOpenRepl(url: string, lastOpenRepl: string | null) {
   if (!url) {
     return;
   }
@@ -46,7 +46,7 @@ function setLastOpenRepl(url: string) {
   }
 
   if (u.pathname === homePage) {
-    if (store.getLastOpenRepl() != null) {
+    if (lastOpenRepl != null) {
       store.setLastOpenRepl(null);
     }
 
@@ -56,8 +56,6 @@ function setLastOpenRepl(url: string) {
   if (!workspaceUrlRegex.test(u.pathname)) {
     return;
   }
-
-  const lastOpenRepl = store.getLastOpenRepl();
 
   if (lastOpenRepl === u.pathname) {
     return;
@@ -78,10 +76,47 @@ function isInBounds(rect: Rectangle) {
   });
 }
 
-export function createWindow(props?: WindowProps): BrowserWindow {
+async function getLastSeenColors(window: BrowserWindow) {
+  const backgroundColor = await window.webContents.executeJavaScript(
+    `getComputedStyle(document.body).getPropertyValue('--background-root');`,
+  );
+  const foregroundColor = await window.webContents.executeJavaScript(
+    `getComputedStyle(document.body).getPropertyValue('--foreground-default');`,
+  );
+
+  return { backgroundColor, foregroundColor };
+}
+
+async function updateStoreWithFocusedWindowValues() {
+  const windows = BrowserWindow.getAllWindows();
+
+  // No existing windows open so there's nothing to update
+  if (windows.length === 0) {
+    return;
+  }
+
+  // Grab the focused window or the first we see if there isn't one
+  const window = BrowserWindow.getFocusedWindow() || windows[0];
+
+  const { backgroundColor, foregroundColor } = await getLastSeenColors(window);
+  store.setLastSeenBackgroundColor(backgroundColor);
+  store.setLastSeenForegroundColor(foregroundColor);
+  store.setWindowBounds(window.getBounds());
+}
+
+export async function createWindow(
+  props?: WindowProps,
+): Promise<BrowserWindow> {
+  await updateStoreWithFocusedWindowValues();
   const backgroundColor = store.getLastSeenBackgroundColor();
   const foregroundColor = store.getLastSeenForegroundColor();
   const url = createURL(props?.url);
+  let lastOpenRepl = store.getLastOpenRepl();
+  const disposeOnLastOpenReplChange = store.onLastOpenReplChange((newValue) => {
+    lastOpenRepl = newValue;
+  });
+
+  log.info("Creating window with URL: ", url);
 
   // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
   // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
@@ -90,11 +125,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   if (isMac()) {
     platformStyling = {
       titleBarStyle: "hidden",
-      titleBarOverlay: {
-        color: backgroundColor,
-        symbolColor: foregroundColor,
-        height: 48,
-      },
+      titleBarOverlay: { height: 48 },
       trafficLightPosition: { x: 20, y: 16 },
     };
   }
@@ -105,7 +136,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
       titleBarOverlay: {
         color: backgroundColor,
         symbolColor: foregroundColor,
-        height: 44,
+        height: 48,
       },
     };
   }
@@ -113,7 +144,10 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   const window = new BrowserWindow({
     webPreferences: {
       preload,
-      additionalArguments: [`--app-version=${app.getVersion()}`, `--platform=${process.platform}`],
+      additionalArguments: [
+        `--app-version=${app.getVersion()}`,
+        `--platform=${process.platform}`,
+      ],
       scrollBounce: true, // MacOS only
     },
     title,
@@ -142,7 +176,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   window.webContents.on("did-navigate-in-page", (_event, url) => {
-    setLastOpenRepl(url);
+    setLastOpenRepl(url, lastOpenRepl);
   });
 
   window.webContents.on("will-navigate", (event, navigationUrl) => {
@@ -169,23 +203,16 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   window.setBounds(store.getWindowBounds());
 
   window.on("close", async () => {
-    // We're capturing the background and foreground colors to use as main
-    // browser window background color, and style the traffic lights/window
-    // buttons.
-    const backgroundColor = await window.webContents.executeJavaScript(
-      `getComputedStyle(document.body).getPropertyValue('--background-root');`,
-    );
-    const foregroundColor = await window.webContents.executeJavaScript(
-      `getComputedStyle(document.body).getPropertyValue('--foreground-default');`,
-    );
+    const { backgroundColor, foregroundColor } =
+      await getLastSeenColors(window);
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setLastSeenForegroundColor(foregroundColor);
     store.setWindowBounds(window.getBounds());
+    disposeOnLastOpenReplChange();
   });
 
   window.on("focus", () => {
-    const url = window.webContents.getURL();
-    setLastOpenRepl(url);
+    setLastOpenRepl(url, lastOpenRepl);
   });
 
   window.on("enter-full-screen", () => {

@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/electron";
 import { isProduction } from "./constants";
+import log from "electron-log/main";
 
 // DSN for "desktop" project in Sentry
 const dsn =
@@ -9,6 +10,8 @@ export function initSentry(): void {
   if (!isProduction) {
     return;
   }
+
+  log.info("Initializing Sentry");
 
   Sentry.init({
     dsn,
