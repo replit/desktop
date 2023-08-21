@@ -80,13 +80,23 @@ async function handleDeeplink(deeplink: string): Promise<void> {
   }
 }
 
+function getFocusedOrFirstWindow(): BrowserWindow | null {
+  const windows = BrowserWindow.getAllWindows();
+
+  if (windows.length === 0) {
+    return null;
+  }
+
+  return BrowserWindow.getFocusedWindow() || windows[0];
+}
+
 function handleHome() {
   const homeUrl = `${baseUrl}${homePage}`;
 
-  const focused = BrowserWindow.getFocusedWindow();
+  const window = getFocusedOrFirstWindow();
 
-  if (focused) {
-    focused.loadURL(homeUrl);
+  if (window) {
+    window.loadURL(homeUrl);
 
     return;
   }
@@ -111,10 +121,10 @@ function handleRepl(url: string) {
     return;
   }
 
-  const focused = BrowserWindow.getFocusedWindow();
+  const window = getFocusedOrFirstWindow();
 
-  if (focused) {
-    focused.loadURL(`${baseUrl}${url}`);
+  if (window) {
+    window.loadURL(`${baseUrl}${url}`);
 
     return;
   }

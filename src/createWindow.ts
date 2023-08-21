@@ -85,7 +85,7 @@ async function getLastSeenBackgroundColor(
   );
 }
 
-async function updateStoreWithFocusedWindowValues() {
+function updateStoreWithFocusedWindowValues() {
   const windows = BrowserWindow.getAllWindows();
 
   // No existing windows open so there's nothing to update
@@ -96,15 +96,15 @@ async function updateStoreWithFocusedWindowValues() {
   // Grab the focused window or the first we see if there isn't one
   const window = BrowserWindow.getFocusedWindow() || windows[0];
 
-  const backgroundColor = await getLastSeenBackgroundColor(window);
-  store.setLastSeenBackgroundColor(backgroundColor);
   store.setWindowBounds(window.getBounds());
+
+  getLastSeenBackgroundColor(window).then((backgroundColor) => {
+    store.setLastSeenBackgroundColor(backgroundColor);
+  });
 }
 
-export async function createWindow(
-  props?: WindowProps
-): Promise<BrowserWindow> {
-  await updateStoreWithFocusedWindowValues();
+export function createWindow(props?: WindowProps): BrowserWindow {
+  updateStoreWithFocusedWindowValues();
   const backgroundColor = store.getLastSeenBackgroundColor();
   const url = createURL(props?.url);
   let lastOpenRepl = store.getLastOpenRepl();
