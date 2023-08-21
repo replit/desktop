@@ -24,8 +24,8 @@ function parseArgument(name: string) {
   return value;
 }
 
-const version = parseArgument('app-version');
-const platform = parseArgument('platform');
+const version = parseArgument("app-version");
+const platform = parseArgument("platform");
 
 contextBridge.exposeInMainWorld("replitDesktop", {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
@@ -48,6 +48,7 @@ contextBridge.exposeInMainWorld("replitDesktop", {
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
   onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
   onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
+  themeChanged: () => ipcRenderer.send(events.THEME_CHANGED),
   logout: () => ipcRenderer.send(events.LOGOUT),
   platform,
   version,

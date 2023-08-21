@@ -76,7 +76,7 @@ function isInBounds(rect: Rectangle) {
   });
 }
 
-async function getLastSeenColors(window: BrowserWindow) {
+export async function getColorsFromWindow(window: BrowserWindow) {
   const backgroundColor = await window.webContents.executeJavaScript(
     `getComputedStyle(document.body).getPropertyValue('--background-root');`,
   );
@@ -98,7 +98,8 @@ async function updateStoreWithFocusedWindowValues() {
   // Grab the focused window or the first we see if there isn't one
   const window = BrowserWindow.getFocusedWindow() || windows[0];
 
-  const { backgroundColor, foregroundColor } = await getLastSeenColors(window);
+  const { backgroundColor, foregroundColor } =
+    await getColorsFromWindow(window);
   store.setLastSeenBackgroundColor(backgroundColor);
   store.setLastSeenForegroundColor(foregroundColor);
   store.setWindowBounds(window.getBounds());
@@ -136,7 +137,7 @@ export async function createWindow(
       titleBarOverlay: {
         color: backgroundColor,
         symbolColor: foregroundColor,
-        height: 48,
+        height: 47, // leaving 1px for border on the top of the pane
       },
     };
   }
@@ -204,7 +205,7 @@ export async function createWindow(
 
   window.on("close", async () => {
     const { backgroundColor, foregroundColor } =
-      await getLastSeenColors(window);
+      await getColorsFromWindow(window);
     store.setLastSeenBackgroundColor(backgroundColor);
     store.setLastSeenForegroundColor(foregroundColor);
     store.setWindowBounds(window.getBounds());
