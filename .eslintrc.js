@@ -24,7 +24,6 @@ module.exports = {
     ],
     curly: ['error', 'all'],
     'consistent-return': 'warn',
-    'declare-theme-extension-at-module': 'error',
     eqeqeq: [
       'error',
       'always',
@@ -32,19 +31,7 @@ module.exports = {
         null: 'ignore',
       },
     ],
-    'flowtype/define-flow-type': 1,
-    'flowtype/use-flow-type': 1,
-    'import/no-anonymous-default-export': [
-      'error',
-      {
-        allowObject: true,
-        allowArray: true,
-        allowLiteral: true,
-        allowNew: true,
-      },
-    ],
     'no-console': 'error',
-    'no-focus-in-set-timeout': 'error',
     'no-lonely-if': 'error',
     'no-multi-spaces': 'error',
     'no-nested-ternary': 'error',
