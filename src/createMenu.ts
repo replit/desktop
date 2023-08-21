@@ -128,7 +128,9 @@ export function createApplicationMenu(): Menu {
     role: 'help',
   });
 
-  const menu = Menu.buildFromTemplate(template as Array<MenuItemConstructorOptions>);
+  const menu = Menu.buildFromTemplate(
+    template as Array<MenuItemConstructorOptions>,
+  );
 
   return menu;
 }

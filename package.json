@@ -8,7 +8,7 @@
     "build": "rimraf dist && esbuild src/main.ts src/preload.ts --target=es2015 --platform=node --format=cjs --packages=external --minify --bundle --outdir=dist",
     "ts:check": "tsc --noEmit",
     "ts:watch": "tsc --noEmit -w",
-    "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "lint": "eslint -c .eslintrc.js --ext .ts ./src",
     "ci": "npm-run-all --parallel build ts:check lint",
     "start": "pnpm build && electron-forge start",
     "start:local": "pnpm build && cross-env REPLIT_URL=http://localhost:3000 electron-forge start",
