@@ -42,7 +42,7 @@ We're following a set of principles inspired by protobuf versioning:
 
 ## Deeplinking
 
-The app supports deeplinks with the `replit://` protocol which can be used to open specific pages or flows directly, launching the app if it's not already running.
+The app supports deeplinks with the `replit` protocol which can be used to open specific pages or flows directly, launching the app if it's not already running.
 
 The following deeplinks are currently supported:
 - `replit://home`: Opens the desktop app home page in the focused window (or a new window if none are open).
