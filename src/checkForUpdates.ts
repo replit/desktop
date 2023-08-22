@@ -52,7 +52,7 @@ export default function checkForUpdates(): void {
     dialog.showMessageBox(dialogOpts).then((returnValue) => {
       log.info(
         'Update dialog selected: ',
-        returnValue.response === 0 ? 'Restart' : 'Later',
+        dialogOpts.buttons[returnValue.response],
       );
 
       if (returnValue.response === 0) {
