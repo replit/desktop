@@ -13,11 +13,15 @@ const url = `${server}/update/${platform}/${app.getVersion()}`;
 export default function checkForUpdates(): void {
   // The app must be packaged in order to check for updates.
   if (!isProduction) {
+    log.info('Skipping auto-update. App is not packaged.');
+
     return;
   }
 
   // The autoUpdater module does not support Linux
   if (isLinux()) {
+    log.info('Skipping auto-update. Auto-update is not supported on Linux.');
+
     return;
   }
 
@@ -29,6 +33,8 @@ export default function checkForUpdates(): void {
       'Skipping auto-update. setFeedURL threw with the following error: ',
       e,
     );
+
+    Sentry.captureException(e);
 
     return;
   }
@@ -61,17 +67,10 @@ export default function checkForUpdates(): void {
     });
   });
 
-  autoUpdater.on('error', (message) => {
-    log.error('There was a problem updating the application');
-    log.error(message);
+  autoUpdater.on('error', (error) => {
+    log.error('There was a problem updating the application: ', error.message);
 
-    const error = new Error('Failed to auto-update the application');
-
-    Sentry.captureException(error, {
-      extra: {
-        message,
-      },
-    });
+    Sentry.captureException(error);
   });
 
   const thirtyMinInMs = 30 * 60 * 1000;
