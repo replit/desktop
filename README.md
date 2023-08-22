@@ -31,7 +31,7 @@ You can then launch a packaged version of the app (needed to test certain featur
 
 To test your changes on other platforms, we recommend using a Virtual Machine host like [UTM](https://mac.getutm.app).
 
-### API Versioning
+## API Versioning
 
 The Electron app communicates with the web frontend through the `replitDesktop` global object defined in `src/preload.ts`. As we develop both applications, this API has to be able to adapt, but at the same time can't break existing clients. The main failure mode we're trying to avoid is someone opening an older version of the Electron app and loading a newer version of the web client which requires a new API that's not supported by the old Electron client.
 
