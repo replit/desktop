@@ -9,8 +9,6 @@ const platform =
   isMac() && process.arch === 'arm64' ? 'darwin_arm64' : process.platform;
 const server = 'https://desktop.replit.com';
 const url = `${server}/update/${platform}/${app.getVersion()}`;
-const thirtyMinInMs = 30 * 60 * 1000;
-const maxCheckLimit = 10;
 
 export default function checkForUpdates(): void {
   // The app must be packaged in order to check for updates.
@@ -35,7 +33,7 @@ export default function checkForUpdates(): void {
     return;
   }
 
-  let interval: NodeJS.Timer = null;
+  let timeout: NodeJS.Timer = null;
   autoUpdater.on('update-downloaded', () => {
     const dialogOpts = {
       type: 'info' as const,
@@ -46,7 +44,9 @@ export default function checkForUpdates(): void {
         'A new version has been downloaded. Restart the application to apply the updates.',
     };
 
-    clearInterval(interval);
+    // We downloaded an update so it's safe to stop trying because the user will either accept
+    // and reload or defer the update until later in which case we should not show it again.
+    clearTimeout(timeout);
 
     dialog.showMessageBox(dialogOpts).then((returnValue) => {
       log.info('Update dialog selected: ', returnValue);
@@ -70,23 +70,25 @@ export default function checkForUpdates(): void {
     });
   });
 
-  function checkForUpdate() {
+  const thirtyMinInMs = 30 * 60 * 1000;
+  const maxCheckLimit = 5;
+  function tryCheckForUpdates() {
     log.info('Checking for updates');
     autoUpdater.checkForUpdates();
   }
 
-  // Check for updates once at startup and then once every 30 mins
-  // that the app is open until we receive an update
-  checkForUpdate();
+  function scheduleCheckForUpdates(attempt = 1) {
+    timeout = setTimeout(
+      () => {
+        tryCheckForUpdates();
+        scheduleCheckForUpdates(Math.max(attempt + 1, maxCheckLimit));
+      },
+      // exponential backoff from original 30 mins until we reach 16 hours
+      thirtyMinInMs * 2 ** (attempt - 1),
+    );
+  }
 
-  let check = 0;
-  interval = setInterval(() => {
-    check++;
-
-    if (check > maxCheckLimit) {
-      return;
-    }
-
-    checkForUpdate();
-  }, thirtyMinInMs);
+  // Check for updates once on launch and then keep retrying
+  scheduleCheckForUpdates();
+  tryCheckForUpdates();
 }
