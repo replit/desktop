@@ -77,14 +77,14 @@ export default function checkForUpdates(): void {
     autoUpdater.checkForUpdates();
   }
 
-  function scheduleCheckForUpdates(attempt = 1) {
+  function scheduleCheckForUpdates(attempt = 0) {
     timeout = setTimeout(
       () => {
         tryCheckForUpdates();
         scheduleCheckForUpdates(Math.max(attempt + 1, maxCheckLimit));
       },
       // exponential backoff from original 30 mins until we reach 16 hours
-      thirtyMinInMs * 2 ** (attempt - 1),
+      thirtyMinInMs * 2 ** attempt,
     );
   }
 
