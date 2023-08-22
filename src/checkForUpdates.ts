@@ -93,6 +93,6 @@ export default function checkForUpdates(): void {
   }
 
   // Check for updates once on launch and then keep retrying
-  scheduleCheckForUpdates();
   tryCheckForUpdates();
+  scheduleCheckForUpdates();
 }
