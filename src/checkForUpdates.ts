@@ -71,7 +71,7 @@ export default function checkForUpdates(): void {
   });
 
   const thirtyMinInMs = 30 * 60 * 1000;
-  const maxCheckLimit = 5;
+  const oneDayInMs = 24 * 60 * 60 * 1000;
   function tryCheckForUpdates() {
     log.info('Checking for updates');
     autoUpdater.checkForUpdates();
@@ -81,10 +81,10 @@ export default function checkForUpdates(): void {
     timeout = setTimeout(
       () => {
         tryCheckForUpdates();
-        scheduleCheckForUpdates(Math.max(attempt + 1, maxCheckLimit));
+        scheduleCheckForUpdates(Math.min(attempt + 1, 10));
       },
-      // exponential backoff from original 30 mins until we reach 16 hours
-      thirtyMinInMs * 2 ** attempt,
+      // exponential backoff from original 30 mins until we reach 24 hours
+      Math.max(thirtyMinInMs * 2 ** attempt, oneDayInMs),
     );
   }
 
