@@ -1,15 +1,15 @@
-import { Rectangle, screen } from "electron";
-import Store from "electron-store";
+import { Rectangle, screen } from 'electron';
+import Store from 'electron-store';
 
 const keys = {
-  LAST_SEEN_BACKGROUND_COLOR: "LAST_SEEN_BACKGROUND_COLOR",
-  LAST_OPEN_REPL: "LAST_OPEN_REPL",
-  WINDOW_BOUNDS: "WINDOW_BOUNDS",
-  NUM_DISPLAYS: "NUM_DISPLAYS",
+  LAST_SEEN_BACKGROUND_COLOR: 'LAST_SEEN_BACKGROUND_COLOR',
+  LAST_OPEN_REPL: 'LAST_OPEN_REPL',
+  WINDOW_BOUNDS: 'WINDOW_BOUNDS',
+  NUM_DISPLAYS: 'NUM_DISPLAYS',
 };
 
 // var(--background-root) value for dark mode
-const defaultBgColor = "#0E1525";
+const defaultBgColor = '#0E1525';
 
 function createStore() {
   const store = new Store();
@@ -21,7 +21,7 @@ function createStore() {
     getLastSeenBackgroundColor(): string {
       return store.get(
         keys.LAST_SEEN_BACKGROUND_COLOR,
-        defaultBgColor
+        defaultBgColor,
       ) as string;
     },
     clearWindowBounds() {
@@ -45,7 +45,7 @@ function createStore() {
       return store.get(keys.LAST_OPEN_REPL, null) as string | null;
     },
     onLastOpenReplChange(
-      listener: (lastOpenRepl: string | null) => void
+      listener: (lastOpenRepl: string | null) => void,
     ): () => void {
       return store.onDidChange(keys.LAST_OPEN_REPL, listener);
     },

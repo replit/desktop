@@ -3,7 +3,7 @@ const osxNotarize =
   process.env.APPLE_PASSWORD &&
   process.env.APPLE_TEAM_ID
     ? {
-        tool: "notarytool",
+        tool: 'notarytool',
         appleId: process.env.APPLE_ID,
         appleIdPassword: process.env.APPLE_PASSWORD,
         teamId: process.env.APPLE_TEAM_ID,
@@ -14,37 +14,37 @@ const osxSign = osxNotarize ? {} : undefined;
 
 if (!osxNotarize) {
   console.log(
-    "Notarytool credentials not passed, skipping sign and notarize step for OSX."
+    'Notarytool credentials not passed, skipping sign and notarize step for OSX.',
   );
 }
 
 module.exports = {
   packagerConfig: {
-    icon: "./assets/logo",
-    executableName: "Replit",
+    icon: './assets/logo',
+    executableName: 'Replit',
     osxSign,
     osxNotarize,
     asar: true,
 
     // ignore development files like README, typescript sources, etc.
     ignore: (path) => {
-      if (path === "") {
+      if (path === '') {
         return false;
       }
 
       // dist folder is necessary for the app to run
-      if (path.startsWith("/dist")) {
+      if (path.startsWith('/dist')) {
         return false;
       }
 
       // package.json is necessary for the app to run
-      if (path === "/package.json") {
+      if (path === '/package.json') {
         return false;
       }
 
       // node_modules are necessary, but we have to strip binaries
-      if (path.includes("node_modules")) {
-        const ignoreNodeBinaries = "/node_modules/\\.bin($|/)";
+      if (path.includes('node_modules')) {
+        const ignoreNodeBinaries = '/node_modules/\\.bin($|/)';
         return path.match(ignoreNodeBinaries);
       }
 
@@ -54,69 +54,69 @@ module.exports = {
 
     protocols: [
       {
-        name: "Replit",
-        schemes: ["replit"],
+        name: 'Replit',
+        schemes: ['replit'],
       },
     ],
   },
   rebuildConfig: {},
   hooks: {
     generateAssets: async () => {
-      const cpy = (await import("cpy")).default;
-      await cpy("assets", "dist");
+      const cpy = (await import('cpy')).default;
+      await cpy('assets', 'dist');
     },
   },
   makers: [
     {
-      name: "@electron-forge/maker-squirrel",
+      name: '@electron-forge/maker-squirrel',
       config: {
-        setupIcon: "./assets/logo.ico",
-        iconUrl: "https://replit.com/public/images/logo.ico",
+        setupIcon: './assets/logo.ico',
+        iconUrl: 'https://replit.com/public/images/logo.ico',
         certificateFile: process.env.WINDOWS_CERTIFICATE_FILE,
         certificatePassword: process.env.WINDOWS_CERTIFICATE_PASSWORD,
       },
     },
     {
-      name: "@electron-forge/maker-dmg",
+      name: '@electron-forge/maker-dmg',
       config: {
-        name: "Replit",
-        icon: "./assets/logo.icns",
+        name: 'Replit',
+        icon: './assets/logo.icns',
         overwrite: true,
         additionalDMGOptions: {
-          "background-color": "#0E1525",
+          'background-color': '#0E1525',
         },
       },
     },
     {
-      name: "@electron-forge/maker-deb",
+      name: '@electron-forge/maker-deb',
       config: {
         options: {
-          name: "replit",
-          bin: "Replit",
-          productName: "Replit",
-          maintainer: "Replit",
-          mimeType: ["x-scheme-handler/replit"],
-          homepage: "https://replit.com",
-          description: "Replit desktop app",
-          icon: "./assets/logo.png",
-          categories: ["Development"],
-          section: "devel",
+          name: 'replit',
+          bin: 'Replit',
+          productName: 'Replit',
+          maintainer: 'Replit',
+          mimeType: ['x-scheme-handler/replit'],
+          homepage: 'https://replit.com',
+          description: 'Replit desktop app',
+          icon: './assets/logo.png',
+          categories: ['Development'],
+          section: 'devel',
         },
       },
     },
     {
-      name: "@electron-forge/maker-zip",
+      name: '@electron-forge/maker-zip',
       config: {},
     },
   ],
   publishers: [
     {
-      name: "@electron-forge/publisher-github",
+      name: '@electron-forge/publisher-github',
       authToken: process.env.GH_TOKEN,
       config: {
         repository: {
-          owner: "replit",
-          name: "desktop",
+          owner: 'replit',
+          name: 'desktop',
         },
       },
     },

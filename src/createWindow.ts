@@ -5,7 +5,7 @@ import {
   shell,
   app,
   Rectangle,
-} from "electron";
+} from 'electron';
 import {
   appIcon as icon,
   appName as title,
@@ -13,12 +13,12 @@ import {
   preloadScript as preload,
   workspaceUrlRegex,
   homePage,
-} from "./constants";
-import log from "electron-log/main";
-import { events } from "./events";
-import isSupportedPage from "./isSupportedPage";
-import { isMac } from "./platform";
-import store from "./store";
+} from './constants';
+import log from 'electron-log/main';
+import { events } from './events';
+import isSupportedPage from './isSupportedPage';
+import { isMac } from './platform';
+import store from './store';
 
 interface WindowProps {
   url?: string | null;
@@ -28,7 +28,7 @@ const defaultUrl = `${baseUrl}${homePage}`;
 
 function createURL(url?: string | null) {
   if (url) {
-    return url.startsWith("/") ? `${baseUrl}${url}` : url;
+    return url.startsWith('/') ? `${baseUrl}${url}` : url;
   }
 
   return defaultUrl;
@@ -77,15 +77,15 @@ function isInBounds(rect: Rectangle) {
 }
 
 async function getLastSeenBackgroundColor(
-  window: BrowserWindow
+  window: BrowserWindow,
 ): Promise<string> {
   // We're capturing the background color to use as main browser window background color.
   return window.webContents.executeJavaScript(
-    `getComputedStyle(document.body).getPropertyValue('--background-root');`
+    `getComputedStyle(document.body).getPropertyValue('--background-root');`,
   );
 }
 
-async function updateStoreWithFocusedWindowValues() {
+function updateStoreWithFocusedWindowValues() {
   const windows = BrowserWindow.getAllWindows();
 
   // No existing windows open so there's nothing to update
@@ -96,15 +96,15 @@ async function updateStoreWithFocusedWindowValues() {
   // Grab the focused window or the first we see if there isn't one
   const window = BrowserWindow.getFocusedWindow() || windows[0];
 
-  const backgroundColor = await getLastSeenBackgroundColor(window);
-  store.setLastSeenBackgroundColor(backgroundColor);
   store.setWindowBounds(window.getBounds());
+
+  getLastSeenBackgroundColor(window).then((backgroundColor) => {
+    store.setLastSeenBackgroundColor(backgroundColor);
+  });
 }
 
-export async function createWindow(
-  props?: WindowProps
-): Promise<BrowserWindow> {
-  await updateStoreWithFocusedWindowValues();
+export function createWindow(props?: WindowProps): BrowserWindow {
+  updateStoreWithFocusedWindowValues();
   const backgroundColor = store.getLastSeenBackgroundColor();
   const url = createURL(props?.url);
   let lastOpenRepl = store.getLastOpenRepl();
@@ -112,16 +112,16 @@ export async function createWindow(
     lastOpenRepl = newValue;
   });
 
-  log.info("Creating window with URL: ", url);
+  log.info('Creating window with URL: ', url);
 
   // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
   // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
   const platformStyling: BrowserWindowConstructorOptions = isMac()
     ? {
-        titleBarStyle: "hidden",
+        titleBarStyle: 'hidden',
         titleBarOverlay: {
-          color: "var(--background-root)",
-          symbolColor: "var(--foreground-default)",
+          color: 'var(--background-root)',
+          symbolColor: 'var(--foreground-default)',
           height: 48,
         },
         trafficLightPosition: { x: 20, y: 16 },
@@ -139,8 +139,8 @@ export async function createWindow(
     },
     title,
     icon,
-    minWidth: 500,
-    minHeight: 420,
+    minWidth: 720,
+    minHeight: 480,
     backgroundColor,
     autoHideMenuBar: true, // Window & Linux only, hides the menubar unless `Alt` is held
     show: false, // We're starting with the window hidden, as we are still setting it up using imperative methods below
@@ -149,7 +149,7 @@ export async function createWindow(
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
   window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`
+    `${window.webContents.getUserAgent()} ReplitDesktop`,
   );
 
   // Prevent any URLs opened via a target="_blank" anchor tag or programmatically using `window.open` from
@@ -158,21 +158,21 @@ export async function createWindow(
     shell.openExternal(details.url);
 
     return {
-      action: "deny",
+      action: 'deny',
     };
   });
 
-  window.webContents.on("did-navigate-in-page", (_event, url) => {
-    setLastOpenRepl(url, lastOpenRepl);
+  window.webContents.on('did-navigate-in-page', (_event, navigationUrl) => {
+    setLastOpenRepl(navigationUrl, lastOpenRepl);
   });
 
-  window.webContents.on("will-navigate", (event, navigationUrl) => {
-    const url = new URL(navigationUrl);
+  window.webContents.on('will-navigate', (event, navigationUrl) => {
+    const u = new URL(navigationUrl);
 
-    const isReplit = url.origin === baseUrl;
+    const isReplit = u.origin === baseUrl;
 
     // Prevent navigation away from Replit or supported pages
-    if (!isReplit || !isSupportedPage(url.pathname)) {
+    if (!isReplit || !isSupportedPage(u.pathname)) {
       event.preventDefault();
       shell.openExternal(navigationUrl);
     }
@@ -189,29 +189,29 @@ export async function createWindow(
 
   window.setBounds(store.getWindowBounds());
 
-  window.on("close", async () => {
-    const backgroundColor = await getLastSeenBackgroundColor(window);
-    store.setLastSeenBackgroundColor(backgroundColor);
+  window.on('close', async () => {
+    const bgColor = await getLastSeenBackgroundColor(window);
+    store.setLastSeenBackgroundColor(bgColor);
     store.setWindowBounds(window.getBounds());
     disposeOnLastOpenReplChange();
   });
 
-  window.on("focus", () => {
+  window.on('focus', () => {
     setLastOpenRepl(url, lastOpenRepl);
   });
 
-  window.on("enter-full-screen", () => {
+  window.on('enter-full-screen', () => {
     window.webContents.send(events.ON_ENTER_FULLSCREEN);
   });
 
-  window.on("leave-full-screen", () => {
+  window.on('leave-full-screen', () => {
     window.webContents.send(events.ON_LEAVE_FULLSCREEN);
   });
 
   // Bypass the browser's cache when initially loading the remote URL
   // in order to ensure that we load the latest web build.
   // See: https://github.com/electron/electron/issues/1360#issuecomment-156506130
-  window.loadURL(url, { extraHeaders: "pragma: no-cache\n" });
+  window.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
 
   // We've set up the window, so let's show it!
   window.show();
