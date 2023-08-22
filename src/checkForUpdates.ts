@@ -47,9 +47,13 @@ export default function checkForUpdates(): void {
     // We downloaded an update so it's safe to stop trying because the user will either accept
     // and reload or defer the update until later in which case we should not show it again.
     clearTimeout(timeout);
+    log.info('Update downloaded');
 
     dialog.showMessageBox(dialogOpts).then((returnValue) => {
-      log.info('Update dialog selected: ', returnValue);
+      log.info(
+        'Update dialog selected: ',
+        returnValue.response === 0 ? 'Restart' : 'Later',
+      );
 
       if (returnValue.response === 0) {
         autoUpdater.quitAndInstall();
@@ -77,14 +81,14 @@ export default function checkForUpdates(): void {
     autoUpdater.checkForUpdates();
   }
 
-  function scheduleCheckForUpdates(attempt = 0) {
+  function scheduleCheckForUpdates(attempt = 1) {
     timeout = setTimeout(
       () => {
         tryCheckForUpdates();
         scheduleCheckForUpdates(Math.min(attempt + 1, 10));
       },
-      // exponential backoff from original 30 mins until we reach 24 hours
-      Math.max(thirtyMinInMs * 2 ** attempt, oneDayInMs),
+      // exponential backoff from 1/2 hour until we reach 24 hours
+      Math.max(thirtyMinInMs * 2 ** (attempt - 1), oneDayInMs),
     );
   }
 
