@@ -6,7 +6,6 @@ import { events } from './events';
 import { isLinux } from './platform';
 import store from './store';
 import isSupportedPage from './isSupportedPage';
-import log from 'electron-log/main';
 import { isWindows } from './platform';
 
 function logEvent(event: events, params?: Record<string, unknown>) {
