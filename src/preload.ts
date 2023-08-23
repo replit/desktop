@@ -29,8 +29,7 @@ const platform = parseArgument('platform');
 
 contextBridge.exposeInMainWorld('replitDesktop', {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
-  openWindow: (replSlug: string) =>
-    ipcRenderer.send(events.OPEN_WINDOW, replSlug),
+  openWindow: (path: string) => ipcRenderer.send(events.OPEN_WINDOW, path),
   openExternalUrl: (url: string) =>
     ipcRenderer.send(events.OPEN_EXTERNAL_URL, url),
   onAuthTokenReceived: (callback: (token: string) => void) => {
@@ -48,6 +47,10 @@ contextBridge.exposeInMainWorld('replitDesktop', {
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
   onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
   onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
+  updateThemeValues: (themeValues: {
+    backgroundRoot: string;
+    foregroundDefault: string;
+  }) => ipcRenderer.send(events.THEME_VALUES_CHANGED, themeValues),
   checkForUpdates: () => ipcRenderer.send(events.CHECK_FOR_UPDATES),
   logout: () => ipcRenderer.send(events.LOGOUT),
   platform,

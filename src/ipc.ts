@@ -6,6 +6,7 @@ import { events } from './events';
 import { isLinux } from './platform';
 import store from './store';
 import isSupportedPage from './isSupportedPage';
+import { isWindows } from './platform';
 
 function logEvent(event: events, params?: Record<string, unknown>) {
   log.info(
@@ -76,5 +77,29 @@ export function setIpcEventListeners(): void {
     const { response } = await dialog.showMessageBox(params);
 
     return response;
+  });
+
+  ipcMain.on(events.THEME_VALUES_CHANGED, (event, themeValues) => {
+    logEvent(events.THEME_VALUES_CHANGED, themeValues);
+
+    const senderWindow = BrowserWindow.getAllWindows().find(
+      (win) => win.webContents.id === event.sender.id,
+    );
+
+    const { backgroundRoot, foregroundDefault } = themeValues;
+
+    // Update store values
+    store.setLastSeenBackgroundColor(backgroundRoot);
+    store.setLastSeenForegroundColor(foregroundDefault);
+
+    // Update window styling
+    senderWindow.setBackgroundColor(backgroundRoot);
+
+    if (isWindows()) {
+      senderWindow.setTitleBarOverlay({
+        color: backgroundRoot,
+        symbolColor: foregroundDefault,
+      });
+    }
   });
 }

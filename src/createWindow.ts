@@ -17,7 +17,7 @@ import {
 import log from 'electron-log/main';
 import { events } from './events';
 import isSupportedPage from './isSupportedPage';
-import { isMac } from './platform';
+import { isMac, isWindows } from './platform';
 import store from './store';
 
 interface WindowProps {
@@ -76,15 +76,6 @@ function isInBounds(rect: Rectangle) {
   });
 }
 
-async function getLastSeenBackgroundColor(
-  window: BrowserWindow,
-): Promise<string> {
-  // We're capturing the background color to use as main browser window background color.
-  return window.webContents.executeJavaScript(
-    `getComputedStyle(document.body).getPropertyValue('--background-root');`,
-  );
-}
-
 function updateStoreWithFocusedWindowValues() {
   const windows = BrowserWindow.getAllWindows();
 
@@ -97,15 +88,43 @@ function updateStoreWithFocusedWindowValues() {
   const window = BrowserWindow.getFocusedWindow() || windows[0];
 
   store.setWindowBounds(window.getBounds());
+}
 
-  getLastSeenBackgroundColor(window).then((backgroundColor) => {
-    store.setLastSeenBackgroundColor(backgroundColor);
-  });
+function getPlatformSpecificStyling({
+  backgroundColor,
+  foregroundColor,
+}: {
+  backgroundColor: string;
+  foregroundColor: string;
+}): Partial<BrowserWindowConstructorOptions> {
+  // For MacOS and Windows we use a hidden titlebar and move the OS window buttons into the header of the interface
+  // the corresponding CSS adjustments to enable this live in the repl-it-web repo.
+  if (isMac()) {
+    return {
+      titleBarStyle: 'hidden',
+      titleBarOverlay: { height: 48 },
+      trafficLightPosition: { x: 20, y: 16 },
+    };
+  }
+
+  if (isWindows()) {
+    return {
+      titleBarStyle: 'hidden',
+      titleBarOverlay: {
+        color: backgroundColor,
+        symbolColor: foregroundColor,
+        height: 47, // leaving 1px for border on the top of the pane
+      },
+    };
+  }
+
+  return {};
 }
 
 export function createWindow(props?: WindowProps): BrowserWindow {
   updateStoreWithFocusedWindowValues();
   const backgroundColor = store.getLastSeenBackgroundColor();
+  const foregroundColor = store.getLastSeenForegroundColor();
   const url = createURL(props?.url);
   let lastOpenRepl = store.getLastOpenRepl();
   const disposeOnLastOpenReplChange = store.onLastOpenReplChange((newValue) => {
@@ -114,19 +133,10 @@ export function createWindow(props?: WindowProps): BrowserWindow {
 
   log.info('Creating window with URL: ', url);
 
-  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
-  // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
-  const platformStyling: BrowserWindowConstructorOptions = isMac()
-    ? {
-        titleBarStyle: 'hidden',
-        titleBarOverlay: {
-          color: 'var(--background-root)',
-          symbolColor: 'var(--foreground-default)',
-          height: 48,
-        },
-        trafficLightPosition: { x: 20, y: 16 },
-      }
-    : {};
+  const platformStyling = getPlatformSpecificStyling({
+    foregroundColor,
+    backgroundColor,
+  });
 
   const window = new BrowserWindow({
     webPreferences: {
@@ -189,9 +199,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
 
   window.setBounds(store.getWindowBounds());
 
-  window.on('close', async () => {
-    const bgColor = await getLastSeenBackgroundColor(window);
-    store.setLastSeenBackgroundColor(bgColor);
+  window.on('close', () => {
     store.setWindowBounds(window.getBounds());
     disposeOnLastOpenReplChange();
   });
