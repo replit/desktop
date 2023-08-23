@@ -90,6 +90,37 @@ function updateStoreWithFocusedWindowValues() {
   store.setWindowBounds(window.getBounds());
 }
 
+function getPlatformSpecificStyling({
+  backgroundColor,
+  foregroundColor,
+}: {
+  backgroundColor: string;
+  foregroundColor: string;
+}): Partial<BrowserWindowConstructorOptions> {
+  // For MacOS and Windows we use a hidden titlebar and move the OS window buttons into the header of the interface
+  // the corresponding CSS adjustments to enable this live in the repl-it-web repo.
+  if (isMac()) {
+    return {
+      titleBarStyle: 'hidden',
+      titleBarOverlay: { height: 48 },
+      trafficLightPosition: { x: 20, y: 16 },
+    };
+  }
+
+  if (isWindows()) {
+    return {
+      titleBarStyle: 'hidden',
+      titleBarOverlay: {
+        color: backgroundColor,
+        symbolColor: foregroundColor,
+        height: 47, // leaving 1px for border on the top of the pane
+      },
+    };
+  }
+
+  return {};
+}
+
 export function createWindow(props?: WindowProps): BrowserWindow {
   updateStoreWithFocusedWindowValues();
   const backgroundColor = store.getLastSeenBackgroundColor();
@@ -102,28 +133,10 @@ export function createWindow(props?: WindowProps): BrowserWindow {
 
   log.info('Creating window with URL: ', url);
 
-  // For MacOS we use a hidden titlebar and move the traffic lights into the header of the interface
-  // the corresponding CSS adjustments to enable that live in the repl-it-web repo!
-  let platformStyling: BrowserWindowConstructorOptions = {};
-
-  if (isMac()) {
-    platformStyling = {
-      titleBarStyle: 'hidden',
-      titleBarOverlay: { height: 48 },
-      trafficLightPosition: { x: 20, y: 16 },
-    };
-  }
-
-  if (isWindows()) {
-    platformStyling = {
-      titleBarStyle: 'hidden',
-      titleBarOverlay: {
-        color: backgroundColor,
-        symbolColor: foregroundColor,
-        height: 47, // leaving 1px for border on the top of the pane
-      },
-    };
-  }
+  const platformStyling = getPlatformSpecificStyling({
+    foregroundColor,
+    backgroundColor,
+  });
 
   const window = new BrowserWindow({
     webPreferences: {
