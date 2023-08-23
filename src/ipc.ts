@@ -1,7 +1,9 @@
-import { BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import { autoUpdater, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import log from 'electron-log/main';
 import { createWindow } from './createWindow';
-import { authPage, baseUrl } from './constants';
+import { authPage, baseUrl, isProduction } from './constants';
 import { events } from './events';
+import { isLinux } from './platform';
 import store from './store';
 import isSupportedPage from './isSupportedPage';
 import log from 'electron-log/main';
@@ -57,7 +59,21 @@ export function setIpcEventListeners(): void {
     createWindow({ url });
   });
 
-  ipcMain.handle(events.SHOW_MESSAGE_BOX, async (_, params) => {
+  ipcMain.on(events.CHECK_FOR_UPDATES, () => {
+    logEvent(events.CHECK_FOR_UPDATES);
+
+    if (!isProduction) {
+      return;
+    }
+
+    if (!isLinux()) {
+      return;
+    }
+
+    autoUpdater.checkForUpdates();
+  });
+
+  ipcMain.handle(events.SHOW_MESSAGE_BOX, async (event, params) => {
     logEvent(events.SHOW_MESSAGE_BOX, params);
     const { response } = await dialog.showMessageBox(params);
 
