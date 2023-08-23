@@ -5,6 +5,7 @@ import { events } from './events';
 import store from './store';
 import isSupportedPage from './isSupportedPage';
 import log from 'electron-log/main';
+import { isWindows } from './platform';
 
 function logEvent(event: events, params?: Record<string, unknown>) {
   log.info(
@@ -73,10 +74,13 @@ export function setIpcEventListeners(): void {
       );
 
       senderWindow.setBackgroundColor(backgroundColor);
-      senderWindow.setTitleBarOverlay({
-        color: backgroundColor,
-        symbolColor: foregroundColor,
-      });
+
+      if (isWindows()) {
+        senderWindow.setTitleBarOverlay({
+          color: backgroundColor,
+          symbolColor: foregroundColor,
+        });
+      }
     },
   );
 }
