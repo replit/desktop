@@ -48,7 +48,8 @@ contextBridge.exposeInMainWorld("replitDesktop", {
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
   onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
   onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
-  themeChanged: () => ipcRenderer.send(events.THEME_CHANGED),
+  themeChanged: (backgroundColor: string, foregroundColor: string) =>
+    ipcRenderer.send(events.THEME_CHANGED, backgroundColor, foregroundColor),
   logout: () => ipcRenderer.send(events.LOGOUT),
   platform,
   version,

@@ -1,11 +1,10 @@
 import { BrowserWindow, dialog, ipcMain, shell } from "electron";
-import { createWindow, getColorsFromWindow } from "./createWindow";
+import { createWindow } from "./createWindow";
 import { authPage, baseUrl } from "./constants";
 import { events } from "./events";
 import store from "./store";
 import isSupportedPage from "./isSupportedPage";
 import log from "electron-log/main";
-import { isWindows } from "./platform";
 
 function logEvent(event: events, params?: Record<string, unknown>) {
   log.info(
@@ -64,28 +63,20 @@ export function setIpcEventListeners(): void {
     return response;
   });
 
-  ipcMain.on(events.THEME_CHANGED, async () => {
-    logEvent(events.THEME_CHANGED);
+  ipcMain.on(
+    events.THEME_CHANGED,
+    async (event, backgroundColor, foregroundColor) => {
+      logEvent(events.THEME_CHANGED, { backgroundColor, foregroundColor });
 
-    const allWindows = BrowserWindow.getAllWindows();
+      const senderWindow = BrowserWindow.getAllWindows().find(
+        (win) => win.webContents.id === event.sender.id,
+      );
 
-    await Promise.all(
-      allWindows.map(async (window) => {
-        const { backgroundColor, foregroundColor } =
-          await getColorsFromWindow(window);
-
-        window.setBackgroundColor(backgroundColor);
-
-        // titlebar overlay is used for the background and foregraound of
-        // native Windows control UI buttons, we have to keep them in sync with
-        // the theme
-        if (isWindows()) {
-          window.setTitleBarOverlay({
-            color: backgroundColor,
-            symbolColor: foregroundColor,
-          });
-        }
-      }),
-    );
-  });
+      senderWindow.setBackgroundColor(backgroundColor);
+      senderWindow.setTitleBarOverlay({
+        color: backgroundColor,
+        symbolColor: foregroundColor,
+      });
+    },
+  );
 }
