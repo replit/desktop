@@ -5,21 +5,21 @@ import {
   Menu,
   MenuItem,
   MenuItemConstructorOptions,
-} from "electron";
-import { baseUrl, isProduction } from "./constants";
-import { createWindow } from "./createWindow";
-import { isMac } from "./platform";
+} from 'electron';
+import { baseUrl, isProduction } from './constants';
+import { createWindow } from './createWindow';
+import { isMac } from './platform';
 
 const replUrlRegExp = new RegExp(`${baseUrl}/@[^/]+/.+`);
 
 const newWindowMenuItem = {
-  label: "New Window",
-  accelerator: "CommandOrControl+Shift+N",
+  label: 'New Window',
+  accelerator: 'CommandOrControl+Shift+N',
   click: () => createWindow(),
 };
 
 const openReplFromClipboardMenuItem = {
-  label: "Open Repl URL from Clipboard",
+  label: 'Open Repl URL from Clipboard',
   click: () => {
     const clipboardText = clipboard.readText();
     const isReplUrl = replUrlRegExp.test(clipboardText);
@@ -28,8 +28,8 @@ const openReplFromClipboardMenuItem = {
       createWindow({ url: clipboardText });
     } else {
       dialog.showMessageBox({
-        type: "warning" as const,
-        message: "The URL in Clipboard is not a Repl URL",
+        type: 'warning' as const,
+        message: 'The URL in Clipboard is not a Repl URL',
       });
     }
   },
@@ -52,83 +52,85 @@ export function createApplicationMenu(): Menu {
     template.push({
       label: app.name,
       submenu: [
-        { role: "about" },
-        { type: "separator" },
-        { role: "services" },
-        { type: "separator" },
-        { role: "hide" },
-        { role: "hideOthers" },
-        { role: "unhide" },
-        { type: "separator" },
-        { role: "quit" },
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideOthers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' },
       ],
     });
   }
 
   // File Menu
   template.push({
-    label: "File",
+    label: 'File',
     submenu: [
       newWindowMenuItem,
       openReplFromClipboardMenuItem,
-      { type: "separator" },
-      isMac() ? { role: "close" } : { role: "quit" },
+      { type: 'separator' },
+      isMac() ? { role: 'close' } : { role: 'quit' },
     ],
   });
 
   // Edit Menu
   template.push({
-    label: "Edit",
+    label: 'Edit',
     submenu: [
-      { role: "undo" },
-      { role: "redo" },
-      { type: "separator" },
-      { role: "cut" },
-      { role: "copy" },
-      { role: "paste" },
-      { role: "pasteandmatchstyle" },
-      { role: "delete" },
-      { role: "selectall" },
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      { role: 'pasteandmatchstyle' },
+      { role: 'delete' },
+      { role: 'selectall' },
     ],
   });
 
   // View Menu
   template.push({
-    label: "View",
+    label: 'View',
     submenu: [
-      { role: "reload" },
-      { role: "forceReload" },
+      { role: 'reload' },
+      { role: 'forceReload' },
       // Don't expose dev tools in production
-      ...(!isProduction ? [{ role: "toggleDevTools" }] : []),
-      { type: "separator" },
-      { type: "separator" },
-      { role: "togglefullscreen" },
+      ...(!isProduction ? [{ role: 'toggleDevTools' }] : []),
+      { type: 'separator' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' },
     ],
   });
 
   // Window Menu
   template.push({
-    label: "Window",
+    label: 'Window',
     submenu: [
-      { role: "minimize" },
-      { role: "zoom" },
+      { role: 'minimize' },
+      { role: 'zoom' },
       ...(isMac()
         ? [
-            { type: "separator" },
-            { role: "front" },
-            { type: "separator" },
-            { role: "window" },
+            { type: 'separator' },
+            { role: 'front' },
+            { type: 'separator' },
+            { role: 'window' },
           ]
-        : [{ role: "close" }]),
+        : [{ role: 'close' }]),
     ],
   });
 
   // Help Menu
   template.push({
-    role: "help",
+    role: 'help',
   });
 
-  const menu = Menu.buildFromTemplate(template as MenuItemConstructorOptions[]);
+  const menu = Menu.buildFromTemplate(
+    template as Array<MenuItemConstructorOptions>,
+  );
 
   return menu;
 }

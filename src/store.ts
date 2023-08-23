@@ -1,17 +1,17 @@
-import { Rectangle, screen } from "electron";
-import Store from "electron-store";
+import { Rectangle, screen } from 'electron';
+import Store from 'electron-store';
 
 const keys = {
-  LAST_SEEN_BACKGROUND_COLOR: "LAST_SEEN_BACKGROUND_COLOR",
-  LAST_SEEN_FOREGROUND_COLOR: "LAST_SEEN_FOREGROUND_COLOR",
-  LAST_OPEN_REPL: "LAST_OPEN_REPL",
-  WINDOW_BOUNDS: "WINDOW_BOUNDS",
-  NUM_DISPLAYS: "NUM_DISPLAYS",
+  LAST_SEEN_BACKGROUND_COLOR: 'LAST_SEEN_BACKGROUND_COLOR',
+  LAST_SEEN_FOREGROUND_COLOR: 'LAST_SEEN_FOREGROUND_COLOR',
+  LAST_OPEN_REPL: 'LAST_OPEN_REPL',
+  WINDOW_BOUNDS: 'WINDOW_BOUNDS',
+  NUM_DISPLAYS: 'NUM_DISPLAYS',
 };
 
 // Default values for dark mode.
-const defaultBgColor = "#0E1525";
-const defaultFgColor = "#F5F9FC";
+const defaultBgColor = '#0E1525';
+const defaultFgColor = '#F5F9FC';
 
 function createStore() {
   const store = new Store();

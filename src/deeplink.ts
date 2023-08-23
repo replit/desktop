@@ -1,5 +1,5 @@
-import { app, BrowserWindow } from "electron";
-import { isWindows, isLinux } from "./platform";
+import { app, BrowserWindow } from 'electron';
+import { isWindows, isLinux } from './platform';
 import {
   baseUrl,
   protocol,
@@ -7,11 +7,11 @@ import {
   semverRegex,
   authPage,
   homePage,
-} from "./constants";
-import path from "path";
-import { createWindow } from "./createWindow";
-import { events } from "./events";
-import log from "electron-log/main";
+} from './constants';
+import path from 'path';
+import { createWindow } from './createWindow';
+import { events } from './events';
+import log from 'electron-log/main';
 
 export function initializeDeeplinking(): void {
   registerDeeplinkProtocol();
@@ -19,7 +19,7 @@ export function initializeDeeplinking(): void {
 }
 
 function registerDeeplinkProtocol(): void {
-  log.info("Registering deeplink protocol");
+  log.info('Registering deeplink protocol');
 
   if (process.defaultApp && isWindows() && process.argv.length >= 2) {
     // Set the path of electron.exe and your app.
@@ -40,7 +40,7 @@ async function handleDeeplink(deeplink: string): Promise<void> {
 
   // Remove trailing ":"
   if (url.protocol.slice(0, -1) !== protocol) {
-    throw new Error("Invalid protocol");
+    throw new Error('Invalid protocol');
   }
 
   // We set the listeners before the app is ready to make sure we don't miss any events
@@ -49,25 +49,25 @@ async function handleDeeplink(deeplink: string): Promise<void> {
   await app.whenReady();
 
   switch (url.hostname) {
-    case "authComplete": {
-      handleAuthComplete(url.searchParams.get("authToken"));
+    case 'authComplete': {
+      handleAuthComplete(url.searchParams.get('authToken'));
 
       break;
     }
 
-    case "home": {
+    case 'home': {
       handleHome();
 
       break;
     }
 
-    case "new": {
-      handleNew(url.searchParams.get("language") || "python3");
+    case 'new': {
+      handleNew(url.searchParams.get('language') || 'python3');
 
       break;
     }
 
-    case "repl": {
+    case 'repl': {
       handleRepl(url.pathname);
 
       break;
@@ -80,13 +80,23 @@ async function handleDeeplink(deeplink: string): Promise<void> {
   }
 }
 
+function getFocusedOrFirstWindow(): BrowserWindow | null {
+  const windows = BrowserWindow.getAllWindows();
+
+  if (windows.length === 0) {
+    return null;
+  }
+
+  return BrowserWindow.getFocusedWindow() || windows[0];
+}
+
 function handleHome() {
   const homeUrl = `${baseUrl}${homePage}`;
 
-  const focused = BrowserWindow.getFocusedWindow();
+  const window = getFocusedOrFirstWindow();
 
-  if (focused) {
-    focused.loadURL(homeUrl);
+  if (window) {
+    window.loadURL(homeUrl);
 
     return;
   }
@@ -106,15 +116,15 @@ function handleNew(language: string) {
 
 function handleRepl(url: string) {
   if (!workspaceUrlRegex.test(url)) {
-    log.error("Expected URL of the format /@username/slug");
+    log.error('Expected URL of the format /@username/slug');
 
     return;
   }
 
-  const focused = BrowserWindow.getFocusedWindow();
+  const window = getFocusedOrFirstWindow();
 
-  if (focused) {
-    focused.loadURL(`${baseUrl}${url}`);
+  if (window) {
+    window.loadURL(`${baseUrl}${url}`);
 
     return;
   }
@@ -165,12 +175,12 @@ function handleAuthComplete(authToken: string) {
 }
 
 function setOpenDeeplinkListeners(): void {
-  log.info("Setting deeplink listeners");
+  log.info('Setting deeplink listeners');
 
   // Windows and Linux fire a different event when deeplinks are opened
   // See docs: https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
   if (isWindows() || isLinux()) {
-    app.on("second-instance", (_event, commandLine) => {
+    app.on('second-instance', (_event, commandLine) => {
       // the commandLine is an array of strings in which the last element is the deep link url
       const url = commandLine.pop();
 
@@ -185,7 +195,7 @@ function setOpenDeeplinkListeners(): void {
     return;
   }
 
-  app.on("open-url", (_event, url) => {
+  app.on('open-url', (_event, url) => {
     handleDeeplink(url);
   });
 }

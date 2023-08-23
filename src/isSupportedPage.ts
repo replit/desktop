@@ -1,6 +1,6 @@
-import { desktopAppPrefix, workspaceUrlRegex } from "./constants";
+import { desktopAppPrefix, workspaceUrlRegex } from './constants';
 
-const supportedNonDesktopAppPages = ["logout"];
+const supportedNonDesktopAppPages = ['logout'];
 
 export default function isSupportedPage(page: string): boolean {
   return (

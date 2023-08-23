@@ -1,5 +1,5 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
-import { events } from "./events";
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { events } from './events';
 
 function makeEventHandler(event: events) {
   return function (callback: () => void) {
@@ -19,15 +19,15 @@ function parseArgument(name: string) {
     throw new Error(`Expected ${name} argument`);
   }
 
-  const [, value] = arg.split("=");
+  const [, value] = arg.split('=');
 
   return value;
 }
 
-const version = parseArgument("app-version");
-const platform = parseArgument("platform");
+const version = parseArgument('app-version');
+const platform = parseArgument('platform');
 
-contextBridge.exposeInMainWorld("replitDesktop", {
+contextBridge.exposeInMainWorld('replitDesktop', {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openWindow: (replSlug: string) =>
     ipcRenderer.send(events.OPEN_WINDOW, replSlug),
