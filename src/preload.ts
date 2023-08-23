@@ -48,6 +48,7 @@ contextBridge.exposeInMainWorld('replitDesktop', {
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
   onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
   onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
+  checkForUpdates: () => ipcRenderer.send(events.CHECK_FOR_UPDATES),
   logout: () => ipcRenderer.send(events.LOGOUT),
   platform,
   version,
