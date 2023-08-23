@@ -88,10 +88,12 @@ export function setIpcEventListeners(): void {
 
     const { backgroundRoot, foregroundDefault } = themeValues;
 
-    senderWindow.setBackgroundColor(backgroundRoot);
-
+    // Update store values
     store.setLastSeenBackgroundColor(backgroundRoot);
     store.setLastSeenForegroundColor(foregroundDefault);
+
+    // Update window styling
+    senderWindow.setBackgroundColor(backgroundRoot);
 
     if (isWindows()) {
       senderWindow.setTitleBarOverlay({
