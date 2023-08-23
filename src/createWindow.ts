@@ -76,19 +76,6 @@ function isInBounds(rect: Rectangle) {
   });
 }
 
-export async function getColorsFromWindow(
-  window: BrowserWindow,
-): Promise<{ backgroundColor: string; foregroundColor: string }> {
-  const backgroundColor = await window.webContents.executeJavaScript(
-    `getComputedStyle(document.body).getPropertyValue('--background-root');`,
-  );
-  const foregroundColor = await window.webContents.executeJavaScript(
-    `getComputedStyle(document.body).getPropertyValue('--foreground-default');`,
-  );
-
-  return { backgroundColor, foregroundColor };
-}
-
 function updateStoreWithFocusedWindowValues() {
   const windows = BrowserWindow.getAllWindows();
 
@@ -101,11 +88,6 @@ function updateStoreWithFocusedWindowValues() {
   const window = BrowserWindow.getFocusedWindow() || windows[0];
 
   store.setWindowBounds(window.getBounds());
-
-  getColorsFromWindow(window).then(({ backgroundColor, foregroundColor }) => {
-    store.setLastSeenBackgroundColor(backgroundColor);
-    store.setLastSeenForegroundColor(foregroundColor);
-  });
 }
 
 export function createWindow(props?: WindowProps): BrowserWindow {
@@ -204,10 +186,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
 
   window.setBounds(store.getWindowBounds());
 
-  window.on('close', async () => {
-    const windowColors = await getColorsFromWindow(window);
-    store.setLastSeenBackgroundColor(windowColors.backgroundColor);
-    store.setLastSeenForegroundColor(windowColors.foregroundColor);
+  window.on('close', () => {
     store.setWindowBounds(window.getBounds());
     disposeOnLastOpenReplChange();
   });

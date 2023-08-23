@@ -9,7 +9,7 @@ const keys = {
   NUM_DISPLAYS: 'NUM_DISPLAYS',
 };
 
-// Default values for dark mode.
+// Default values for var(--background-root) and var(--foreground-default) in dark mode.
 const defaultBgColor = '#0E1525';
 const defaultFgColor = '#F5F9FC';
 

@@ -79,23 +79,25 @@ export function setIpcEventListeners(): void {
     return response;
   });
 
-  ipcMain.on(
-    events.THEME_CHANGED,
-    async (event, backgroundColor, foregroundColor) => {
-      logEvent(events.THEME_CHANGED, { backgroundColor, foregroundColor });
+  ipcMain.on(events.THEME_VALUES_CHANGED, (event, themeValues) => {
+    logEvent(events.THEME_VALUES_CHANGED, themeValues);
 
-      const senderWindow = BrowserWindow.getAllWindows().find(
-        (win) => win.webContents.id === event.sender.id,
-      );
+    const senderWindow = BrowserWindow.getAllWindows().find(
+      (win) => win.webContents.id === event.sender.id,
+    );
 
-      senderWindow.setBackgroundColor(backgroundColor);
+    const { backgroundRoot, foregroundDefault } = themeValues;
 
-      if (isWindows()) {
-        senderWindow.setTitleBarOverlay({
-          color: backgroundColor,
-          symbolColor: foregroundColor,
-        });
-      }
-    },
-  );
+    senderWindow.setBackgroundColor(backgroundRoot);
+
+    store.setLastSeenBackgroundColor(backgroundRoot);
+    store.setLastSeenForegroundColor(foregroundDefault);
+
+    if (isWindows()) {
+      senderWindow.setTitleBarOverlay({
+        color: backgroundRoot,
+        symbolColor: foregroundDefault,
+      });
+    }
+  });
 }
