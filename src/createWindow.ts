@@ -13,6 +13,7 @@ import {
   preloadScript as preload,
   workspaceUrlRegex,
   homePage,
+  isProduction,
 } from './constants';
 import log from 'electron-log/main';
 import { events } from './events';
@@ -158,8 +159,12 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   // Add a custom string to user agent to make it easier to differentiate requests from desktop app
+  const userAgentSuffix = isProduction
+    ? 'ReplitDesktop'
+    : 'ReplitDesktop (Development)';
+
   window.webContents.setUserAgent(
-    `${window.webContents.getUserAgent()} ReplitDesktop`,
+    `${window.webContents.getUserAgent()} ${userAgentSuffix}`,
   );
 
   // Prevent any URLs opened via a target="_blank" anchor tag or programmatically using `window.open` from
