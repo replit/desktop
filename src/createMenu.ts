@@ -92,16 +92,18 @@ export function createApplicationMenu(): Menu {
     ],
   });
 
+  const devOnlyMenuItems = [
+    { role: 'reload' },
+    { role: 'forceReload' },
+    { role: 'toggleDevTools' },
+    { type: 'separator' },
+  ];
+
   // View Menu
   template.push({
     label: 'View',
     submenu: [
-      { role: 'reload' },
-      { role: 'forceReload' },
-      // Don't expose dev tools in production
-      ...(!isProduction ? [{ role: 'toggleDevTools' }] : []),
-      { type: 'separator' },
-      { type: 'separator' },
+      ...(!isProduction ? devOnlyMenuItems : []),
       { role: 'togglefullscreen' },
     ],
   });
