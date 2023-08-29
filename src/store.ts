@@ -35,7 +35,7 @@ function getStoreName() {
   }
 
   if (isLoadingProdReplit) {
-    return 'config-dev-production';
+    return 'config-dev-prod';
   }
 
   // Other URLs could be repl.co URLs from hosted RoR instances
