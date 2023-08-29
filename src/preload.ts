@@ -55,4 +55,7 @@ contextBridge.exposeInMainWorld('replitDesktop', {
   logout: () => ipcRenderer.send(events.LOGOUT),
   platform,
   version,
+  openWebViewDevTools: async (url: string) => {
+    ipcRenderer.send(events.OPEN_WEB_VIEW_DEV_TOOLS, url);
+  },
 });

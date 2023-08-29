@@ -147,6 +147,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
         `--platform=${process.platform}`,
       ],
       scrollBounce: true, // MacOS only
+      webviewTag: true, // DevTools support for embedded pages
     },
     title,
     icon,

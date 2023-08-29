@@ -102,4 +102,30 @@ export function setIpcEventListeners(): void {
       });
     }
   });
+
+  ipcMain.on(events.OPEN_WEB_VIEW_DEV_TOOLS, async (_event, url: string) => {
+    logEvent(events.OPEN_WEB_VIEW_DEV_TOOLS, { url });
+    const host = '127.0.0.1:9222';
+
+    const response = await fetch(`http://${host}/json`);
+    const devtools = await response.json();
+
+    if (!devtools || !Array.isArray(devtools)) {
+      return;
+    }
+
+    const normalizedUrl = url.toLowerCase();
+
+    const entry = devtools.find(
+      (entry) => entry.url.toLowerCase() === normalizedUrl,
+    );
+
+    const window = new BrowserWindow({});
+
+    await window.loadURL(
+      `http://${host}/devtools/inspector.html?ws=${host}/devtools/page/${entry.id}`,
+    );
+
+    window.show();
+  });
 }

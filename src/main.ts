@@ -28,6 +28,10 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+// Enable remote debugging to support opening dev tools for web views
+app.commandLine.appendSwitch('remote-debugging-port', '9222');
+app.commandLine.appendSwitch('remote-allow-origins', 'http://127.0.0.1:9222');
+
 initSentry();
 app.setName(appName);
 initializeDeeplinking();
