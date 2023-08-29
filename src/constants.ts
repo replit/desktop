@@ -14,9 +14,11 @@ export const macAppIcon = nativeImage.createFromPath(
 
 export const preloadScript = path.join(__dirname, 'preload.js');
 
-export const baseUrl = process.env.REPLIT_URL || 'https://replit.com';
+const defaultBaseUrl = 'https://replit.com';
+export const baseUrl = process.env.REPLIT_URL || defaultBaseUrl;
 export const isLoadingLocalhost = baseUrl.includes('localhost');
 export const isLoadingStaging = baseUrl.includes('staging');
+export const isLoadingProd = baseUrl === defaultBaseUrl;
 
 export const workspaceUrlRegex = /^\/@\S+\/\S+/;
 

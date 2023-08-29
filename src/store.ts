@@ -5,6 +5,7 @@ import {
   isLoadingLocalhost,
   isLoadingStaging,
   baseUrl,
+  isLoadingProd,
 } from './constants';
 
 enum Key {
@@ -31,6 +32,10 @@ function getStoreName() {
 
   if (isLoadingStaging) {
     return 'config-dev-staging';
+  }
+
+  if (isLoadingProd) {
+    return 'config-dev-production';
   }
 
   // Other URLs could be repl.co URLs from hosted RoR instances
