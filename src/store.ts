@@ -39,8 +39,7 @@ function getStoreName() {
   }
 
   // Other URLs could be repl.co URLs from hosted RoR instances
-  const url = new URL(baseUrl);
-  const host = url.host.replaceAll('/', '-');
+  const { host } = new URL(baseUrl);
 
   return `config-dev-${host}`;
 }

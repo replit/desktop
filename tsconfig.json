@@ -8,10 +8,7 @@
     "target": "es2015",
     "paths": {
       "*": ["node_modules/*"]
-    },
-    "lib": [
-      "ES2021.String"
-    ]
+    }
   },
   "include": [
     "src/**/*"
