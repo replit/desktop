@@ -2,10 +2,10 @@ import { Rectangle, screen } from 'electron';
 import Store from 'electron-store';
 import {
   isProduction,
-  isLoadingLocalhost,
-  isLoadingStaging,
+  isLoadingLocalReplit,
+  isLoadingStagingReplit,
+  isLoadingProdReplit,
   baseUrl,
-  isLoadingProd,
 } from './constants';
 
 enum Key {
@@ -26,15 +26,15 @@ function getStoreName() {
     return 'config';
   }
 
-  if (isLoadingLocalhost) {
+  if (isLoadingLocalReplit) {
     return 'config-dev-local';
   }
 
-  if (isLoadingStaging) {
+  if (isLoadingStagingReplit) {
     return 'config-dev-staging';
   }
 
-  if (isLoadingProd) {
+  if (isLoadingProdReplit) {
     return 'config-dev-production';
   }
 
