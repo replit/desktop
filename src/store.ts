@@ -1,6 +1,11 @@
 import { Rectangle, screen } from 'electron';
 import Store from 'electron-store';
-import { isProduction, baseUrl } from './constants';
+import {
+  isProduction,
+  isLoadingLocalhost,
+  isLoadingStaging,
+  baseUrl,
+} from './constants';
 
 enum Key {
   LAST_SEEN_BACKGROUND_COLOR = 'LAST_SEEN_BACKGROUND_COLOR',
@@ -15,9 +20,28 @@ const defaultBgColor = '#0E1525';
 const defaultFgColor = '#F5F9FC';
 
 // Different store in the different dev modes and in production
-const name = isProduction ? 'config' : `config-dev-${baseUrl}`;
+function getStoreName() {
+  if (isProduction) {
+    return 'config';
+  }
+
+  if (isLoadingLocalhost) {
+    return 'config-dev-local';
+  }
+
+  if (isLoadingStaging) {
+    return 'config-dev-staging';
+  }
+
+  // Other URLs could be repl.co URLs from hosted RoR instances
+  const url = new URL(baseUrl);
+  const host = url.host.replaceAll('/', '-');
+
+  return `config-dev-${host}`;
+}
 
 function createStore() {
+  const name = getStoreName();
   const store = new Store({
     name,
   });
