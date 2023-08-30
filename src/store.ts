@@ -26,16 +26,16 @@ function getStoreName() {
     return 'config';
   }
 
+  if (isLoadingProdReplit) {
+    return 'config-dev';
+  }
+
   if (isLoadingLocalReplit) {
     return 'config-dev-local';
   }
 
   if (isLoadingStagingReplit) {
     return 'config-dev-staging';
-  }
-
-  if (isLoadingProdReplit) {
-    return 'config-dev-prod';
   }
 
   // Other URLs could be repl.co URLs from hosted RoR instances
