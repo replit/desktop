@@ -146,7 +146,6 @@ export function createWindow(props?: WindowProps): BrowserWindow {
         `--app-version=${app.getVersion()}`,
         `--platform=${process.platform}`,
       ],
-      scrollBounce: true, // MacOS only
       webviewTag: true, // Enables support for devtools access on frames
     },
     title,
