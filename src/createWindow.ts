@@ -210,7 +210,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   window.on('focus', () => {
-    setLastOpenRepl(url, lastOpenRepl);
+    setLastOpenRepl(window.webContents.getURL(), lastOpenRepl);
   });
 
   window.on('enter-full-screen', () => {
