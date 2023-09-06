@@ -1,16 +1,7 @@
-import {
-  app,
-  clipboard,
-  dialog,
-  Menu,
-  MenuItem,
-  MenuItemConstructorOptions,
-} from 'electron';
-import { baseUrl, isProduction } from './constants';
+import { app, Menu, MenuItem, MenuItemConstructorOptions } from 'electron';
+import { isProduction } from './constants';
 import { createWindow } from './createWindow';
 import { isMac } from './platform';
-
-const replUrlRegExp = new RegExp(`${baseUrl}/@[^/]+/.+`);
 
 const newWindowMenuItem = {
   label: 'New Window',
@@ -18,28 +9,10 @@ const newWindowMenuItem = {
   click: () => createWindow(),
 };
 
-const openReplFromClipboardMenuItem = {
-  label: 'Open Repl URL from Clipboard',
-  click: () => {
-    const clipboardText = clipboard.readText();
-    const isReplUrl = replUrlRegExp.test(clipboardText);
-
-    if (isReplUrl) {
-      createWindow({ url: clipboardText });
-    } else {
-      dialog.showMessageBox({
-        type: 'warning' as const,
-        message: 'The URL in Clipboard is not a Repl URL',
-      });
-    }
-  },
-};
-
 export function createDockMenu(): Menu {
   const menu = new Menu();
 
   menu.append(new MenuItem(newWindowMenuItem));
-  menu.append(new MenuItem(openReplFromClipboardMenuItem));
 
   return menu;
 }
@@ -68,12 +41,7 @@ export function createApplicationMenu(): Menu {
   // File Menu
   template.push({
     label: 'File',
-    submenu: [
-      newWindowMenuItem,
-      openReplFromClipboardMenuItem,
-      { type: 'separator' },
-      isMac() ? { role: 'close' } : { role: 'quit' },
-    ],
+    submenu: [newWindowMenuItem],
   });
 
   // Edit Menu
