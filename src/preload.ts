@@ -35,7 +35,6 @@ contextBridge.exposeInMainWorld('replitDesktop', {
   },
   showMessageBox: async (params: Electron.MessageBoxOptions) =>
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
-
   onFullScreenChanged: (callback: (isFullScreen: boolean) => void) => {
     function listener(_event: IpcRendererEvent, isFullScreen: boolean) {
       callback(isFullScreen);
@@ -45,6 +44,17 @@ contextBridge.exposeInMainWorld('replitDesktop', {
 
     return () => {
       ipcRenderer.removeListener(events.ON_FULLSCREEN_CHANGED, listener);
+    };
+  },
+  onFocusChanged: (callback: (isFocused: boolean) => void) => {
+    function listener(_event: IpcRendererEvent, isFocused: boolean) {
+      callback(isFocused);
+    }
+
+    ipcRenderer.on(events.ON_FOCUSED_CHANGED, listener);
+
+    return () => {
+      ipcRenderer.removeListener(events.ON_FOCUSED_CHANGED, listener);
     };
   },
   updateThemeValues: (themeValues: {
