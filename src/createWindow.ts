@@ -214,11 +214,11 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   });
 
   window.on('enter-full-screen', () => {
-    window.webContents.send(events.ON_ENTER_FULLSCREEN);
+    window.webContents.send(events.ON_FULLSCREEN_CHANGED, true);
   });
 
   window.on('leave-full-screen', () => {
-    window.webContents.send(events.ON_LEAVE_FULLSCREEN);
+    window.webContents.send(events.ON_FULLSCREEN_CHANGED, false);
   });
 
   // Bypass the browser's cache when initially loading the remote URL
