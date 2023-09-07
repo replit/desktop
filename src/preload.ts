@@ -1,16 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { events } from './events';
 
-function makeEventHandler(event: events) {
-  return function (callback: () => void) {
-    ipcRenderer.on(event, callback);
-
-    return () => {
-      ipcRenderer.removeListener(event, callback);
-    };
-  };
-}
-
 function parseArgument(name: string) {
   // Must be passed in as an entry to the `additionalArguments` array in `webPreferences`
   const arg = process.argv.find((a) => a.includes(`--${name}=`));
@@ -45,8 +35,28 @@ contextBridge.exposeInMainWorld('replitDesktop', {
   },
   showMessageBox: async (params: Electron.MessageBoxOptions) =>
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
-  onEnterFullscreen: makeEventHandler(events.ON_ENTER_FULLSCREEN),
-  onLeaveFullscreen: makeEventHandler(events.ON_LEAVE_FULLSCREEN),
+  onFullScreenChanged: (callback: (isFullScreen: boolean) => void) => {
+    function listener(_event: IpcRendererEvent, isFullScreen: boolean) {
+      callback(isFullScreen);
+    }
+
+    ipcRenderer.on(events.ON_FULLSCREEN_CHANGED, listener);
+
+    return () => {
+      ipcRenderer.removeListener(events.ON_FULLSCREEN_CHANGED, listener);
+    };
+  },
+  onFocusChanged: (callback: (isFocused: boolean) => void) => {
+    function listener(_event: IpcRendererEvent, isFocused: boolean) {
+      callback(isFocused);
+    }
+
+    ipcRenderer.on(events.ON_FOCUSED_CHANGED, listener);
+
+    return () => {
+      ipcRenderer.removeListener(events.ON_FOCUSED_CHANGED, listener);
+    };
+  },
   updateThemeValues: (themeValues: {
     backgroundRoot: string;
     foregroundDefault: string;
