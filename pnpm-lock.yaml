@@ -52,8 +52,8 @@ devDependencies:
     specifier: ^7.0.3
     version: 7.0.3
   electron:
-    specifier: ^26.1.0
-    version: 26.1.0
+    specifier: ^26.2.1
+    version: 26.2.1
   electron-winstaller:
     specifier: ^5.1.0
     version: 5.1.0
@@ -384,6 +384,23 @@ packages:
 
   /@electron/get@2.0.2:
     resolution: {integrity: sha512-eFZVFoRXb3GFGd7Ak7W4+6jBl9wBtiZ4AaYOse97ej6mKj5tkyO0dUnUChs1IhJZtx1BENo4/p4WUTXpi6vT+g==}
+    engines: {node: '>=12'}
+    dependencies:
+      debug: 4.3.4
+      env-paths: 2.2.1
+      fs-extra: 8.1.0
+      got: 11.8.6
+      progress: 2.0.3
+      semver: 6.3.1
+      sumchecker: 3.0.1
+    optionalDependencies:
+      global-agent: 3.0.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@electron/get@2.0.3:
+    resolution: {integrity: sha512-Qkzpg2s9GnVV2I2BjRksUi43U5e6+zaQMcjoJy0C+C5oxaKl+fmckGDQFtRpZpZV0NQekuZZ+tGz7EA9TVnQtQ==}
     engines: {node: '>=12'}
     dependencies:
       debug: 4.3.4
@@ -2131,13 +2148,13 @@ packages:
       - supports-color
     dev: true
 
-  /electron@26.1.0:
-    resolution: {integrity: sha512-qEh19H09Pysn3ibms5nZ0haIh5pFoOd7/5Ww7gzmAwDQOulRi8Sa2naeueOyIb1GKpf+6L4ix3iceYRAuA5r5Q==}
+  /electron@26.2.1:
+    resolution: {integrity: sha512-SNT24Cf/wRvfcFZQoERXjzswUlg5ouqhIuA2t9x2L7VdTn+2Jbs0QXRtOfzcnOV/raVMz3e8ICyaU2GGeciKLg==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@electron/get': 2.0.2
+      '@electron/get': 2.0.3
       '@types/node': 18.15.11
       extract-zip: 2.0.1
     transitivePeerDependencies:
