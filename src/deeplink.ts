@@ -36,11 +36,18 @@ function registerDeeplinkProtocol(): void {
 async function handleDeeplink(deeplink: string): Promise<void> {
   log.info(`Arrived from deeplink: ${deeplink}`);
 
-  const url = new URL(deeplink);
+  let url;
+  try {
+    url = new URL(deeplink);
 
-  // Remove trailing ":"
-  if (url.protocol.slice(0, -1) !== protocol) {
-    throw new Error('Invalid protocol');
+    // Remove trailing ":"
+    if (url.protocol.slice(0, -1) !== protocol) {
+      throw new Error('Invalid protocol');
+    }
+  } catch {
+    log.warn('Invalid URL for deeplink');
+
+    return;
   }
 
   // We set the listeners before the app is ready to make sure we don't miss any events
