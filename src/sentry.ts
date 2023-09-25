@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/electron';
 import { isProduction } from './constants';
 import log from 'electron-log/main';
+import store from './store';
 
 // DSN for "desktop" project in Sentry
 const dsn =
@@ -15,5 +16,18 @@ export function initSentry(): void {
 
   Sentry.init({
     dsn,
+  });
+
+  const user = store.getUser();
+
+  if (!user) {
+    return;
+  }
+
+  const { id, username, email } = user;
+  Sentry.setUser({
+    id: id.toString(),
+    email,
+    username,
   });
 }

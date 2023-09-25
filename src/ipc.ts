@@ -1,4 +1,5 @@
 import { autoUpdater, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import * as Sentry from '@sentry/electron';
 import log from 'electron-log/main';
 import { createWindow } from './createWindow';
 import { authPage, baseUrl, isProduction } from './constants';
@@ -52,6 +53,7 @@ export function setIpcEventListeners(): void {
   ipcMain.on(events.LOGOUT, () => {
     logEvent(events.LOGOUT);
     store.setLastOpenRepl(null);
+    store.setUser(null);
     const url = `${baseUrl}/logout?goto=${authPage}`;
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
@@ -77,6 +79,25 @@ export function setIpcEventListeners(): void {
     const { response } = await dialog.showMessageBox(params);
 
     return response;
+  });
+
+  ipcMain.on(events.UPDATE_USER_INFO, async (event, user) => {
+    logEvent(events.UPDATE_USER_INFO, user);
+
+    store.setUser(user);
+
+    const { id, email, username } = user;
+    Sentry.setUser({
+      id: id.toString(),
+      email,
+      username,
+    });
+  });
+
+  ipcMain.handle(events.GET_USER_INFO, () => {
+    logEvent(events.GET_USER_INFO);
+
+    return store.getUser();
   });
 
   ipcMain.on(events.THEME_VALUES_CHANGED, (event, themeValues) => {
