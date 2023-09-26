@@ -33,22 +33,27 @@ function registerDeeplinkProtocol(): void {
   }
 }
 
-async function handleDeeplink(deeplink: string): Promise<void> {
+function isValidDeeplinkURL(deeplink: string) {
   log.info(`Arrived from deeplink: ${deeplink}`);
 
-  let url;
   try {
-    url = new URL(deeplink);
+    const url = new URL(deeplink);
 
     // Remove trailing ":"
     if (url.protocol.slice(0, -1) !== protocol) {
-      throw new Error('Invalid protocol');
+      return false;
     }
   } catch {
     log.warn('Invalid URL for deeplink');
 
-    return;
+    return false;
   }
+
+  return true;
+}
+
+async function handleDeeplink(deeplink: string): Promise<void> {
+  const url = new URL(deeplink);
 
   // We set the listeners before the app is ready to make sure we don't miss any events
   // that triggered the launch of the app so we need to check that the app is ready before
@@ -188,11 +193,26 @@ function setOpenDeeplinkListeners(): void {
   // See docs: https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
   if (isWindows() || isLinux()) {
     app.on('second-instance', (_event, commandLine) => {
+      if (commandLine.length === 0) {
+        throw new Error('Expected command line arguments');
+      }
+
       // the commandLine is an array of strings in which the last element is the deep link url
-      const url = commandLine.pop();
+      const url = commandLine[commandLine.length - 1];
+      const command = commandLine[0];
 
       // On Windows, the app emits the "second-instance" event after the app auto-updates.
       if (semverRegex.test(url)) {
+        return;
+      }
+
+      if (!isValidDeeplinkURL(url)) {
+        // Linux emits this event when the native "New Window" menu item is triggered
+        // where the command line is "replit" followed by a bunch of flags.
+        if (isLinux() && command === protocol) {
+          createWindow();
+        }
+
         return;
       }
 
