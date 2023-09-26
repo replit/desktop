@@ -5,6 +5,7 @@ import { authPage, baseUrl, isProduction } from './constants';
 import { events } from './events';
 import { isLinux } from './platform';
 import store from './store';
+import { setSentryUser } from './sentry';
 import isSupportedPage from './isSupportedPage';
 import { isWindows } from './platform';
 
@@ -52,6 +53,9 @@ export function setIpcEventListeners(): void {
   ipcMain.on(events.LOGOUT, () => {
     logEvent(events.LOGOUT);
     store.setLastOpenRepl(null);
+    store.setUser(null);
+    setSentryUser(null);
+
     const url = `${baseUrl}/logout?goto=${authPage}`;
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
@@ -77,6 +81,19 @@ export function setIpcEventListeners(): void {
     const { response } = await dialog.showMessageBox(params);
 
     return response;
+  });
+
+  ipcMain.on(events.UPDATE_USER_INFO, async (event, user) => {
+    logEvent(events.UPDATE_USER_INFO, user);
+
+    store.setUser(user);
+    setSentryUser(user);
+  });
+
+  ipcMain.handle(events.GET_USER_INFO, () => {
+    logEvent(events.GET_USER_INFO);
+
+    return store.getUser();
   });
 
   ipcMain.on(events.THEME_VALUES_CHANGED, (event, themeValues) => {

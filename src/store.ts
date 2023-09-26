@@ -7,6 +7,7 @@ import {
   isLoadingProdReplit,
   baseUrl,
 } from './constants';
+import type { User } from './types';
 
 enum Key {
   LAST_SEEN_BACKGROUND_COLOR = 'LAST_SEEN_BACKGROUND_COLOR',
@@ -14,6 +15,7 @@ enum Key {
   LAST_OPEN_REPL = 'LAST_OPEN_REPL',
   WINDOW_BOUNDS = 'WINDOW_BOUNDS',
   NUM_DISPLAYS = 'NUM_DISPLAYS',
+  USER_INFO = 'USER_INFO',
 }
 
 // Default values for var(--background-root) and var(--foreground-default) in dark mode.
@@ -82,6 +84,12 @@ function createStore() {
       const mouseScreen = screen.getDisplayNearestPoint(mousePosition);
 
       return store.get(Key.WINDOW_BOUNDS, mouseScreen.workArea) as Rectangle;
+    },
+    getUser(): User | null {
+      return store.get(Key.USER_INFO, null) as User | null;
+    },
+    setUser(user: User | null) {
+      store.set(Key.USER_INFO, user);
     },
     setLastOpenRepl(path: string | null) {
       store.set(Key.LAST_OPEN_REPL, path);

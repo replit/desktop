@@ -17,6 +17,44 @@ function parseArgument(name: string) {
 const version = parseArgument('app-version');
 const platform = parseArgument('platform');
 
+async function getUserInfo() {
+  const existingUser = await ipcRenderer.invoke(events.GET_USER_INFO);
+
+  // We already have metadata about the user in our store so we don't need to refetch
+  if (existingUser) {
+    return;
+  }
+
+  const baseUrl = new URL(window.location.href).origin;
+  const isAuthenticatedUrl = `${baseUrl}/is_authenticated`;
+
+  const res = await fetch(isAuthenticatedUrl);
+  const { success, user } = await res.json();
+
+  // Not authed yet. Ignore and retry next time the script is loaded.
+  if (!success) {
+    return;
+  }
+
+  if (!user) {
+    throw new Error('Expected user');
+  }
+
+  const { id, username, email } = user;
+
+  if (!id || !username || !email) {
+    throw new Error('Expected id, username, and email');
+  }
+
+  ipcRenderer.send(events.UPDATE_USER_INFO, {
+    id,
+    username,
+    email,
+  });
+}
+
+getUserInfo();
+
 contextBridge.exposeInMainWorld('replitDesktop', {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openWindow: (path: string) => ipcRenderer.send(events.OPEN_WINDOW, path),
