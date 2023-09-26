@@ -54,6 +54,8 @@ export function setIpcEventListeners(): void {
     logEvent(events.LOGOUT);
     store.setLastOpenRepl(null);
     store.setUser(null);
+    Sentry.setUser(null);
+
     const url = `${baseUrl}/logout?goto=${authPage}`;
 
     BrowserWindow.getAllWindows().forEach((win) => win.close());
