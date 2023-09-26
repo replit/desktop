@@ -7,6 +7,7 @@ import {
   isLoadingProdReplit,
   baseUrl,
 } from './constants';
+import type { User } from './types';
 
 enum Key {
   LAST_SEEN_BACKGROUND_COLOR = 'LAST_SEEN_BACKGROUND_COLOR',
@@ -43,12 +44,6 @@ function getStoreName() {
   const { host } = new URL(baseUrl);
 
   return `config-dev-${host}`;
-}
-
-interface User {
-  id: number;
-  email: string;
-  username: string;
 }
 
 function createStore() {

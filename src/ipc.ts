@@ -6,6 +6,7 @@ import { authPage, baseUrl, isProduction } from './constants';
 import { events } from './events';
 import { isLinux } from './platform';
 import store from './store';
+import { setUser } from './sentry';
 import isSupportedPage from './isSupportedPage';
 import { isWindows } from './platform';
 
@@ -54,7 +55,7 @@ export function setIpcEventListeners(): void {
     logEvent(events.LOGOUT);
     store.setLastOpenRepl(null);
     store.setUser(null);
-    Sentry.setUser(null);
+    setUser(null);
 
     const url = `${baseUrl}/logout?goto=${authPage}`;
 
@@ -87,13 +88,7 @@ export function setIpcEventListeners(): void {
     logEvent(events.UPDATE_USER_INFO, user);
 
     store.setUser(user);
-
-    const { id, email, username } = user;
-    Sentry.setUser({
-      id: id.toString(),
-      email,
-      username,
-    });
+    setUser(user);
   });
 
   ipcMain.handle(events.GET_USER_INFO, () => {
