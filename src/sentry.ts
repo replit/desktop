@@ -19,10 +19,10 @@ export function initSentry(): void {
     dsn,
   });
 
-  setUser(store.getUser());
+  setSentryUser(store.getUser());
 }
 
-export function setUser(user: User | null) {
+export function setSentryUser(user: User | null) {
   if (!isProduction) {
     return;
   }

@@ -1,12 +1,11 @@
 import { autoUpdater, BrowserWindow, dialog, ipcMain, shell } from 'electron';
-import * as Sentry from '@sentry/electron';
 import log from 'electron-log/main';
 import { createWindow } from './createWindow';
 import { authPage, baseUrl, isProduction } from './constants';
 import { events } from './events';
 import { isLinux } from './platform';
 import store from './store';
-import { setUser } from './sentry';
+import { setSentryUser } from './sentry';
 import isSupportedPage from './isSupportedPage';
 import { isWindows } from './platform';
 
@@ -55,7 +54,7 @@ export function setIpcEventListeners(): void {
     logEvent(events.LOGOUT);
     store.setLastOpenRepl(null);
     store.setUser(null);
-    setUser(null);
+    setSentryUser(null);
 
     const url = `${baseUrl}/logout?goto=${authPage}`;
 
@@ -88,7 +87,7 @@ export function setIpcEventListeners(): void {
     logEvent(events.UPDATE_USER_INFO, user);
 
     store.setUser(user);
-    setUser(user);
+    setSentryUser(user);
   });
 
   ipcMain.handle(events.GET_USER_INFO, () => {
