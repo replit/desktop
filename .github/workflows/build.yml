@@ -75,4 +75,4 @@ jobs:
       - name: Install
         run: pnpm install
       - name: Make
-        run: pnpm run make
+        run: pnpm run make --arch=${{ matrix.arch }}
