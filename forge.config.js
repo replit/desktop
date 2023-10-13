@@ -18,6 +18,11 @@ if (!osxNotarize) {
   );
 }
 
+const dmgPath = process.arch === 'arm64' ? 'Replit.dmg' : 'Replit-Intel.dmg';
+console.log(process);
+console.log('ARCH: ', process.arch);
+console.log('DMG PATH: ', dmgPath);
+
 module.exports = {
   packagerConfig: {
     icon: './assets/logo',
