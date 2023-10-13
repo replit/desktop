@@ -55,7 +55,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, ubuntu-latest, windows-latest ]
+        os: [ macOS-13-xlarge, ubuntu-latest, windows-latest ]
         arch: [ x64, arm64 ]
         # Exclude platforms we don't support
         exclude:
