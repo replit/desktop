@@ -47,6 +47,7 @@ jobs:
               - package.json
               - tsconfig.json
               - forge.config.js
+              - .github/workflow/**
 
   make:
     name: Make (${{ matrix.os }} - ${{ matrix.arch }})
@@ -75,4 +76,4 @@ jobs:
       - name: Install
         run: pnpm install
       - name: Make
-        run: pnpm run make
+        run: pnpm run make --arch=${{ matrix.arch }}
