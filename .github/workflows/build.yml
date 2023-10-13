@@ -71,6 +71,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+          architecture: ${{ matrix.arch }}
           cache: pnpm
       - name: Install
         run: pnpm install
