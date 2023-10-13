@@ -66,6 +66,11 @@ module.exports = {
       const cpy = (await import('cpy')).default;
       await cpy('assets', 'dist');
     },
+    postMake: (config, makeResults) => {
+      console.log('POST MAKE');
+      console.log(config);
+      console.log(makeResults);
+    },
   },
   makers: [
     {
