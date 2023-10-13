@@ -55,14 +55,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-13-xlarge, ubuntu-latest, windows-latest ]
+        os: [ macOS-13-xlarge, macOS-latest, ubuntu-latest, windows-latest ]
         arch: [ x64, arm64 ]
-        # Exclude platforms we don't support
+        # On Windows we only support x86 builds 
         exclude:
         - os: windows-latest
           arch: arm64
-        - os: ubuntu-latest
+        # Only build arm64 build on M1 and x86 build on Intel Mac
+        - os: macOS-latest 
           arch: arm64
+        - os: macOS-13-xlarge 
+          arch: x64
 
     steps:
       - uses: actions/checkout@v3
@@ -73,7 +76,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          architecture: ${{ matrix.arch }}
           cache: pnpm
       - name: Install
         run: pnpm install
