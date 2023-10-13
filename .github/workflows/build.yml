@@ -61,7 +61,6 @@ jobs:
         exclude:
         - os: windows-latest
           arch: arm64
-        exclude:
         - os: ubuntu-latest
           arch: arm64
 
