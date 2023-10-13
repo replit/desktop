@@ -82,7 +82,7 @@ module.exports = {
       config: {
         name: 'Replit',
         icon: './assets/logo.icns',
-        overwrite: true,
+        overwrite: false,
         dmgPath: process.arch === 'arm64' ? 'Replit.dmg' : 'Replit-Intel.dmg',
         additionalDMGOptions: {
           'background-color': '#0E1525',
