@@ -45,6 +45,7 @@ module.exports = {
       // node_modules are necessary, but we have to strip binaries
       if (path.includes('node_modules')) {
         const ignoreNodeBinaries = '/node_modules/\\.bin($|/)';
+
         return path.match(ignoreNodeBinaries);
       }
 
@@ -82,6 +83,7 @@ module.exports = {
         name: 'Replit',
         icon: './assets/logo.icns',
         overwrite: true,
+        dmgPath: process.arch === 'arm64' ? 'Replit.dmg' : 'Replit-Intel.dmg',
         additionalDMGOptions: {
           'background-color': '#0E1525',
         },
