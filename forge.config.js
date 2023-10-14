@@ -13,15 +13,11 @@ const osxNotarize =
 const osxSign = osxNotarize ? {} : undefined;
 
 if (!osxNotarize) {
+  // eslint-disable-next-line no-console
   console.log(
     'Notarytool credentials not passed, skipping sign and notarize step for OSX.',
   );
 }
-
-const dmgPath = process.arch === 'arm64' ? 'Replit.dmg' : 'Replit-Intel.dmg';
-console.log(process);
-console.log('ARCH: ', process.arch);
-console.log('DMG PATH: ', dmgPath);
 
 module.exports = {
   packagerConfig: {
@@ -71,11 +67,6 @@ module.exports = {
       const cpy = (await import('cpy')).default;
       await cpy('assets', 'dist');
     },
-    postMake: (config, makeResults) => {
-      console.log('POST MAKE');
-      console.log(config);
-      console.log(makeResults);
-    },
   },
   makers: [
     {
@@ -93,6 +84,7 @@ module.exports = {
         name: 'Replit',
         icon: './assets/logo.icns',
         overwrite: false,
+        // Set a different path for each architecture to avoid conflicts when uploading
         dmgPath: process.arch === 'arm64' ? 'Replit.dmg' : 'Replit-Intel.dmg',
         additionalDMGOptions: {
           'background-color': '#0E1525',
