@@ -47,7 +47,7 @@ jobs:
               - package.json
               - tsconfig.json
               - forge.config.js
-              - .github/workflow/**
+              - .github/workflows/**
 
   make:
     name: Make (${{ matrix.os }} - ${{ matrix.arch }})
@@ -82,5 +82,25 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install
+      - name: Generate Windows code signing certificate 
+        if: matrix.os == 'windows-latest'
+        id: write_file
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: 'windows-certificate.pfx'
+          encodedString: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE }}
+      - name: Generate MacOS code signing certificate
+        if: matrix.os == 'macOS-latest' || matrix.os == 'macOS-13-xlarge'
+        run: ./scripts/add-macos-cert.sh
+        env:
+          MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
       - name: Make
         run: pnpm run make --arch=${{ matrix.arch }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          WINDOWS_CERTIFICATE_FILE: ${{ steps.write_file.outputs.filePath }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

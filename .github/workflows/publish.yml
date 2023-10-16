@@ -46,7 +46,7 @@ jobs:
           fileName: 'windows-certificate.pfx'
           encodedString: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE }}
       - name: Generate MacOS code signing certificate
-        if: matrix.os == 'macOS-latest'
+        if: matrix.os == 'macOS-latest' || matrix.os == 'macOS-13-xlarge'
         run: ./scripts/add-macos-cert.sh
         env:
           MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
