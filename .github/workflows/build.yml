@@ -104,4 +104,3 @@ jobs:
           WINDOWS_CERTIFICATE_FILE: ${{ steps.write_file.outputs.filePath }}
           WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          DEBUG: electron-osx-sign*
