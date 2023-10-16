@@ -13,6 +13,7 @@ const osxNotarize =
 const osxSign = osxNotarize ? {} : undefined;
 
 if (!osxNotarize) {
+  // eslint-disable-next-line no-console
   console.log(
     'Notarytool credentials not passed, skipping sign and notarize step for OSX.',
   );
@@ -45,6 +46,7 @@ module.exports = {
       // node_modules are necessary, but we have to strip binaries
       if (path.includes('node_modules')) {
         const ignoreNodeBinaries = '/node_modules/\\.bin($|/)';
+
         return path.match(ignoreNodeBinaries);
       }
 
@@ -81,7 +83,9 @@ module.exports = {
       config: {
         name: 'Replit',
         icon: './assets/logo.icns',
-        overwrite: true,
+        overwrite: false,
+        // Set a different path for each architecture to avoid conflicts when uploading
+        dmgPath: process.arch === 'arm64' ? 'Replit.dmg' : 'Replit-Intel.dmg',
         additionalDMGOptions: {
           'background-color': '#0E1525',
         },
