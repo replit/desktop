@@ -64,9 +64,17 @@ jobs:
         exclude:
         - os: windows-latest
           arch: arm64
+        - os: windows-latest
+          arch: x64
         # Only build arm64 builds on M1 and x86 builds on Intel Mac
         - os: macOS-latest 
           arch: arm64
+        - os: macOS-latest 
+          arch: x64
+        - os: ubuntu-latest 
+          arch: arm64
+        - os: ubuntu-latest 
+          arch: x64
         - os: macOS-13-xlarge 
           arch: x64
 
@@ -82,6 +90,8 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install
+      - name: Test-find-identity
+        run: security find-identity -v
       - name: Make
         run: pnpm run make --arch=${{ matrix.arch }}
         env:
