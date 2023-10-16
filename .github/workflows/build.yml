@@ -84,3 +84,10 @@ jobs:
         run: pnpm install
       - name: Make
         run: pnpm run make --arch=${{ matrix.arch }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          WINDOWS_CERTIFICATE_FILE: ${{ steps.write_file.outputs.filePath }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
