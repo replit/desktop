@@ -12,7 +12,7 @@ const osxNotarize =
 
 const osxSign = osxNotarize
   ? {
-      identity: 'Developer ID Application:',
+      identity: 'Developer ID Application: Replit, Inc (DHGAN2LN9Q)',
     }
   : undefined;
 
