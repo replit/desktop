@@ -10,7 +10,11 @@ const osxNotarize =
       }
     : undefined;
 
-const osxSign = osxNotarize ? {} : undefined;
+const osxSign = osxNotarize
+  ? {
+      identity: 'Developer ID Application:',
+    }
+  : undefined;
 
 if (!osxNotarize) {
   // eslint-disable-next-line no-console
