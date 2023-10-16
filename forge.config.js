@@ -10,11 +10,7 @@ const osxNotarize =
       }
     : undefined;
 
-const osxSign = osxNotarize
-  ? {
-      identity: 'Developer ID Application: Replit, Inc (DHGAN2LN9Q)',
-    }
-  : undefined;
+const osxSign = osxNotarize ? {} : undefined;
 
 if (!osxNotarize) {
   // eslint-disable-next-line no-console
