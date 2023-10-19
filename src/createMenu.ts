@@ -44,6 +44,8 @@ export function createDockMenu(): Menu {
   return menu;
 }
 
+const allowDevtools = !isProduction || process.env.ENABLE_DEVTOOLS;
+
 export function createApplicationMenu(): Menu {
   const template = [];
 
@@ -95,7 +97,6 @@ export function createApplicationMenu(): Menu {
   const devOnlyMenuItems = [
     { role: 'reload' },
     { role: 'forceReload' },
-    { role: 'toggleDevTools' },
     { type: 'separator' },
   ];
 
@@ -104,6 +105,7 @@ export function createApplicationMenu(): Menu {
     label: 'View',
     submenu: [
       ...(!isProduction ? devOnlyMenuItems : []),
+      ...(allowDevtools ? [{ role: 'toggleDevTools' }] : []),
       { role: 'togglefullscreen' },
     ],
   });
