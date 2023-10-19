@@ -105,7 +105,7 @@ export function createApplicationMenu(): Menu {
     label: 'View',
     submenu: [
       ...(!isProduction ? devOnlyMenuItems : []),
-      ...(allowDevtools ? { role: 'toggleDevTools' } : []),
+      ...(allowDevtools ? [{ role: 'toggleDevTools' }] : []),
       { role: 'togglefullscreen' },
     ],
   });
