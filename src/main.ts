@@ -1,6 +1,6 @@
 import { app, Menu, BrowserWindow } from 'electron';
 import { createWindow } from './createWindow';
-import { appName, macAppIcon } from './constants';
+import { appName, isProduction, macAppIcon } from './constants';
 import { isMac } from './platform';
 import { initSentry } from './sentry';
 import { createApplicationMenu, createDockMenu } from './createMenu';
@@ -14,9 +14,12 @@ import log from 'electron-log/main';
 log.initialize({ preload: true });
 log.errorHandler.startCatching();
 
-log.info(`Launching app version: ${app.getVersion()}`);
-log.info(`Platform: ${process.platform}`);
-log.info(`Arch: ${process.arch}`);
+const version = isProduction
+  ? app.getVersion()
+  : `${app.getVersion()} (development)`;
+
+log.info(`Launching app version: ${version}`);
+log.info(`Platform: ${process.platform} (${process.arch})`);
 log.info(`Args: ${process.argv}`);
 
 // Handles Squirrel (https://github.com/Squirrel/Squirrel.Windows) events on Windows.
