@@ -10,16 +10,12 @@ const osxNotarize =
       }
     : undefined;
 
-const osxSign = osxNotarize
-  ? {
-      identity: 'Developer ID Application:',
-    }
-  : undefined;
+const osxSign = osxNotarize ? {} : undefined;
 
 if (!osxNotarize) {
   // eslint-disable-next-line no-console
   console.log(
-    'Notarytool credentials not passed, skipping sign and notarize step for OSX',
+    'Notarytool credentials not passed, skipping sign and notarize step for OSX.',
   );
 }
 
