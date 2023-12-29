@@ -39,7 +39,7 @@ export default function checkForUpdates(): void {
     return;
   }
 
-  let timeout: ReturnType<typeof setTimeout> = null;
+  let timeout: NodeJS.Timer = null;
   autoUpdater.on('update-downloaded', () => {
     const dialogOpts = {
       type: 'info' as const,

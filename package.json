@@ -21,8 +21,7 @@
   "author": "Replit",
   "main": "./dist/main.js",
   "engines": {
-    "pnpm": ">=8.5.1",
-    "node": "^20.10.0"
+    "pnpm": ">=8.5.1"
   },
   "prettier": {
     "trailingComma": "all",
