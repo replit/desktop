@@ -56,8 +56,8 @@ devDependencies:
     specifier: ^7.0.3
     version: 7.0.3
   electron:
-    specifier: ^26.4.1
-    version: 26.6.1
+    specifier: ^28.1.0
+    version: 28.1.0
   electron-winstaller:
     specifier: ^5.1.0
     version: 5.2.1
@@ -2189,8 +2189,8 @@ packages:
       - supports-color
     dev: true
 
-  /electron@26.6.1:
-    resolution: {integrity: sha512-4Vz9u0Jt/khPa/en2l8Jv6SWEfsK/ieWYtchl5j0clbNSjdeTucnEFOhz9B9WwsAmfQjxBnpuMZpmdBuyxq+wg==}
+  /electron@28.1.0:
+    resolution: {integrity: sha512-82Y7o4PSWPn1o/aVwYPsgmBw6Gyf2lVHpaBu3Ef8LrLWXxytg7ZRZr/RtDqEMOzQp3+mcuy3huH84MyjdmP50Q==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
     requiresBuild: true
@@ -2227,6 +2227,7 @@ packages:
 
   /end-of-stream@1.4.4:
     resolution: {integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==}
+    requiresBuild: true
     dependencies:
       once: 1.4.0
     dev: true
