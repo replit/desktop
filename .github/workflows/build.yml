@@ -82,7 +82,9 @@ jobs:
         with:
           node-version: 20.10.x
           cache: pnpm
-      - name: Install
+      - name: Install packaging
+        run: python3 -m pip install packaging
+      - name: Install npm packages
         run: pnpm install
       - name: Generate Windows code signing certificate 
         if: matrix.os == 'windows-latest'
