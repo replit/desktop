@@ -82,8 +82,9 @@ jobs:
         with:
           node-version: 20.10.x
           cache: pnpm
-      - name: Install packaging
-        run: python3 -m pip install packaging
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Install npm packages
         run: pnpm install
       - name: Generate Windows code signing certificate 
