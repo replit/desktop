@@ -82,7 +82,8 @@ jobs:
         with:
           node-version: 20.10.x
           cache: pnpm
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Install npm packages
