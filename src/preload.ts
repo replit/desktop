@@ -73,6 +73,8 @@ contextBridge.exposeInMainWorld('replitDesktop', {
   },
   showMessageBox: async (params: Electron.MessageBoxOptions) =>
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
+  showOpenDirectoryDialog: async () =>
+    ipcRenderer.invoke(events.SHOW_OPEN_DIRECTORY_DIALOG),
   onFullScreenChanged: (callback: (isFullScreen: boolean) => void) => {
     function listener(_event: IpcRendererEvent, isFullScreen: boolean) {
       callback(isFullScreen);

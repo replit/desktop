@@ -8,7 +8,7 @@ import store from './store';
 import { setSentryUser } from './sentry';
 import isSupportedPage from './isSupportedPage';
 import { isWindows } from './platform';
-import { spawn, exec } from 'child_process';
+import { exec } from 'child_process';
 
 function logEvent(event: events, params?: Record<string, unknown>) {
   log.info(
@@ -80,6 +80,19 @@ export function setIpcEventListeners(): void {
   ipcMain.handle(events.SHOW_MESSAGE_BOX, async (event, params) => {
     logEvent(events.SHOW_MESSAGE_BOX, params);
     const { response } = await dialog.showMessageBox(params);
+
+    return response;
+  });
+
+  ipcMain.handle(events.SHOW_OPEN_DIRECTORY_DIALOG, async (event) => {
+    logEvent(events.SHOW_OPEN_DIRECTORY_DIALOG);
+    const senderWindow = BrowserWindow.getAllWindows().find(
+      (win) => win.webContents.id === event.sender.id,
+    );
+
+    const response = await dialog.showOpenDialog(senderWindow, {
+      properties: ['openDirectory'],
+    });
 
     return response;
   });
