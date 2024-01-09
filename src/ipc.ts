@@ -1,4 +1,11 @@
-import { autoUpdater, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import {
+  app,
+  autoUpdater,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  shell,
+} from 'electron';
 import log from 'electron-log/main';
 import { createWindow } from './createWindow';
 import { authPage, baseUrl, isProduction } from './constants';
@@ -8,7 +15,7 @@ import store from './store';
 import { setSentryUser } from './sentry';
 import isSupportedPage from './isSupportedPage';
 import { isWindows } from './platform';
-import { exec } from 'child_process';
+import { spawn, exec } from 'child_process';
 
 function logEvent(event: events, params?: Record<string, unknown>) {
   log.info(
@@ -91,7 +98,8 @@ export function setIpcEventListeners(): void {
     );
 
     const response = await dialog.showOpenDialog(senderWindow, {
-      properties: ['openDirectory'],
+      properties: ['openDirectory', 'showHiddenFiles'],
+      defaultPath: '/',
     });
 
     return response;
@@ -110,14 +118,40 @@ export function setIpcEventListeners(): void {
   });
 
   ipcMain.handle(events.SYNC_LOCAL_DIRECTORY, async (event, params) => {
-    logEvent(events.SYNC_LOCAL_DIRECTORY);
+    logEvent(events.SYNC_LOCAL_DIRECTORY, params);
 
-    const { localDirectory, remoteDirectory, sshUser, sshHostname } = params;
+    const { localDirectory, remoteDirectory, sshUser, sshHostname, sshPort } =
+      params;
 
-    // TODO: Run command, return a way to close the session
-    const command = `sshfs ${sshUser}@${sshHostname}:${remoteDirectory} ${localDirectory} -o IdentityFile=/Users/sergeichestakov/.ssh/replit -o allow_other,default_permissions`;
+    const home = app.getPath('home');
 
-    return command;
+    log.info('Spawning sshfs');
+    const sshfs = spawn('sshfs', [
+      `${sshUser}@${sshHostname}:${remoteDirectory}/`,
+      localDirectory,
+      '-p',
+      sshPort,
+      '-o',
+      `IdentityFile=${home}/.ssh/replit`,
+      '-o',
+      'allow_other,default_permissions,debug',
+    ]);
+
+    log.info(`Started process: ${sshfs.pid}`);
+
+    sshfs.stdout.on('data', (data) => {
+      log.info(`stdout: ${data}`);
+    });
+
+    sshfs.stderr.on('data', (data) => {
+      log.error(`stderr: ${data}`);
+    });
+
+    sshfs.on('close', (code) => {
+      log.warn(`child process exited with code ${code}`);
+    });
+
+    return sshfs.pid;
   });
 
   ipcMain.on(events.UPDATE_USER_INFO, async (event, user) => {
