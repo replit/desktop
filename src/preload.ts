@@ -55,6 +55,14 @@ async function getUserInfo() {
 
 getUserInfo();
 
+interface SyncLocalDirectoryParams {
+  remoteDirectory: string;
+  localDirectory: string;
+  sshUser: string;
+  sshHostname: string;
+  sshPort: string;
+}
+
 contextBridge.exposeInMainWorld('replitDesktop', {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openWindow: (path: string) => ipcRenderer.send(events.OPEN_WINDOW, path),
@@ -75,6 +83,9 @@ contextBridge.exposeInMainWorld('replitDesktop', {
     ipcRenderer.invoke(events.SHOW_MESSAGE_BOX, params),
   showOpenDirectoryDialog: async () =>
     ipcRenderer.invoke(events.SHOW_OPEN_DIRECTORY_DIALOG),
+  syncLocalDirectory: (params: SyncLocalDirectoryParams) => {
+    return ipcRenderer.invoke(events.SYNC_LOCAL_DIRECTORY, params);
+  },
   onFullScreenChanged: (callback: (isFullScreen: boolean) => void) => {
     function listener(_event: IpcRendererEvent, isFullScreen: boolean) {
       callback(isFullScreen);

@@ -109,6 +109,17 @@ export function setIpcEventListeners(): void {
     });
   });
 
+  ipcMain.handle(events.SYNC_LOCAL_DIRECTORY, async (event, params) => {
+    logEvent(events.SYNC_LOCAL_DIRECTORY);
+
+    const { localDirectory, remoteDirectory, sshUser, sshHostname } = params;
+
+    // TODO: Run command, return a way to close the session
+    const command = `sshfs ${sshUser}@${sshHostname}:${remoteDirectory} ${localDirectory} -o IdentityFile=/Users/sergeichestakov/.ssh/replit -o allow_other,default_permissions`;
+
+    return command;
+  });
+
   ipcMain.on(events.UPDATE_USER_INFO, async (event, user) => {
     logEvent(events.UPDATE_USER_INFO, user);
 
