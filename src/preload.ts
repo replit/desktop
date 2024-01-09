@@ -100,6 +100,7 @@ contextBridge.exposeInMainWorld('replitDesktop', {
     foregroundDefault: string;
   }) => ipcRenderer.send(events.THEME_VALUES_CHANGED, themeValues),
   checkForUpdates: () => ipcRenderer.send(events.CHECK_FOR_UPDATES),
+  generateSSHKeys: async () => ipcRenderer.invoke(events.GENERATE_SSH_KEYS),
   logout: () => ipcRenderer.send(events.LOGOUT),
   platform,
   version,

@@ -8,6 +8,7 @@ import store from './store';
 import { setSentryUser } from './sentry';
 import isSupportedPage from './isSupportedPage';
 import { isWindows } from './platform';
+import { spawn, exec } from 'child_process';
 
 function logEvent(event: events, params?: Record<string, unknown>) {
   log.info(
@@ -81,6 +82,18 @@ export function setIpcEventListeners(): void {
     const { response } = await dialog.showMessageBox(params);
 
     return response;
+  });
+
+  ipcMain.handle(events.GENERATE_SSH_KEYS, async () => {
+    logEvent(events.GENERATE_SSH_KEYS);
+
+    return new Promise((resolve) => {
+      const command =
+        '[ -s ~/.ssh/replit.pub ] || ssh-keygen -t ed25519 -f ~/.ssh/replit -q -N "" && cat ~/.ssh/replit.pub';
+      exec(command, (_error, stdout) => {
+        resolve(stdout);
+      });
+    });
   });
 
   ipcMain.on(events.UPDATE_USER_INFO, async (event, user) => {
