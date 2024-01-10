@@ -67,6 +67,13 @@ interface ExitLocalDirectorySync {
   pid: number;
 }
 
+interface Output {
+  pid?: number;
+  type: 'stdout' | 'stderr';
+  output: string;
+  label: string;
+}
+
 contextBridge.exposeInMainWorld('replitDesktop', {
   closeCurrentWindow: () => ipcRenderer.send(events.CLOSE_CURRENT_WINDOW),
   openWindow: (path: string) => ipcRenderer.send(events.OPEN_WINDOW, path),
@@ -81,6 +88,17 @@ contextBridge.exposeInMainWorld('replitDesktop', {
 
     return () => {
       ipcRenderer.removeListener(events.AUTH_TOKEN_RECEIVED, listener);
+    };
+  },
+  onOutput: (callback: (output: Output) => void) => {
+    function listener(_event: IpcRendererEvent, output: Output) {
+      callback(output);
+    }
+
+    ipcRenderer.on(events.OUTPUT, listener);
+
+    return () => {
+      ipcRenderer.removeListener(events.OUTPUT, listener);
     };
   },
   showMessageBox: async (params: Electron.MessageBoxOptions) =>
