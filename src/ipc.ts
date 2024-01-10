@@ -113,6 +113,10 @@ export function setIpcEventListeners(): void {
       return false;
     }
 
+    const senderWindow = BrowserWindow.getAllWindows().find(
+      (win) => win.webContents.id === event.sender.id,
+    );
+
     const directory = store.getLocalSyncDirForPid(pid);
 
     if (!directory) {
@@ -127,29 +131,62 @@ export function setIpcEventListeners(): void {
 
     umount.stdout.on('data', (data) => {
       log.info(`umount stdout: ${data}`);
+
+      senderWindow.webContents.send(events.OUTPUT, {
+        type: 'stdout',
+        pid: umount.pid,
+        output: data.toString(),
+        label: 'umount',
+      });
     });
 
     umount.stderr.on('data', (data) => {
       log.error(`umount stderr: ${data}`);
+
+      senderWindow.webContents.send(events.OUTPUT, {
+        type: 'stderr',
+        pid: umount.pid,
+        output: data.toString(),
+        label: 'umount',
+      });
     });
 
     umount.on('close', (code) => {
-      log.warn(`umount child process exited with code ${code}`);
+      const message = `umount child process exited with code ${code}`;
+      log.warn(message);
+
+      senderWindow.webContents.send(events.OUTPUT, {
+        type: 'stdout',
+        pid: umount.pid,
+        output: message,
+        label: 'umount',
+      });
     });
 
     return true;
   });
 
-  ipcMain.handle(events.GENERATE_SSH_KEYS, async () => {
+  ipcMain.handle(events.GENERATE_SSH_KEYS, async (event) => {
     logEvent(events.GENERATE_SSH_KEYS);
 
     const home = app.getPath('home');
+
+    const senderWindow = BrowserWindow.getAllWindows().find(
+      (win) => win.webContents.id === event.sender.id,
+    );
 
     return new Promise((resolve) => {
       const command = `[ -s ${home}/.ssh/replit.pub ] || ssh-keygen -t ed25519 -f ${home}/.ssh/replit -q -N "" && cat ${home}/.ssh/replit.pub`;
       log.info(`Generating keys with command: ${command}`);
       exec(command, (_error, stdout) => {
         log.info(`Resolving keygen with output: ${stdout}`);
+
+        senderWindow.webContents.send(events.OUTPUT, {
+          type: 'stdout',
+          output: stdout,
+          label: 'ssh-keygen',
+        });
+
         resolve(stdout);
       });
     });
@@ -177,16 +214,42 @@ export function setIpcEventListeners(): void {
 
     log.info(`Started process: ${sshfs.pid}`);
 
+    const senderWindow = BrowserWindow.getAllWindows().find(
+      (win) => win.webContents.id === event.sender.id,
+    );
+
     sshfs.stdout.on('data', (data) => {
       log.info(`sshfs stdout: ${data}`);
+
+      senderWindow.webContents.send(events.OUTPUT, {
+        type: 'stdout',
+        output: data.toString(),
+        label: 'sshfs',
+        pid: sshfs.pid,
+      });
     });
 
     sshfs.stderr.on('data', (data) => {
       log.error(`sshfs stderr: ${data}`);
+
+      senderWindow.webContents.send(events.OUTPUT, {
+        type: 'stderr',
+        output: data.toString(),
+        label: 'sshfs',
+        pid: sshfs.pid,
+      });
     });
 
     sshfs.on('close', (code) => {
-      log.warn(`sshfs child process exited with code ${code}`);
+      const message = `sshfs child process exited with code ${code}`;
+      log.warn(message);
+
+      senderWindow.webContents.send(events.OUTPUT, {
+        type: 'stdout',
+        output: message,
+        label: 'sshfs',
+        pid: sshfs.pid,
+      });
     });
 
     store.setLocalSyncDirForPid(sshfs.pid, localDirectory);
