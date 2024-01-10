@@ -143,10 +143,13 @@ export function setIpcEventListeners(): void {
   ipcMain.handle(events.GENERATE_SSH_KEYS, async () => {
     logEvent(events.GENERATE_SSH_KEYS);
 
+    const home = app.getPath('home');
+
     return new Promise((resolve) => {
-      const command =
-        '[ -s ~/.ssh/replit.pub ] || ssh-keygen -t ed25519 -f ~/.ssh/replit -q -N "" && cat ~/.ssh/replit.pub';
+      const command = `[ -s ${home}/.ssh/replit.pub ] || ssh-keygen -t ed25519 -f ${home}/.ssh/replit -q -N "" && cat ${home}/.ssh/replit.pub`;
+      log.info(`Generating keys with command: ${command}`);
       exec(command, (_error, stdout) => {
+        log.info(`Resolving keygen with output: ${stdout}`);
         resolve(stdout);
       });
     });
