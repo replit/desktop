@@ -12,11 +12,14 @@ import type { User } from './types';
 enum Key {
   LAST_SEEN_BACKGROUND_COLOR = 'LAST_SEEN_BACKGROUND_COLOR',
   LAST_SEEN_FOREGROUND_COLOR = 'LAST_SEEN_FOREGROUND_COLOR',
+  LOCAL_SYNC_PID_TO_DIR_MAP = 'LOCAL_SYNC_PID_TO_DIR_MAP',
   LAST_OPEN_REPL = 'LAST_OPEN_REPL',
   WINDOW_BOUNDS = 'WINDOW_BOUNDS',
   NUM_DISPLAYS = 'NUM_DISPLAYS',
   USER_INFO = 'USER_INFO',
 }
+
+type PidToDirMap = Record<number, string>;
 
 // Default values for var(--background-root) and var(--foreground-default) in dark mode.
 const defaultBgColor = '#0E1525';
@@ -90,6 +93,20 @@ function createStore() {
     },
     setUser(user: User | null) {
       store.set(Key.USER_INFO, user);
+    },
+    setLocalSyncDirForPid(pid: number, directory: string) {
+      const map = store.get(Key.LOCAL_SYNC_PID_TO_DIR_MAP, {}) as PidToDirMap;
+      map[pid] = directory;
+
+      store.set(Key.LOCAL_SYNC_PID_TO_DIR_MAP, map);
+    },
+    getLocalSyncDirForPid(pid: number): string | null {
+      const map = store.get(Key.LOCAL_SYNC_PID_TO_DIR_MAP, {}) as PidToDirMap;
+
+      return map[pid] || null;
+    },
+    clearLocalSyncPidToDirMap() {
+      store.delete(Key.LOCAL_SYNC_PID_TO_DIR_MAP);
     },
     setLastOpenRepl(path: string | null) {
       store.set(Key.LAST_OPEN_REPL, path);

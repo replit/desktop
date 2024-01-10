@@ -105,6 +105,41 @@ export function setIpcEventListeners(): void {
     return response;
   });
 
+  ipcMain.handle(events.STOP_LOCAL_DIRECTORY_SYNC, async (event, params) => {
+    logEvent(events.STOP_LOCAL_DIRECTORY_SYNC, params);
+    const { pid } = params;
+
+    if (!pid) {
+      return false;
+    }
+
+    const directory = store.getLocalSyncDirForPid(pid);
+
+    if (!directory) {
+      return false;
+    }
+
+    log.info(`Running kill ${pid}`);
+    process.kill(pid);
+
+    log.info(`Running umount ${directory}`);
+    const umount = spawn('umount', [directory]);
+
+    umount.stdout.on('data', (data) => {
+      log.info(`umount stdout: ${data}`);
+    });
+
+    umount.stderr.on('data', (data) => {
+      log.error(`umount stderr: ${data}`);
+    });
+
+    umount.on('close', (code) => {
+      log.warn(`umount child process exited with code ${code}`);
+    });
+
+    return true;
+  });
+
   ipcMain.handle(events.GENERATE_SSH_KEYS, async () => {
     logEvent(events.GENERATE_SSH_KEYS);
 
@@ -140,16 +175,18 @@ export function setIpcEventListeners(): void {
     log.info(`Started process: ${sshfs.pid}`);
 
     sshfs.stdout.on('data', (data) => {
-      log.info(`stdout: ${data}`);
+      log.info(`sshfs stdout: ${data}`);
     });
 
     sshfs.stderr.on('data', (data) => {
-      log.error(`stderr: ${data}`);
+      log.error(`sshfs stderr: ${data}`);
     });
 
     sshfs.on('close', (code) => {
-      log.warn(`child process exited with code ${code}`);
+      log.warn(`sshfs child process exited with code ${code}`);
     });
+
+    store.setLocalSyncDirForPid(sshfs.pid, localDirectory);
 
     return sshfs.pid;
   });
