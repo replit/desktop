@@ -170,6 +170,22 @@ export function createWindow(props?: WindowProps): BrowserWindow {
   // Prevent any URLs opened via a target="_blank" anchor tag or programmatically using `window.open` from
   // opening in an Electron window and open in the user's external browser instead.
   window.webContents.setWindowOpenHandler((details) => {
+    try {
+      const u = new URL(details.url);
+
+      // Don't open URLs with protocols other than http / https externally since they may open other apps.
+      if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+        return {
+          action: 'deny',
+        };
+      }
+    } catch {
+      // The URL constructor throws a TypeError for malformed URLs so we can just ignore here if one is opened.
+      return {
+        action: 'deny',
+      };
+    }
+
     shell.openExternal(details.url);
 
     return {
@@ -189,6 +205,12 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     // Prevent navigation away from Replit or supported pages
     if (!isReplit || !isSupportedPage(u.pathname)) {
       event.preventDefault();
+
+      // Don't open URLs with protocols other than http / https externally since they may open other apps.
+      if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+        return;
+      }
+
       shell.openExternal(navigationUrl);
     }
   });
