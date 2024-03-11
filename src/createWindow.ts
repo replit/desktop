@@ -122,6 +122,10 @@ function getPlatformSpecificStyling({
   return {};
 }
 
+const EXTERNAL_PROTOCOLS_ALLOW_LIST = ['http', 'https', 'replit', 'vscode'].map(
+  (p) => `${p}:`,
+);
+
 export function createWindow(props?: WindowProps): BrowserWindow {
   updateStoreWithFocusedWindowValues();
   const backgroundColor = store.getLastSeenBackgroundColor();
@@ -206,8 +210,9 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     if (!isReplit || !isSupportedPage(u.pathname)) {
       event.preventDefault();
 
-      // Don't open URLs with protocols other than http / https externally since they may open other apps.
-      if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+      // Don't open URLs with protocols other than those we explicitly allow otherwise to prevent users
+      // from opening external apps and running untrusted code that could compromise their machines.
+      if (!EXTERNAL_PROTOCOLS_ALLOW_LIST.includes(u.protocol)) {
         return;
       }
 
