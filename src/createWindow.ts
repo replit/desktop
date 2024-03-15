@@ -177,8 +177,9 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     try {
       const u = new URL(details.url);
 
-      // Don't open URLs with protocols other than http / https externally since they may open other apps.
-      if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+      // Don't open URLs with protocols other than those we explicitly allow otherwise to prevent users
+      // from opening external apps and running untrusted code that could compromise their machines.
+      if (!EXTERNAL_PROTOCOLS_ALLOW_LIST.includes(u.protocol)) {
         return {
           action: 'deny',
         };
@@ -208,14 +209,13 @@ export function createWindow(props?: WindowProps): BrowserWindow {
 
     // Prevent navigation away from Replit or supported pages
     if (!isReplit || !isSupportedPage(u.pathname)) {
-      event.preventDefault();
-
       // Don't open URLs with protocols other than those we explicitly allow otherwise to prevent users
       // from opening external apps and running untrusted code that could compromise their machines.
       if (!EXTERNAL_PROTOCOLS_ALLOW_LIST.includes(u.protocol)) {
         return;
       }
 
+      event.preventDefault();
       shell.openExternal(navigationUrl);
     }
   });
