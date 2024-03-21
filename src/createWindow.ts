@@ -191,6 +191,7 @@ export function createWindow(props?: WindowProps): BrowserWindow {
       };
     }
 
+    log.info('Opening external URL in window open handler: ', details);
     shell.openExternal(details.url);
 
     return {
@@ -202,8 +203,8 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     setLastOpenRepl(navigationUrl, lastOpenRepl);
   });
 
-  window.webContents.on('will-navigate', (event, navigationUrl) => {
-    const u = new URL(navigationUrl);
+  window.webContents.on('will-navigate', (event) => {
+    const u = new URL(event.url);
 
     const isReplit = u.origin === baseUrl;
 
@@ -216,7 +217,8 @@ export function createWindow(props?: WindowProps): BrowserWindow {
       }
 
       event.preventDefault();
-      shell.openExternal(navigationUrl);
+      log.info('Opening external URL in will-navigate event handler: ', event);
+      shell.openExternal(event.url);
     }
   });
 
