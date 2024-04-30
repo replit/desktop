@@ -3,7 +3,8 @@ import { isWindows, isLinux } from './platform';
 import {
   baseUrl,
   protocol,
-  workspaceUrlRegex,
+  personalReplUrlRegex,
+  teamReplUrlRegex,
   semverRegex,
   authPage,
   homePage,
@@ -127,8 +128,8 @@ function handleNew(language: string) {
 }
 
 function handleRepl(url: string) {
-  if (!workspaceUrlRegex.test(url)) {
-    log.error('Expected URL of the format /@username/slug');
+  if (!personalReplUrlRegex.test(url) && !teamReplUrlRegex.test(url)) {
+    log.error('Expected valid workspace URL');
 
     return;
   }

@@ -11,7 +11,8 @@ import {
   appName as title,
   baseUrl,
   preloadScript as preload,
-  workspaceUrlRegex,
+  teamReplUrlRegex,
+  personalReplUrlRegex,
   homePage,
   isProduction,
 } from './constants';
@@ -54,7 +55,10 @@ function setLastOpenRepl(url: string, lastOpenRepl: string | null) {
     return;
   }
 
-  if (!workspaceUrlRegex.test(u.pathname)) {
+  if (
+    !personalReplUrlRegex.test(u.pathname) &&
+    !teamReplUrlRegex.test(u.pathname)
+  ) {
     return;
   }
 

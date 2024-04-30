@@ -20,7 +20,13 @@ export const isLoadingLocalReplit = baseUrl.includes('localhost');
 export const isLoadingStagingReplit = baseUrl.includes('staging');
 export const isLoadingProdReplit = baseUrl === defaultBaseUrl;
 
-export const workspaceUrlRegex = /^\/@\S+\/\S+/;
+// Generated using path-to-regexp, the same package express uses to parse routes.
+// See: https://github.com/pillarjs/path-to-regexp
+// Matches /@:username/:slug
+export const personalReplUrlRegex = /^\/@([^/#?]+?)(?:\/([^/#?]+?))[/#?]?$/i;
+// Matches /t/:orgSlug/:orgId/repls/:replSlug
+export const teamReplUrlRegex =
+  /^\/t(?:\/([^/#?]+?))(?:\/([^/#?]+?))\/repls(?:\/([^/#?]+?))[/#?]?$/i;
 
 export const homePage = '/desktopApp/home';
 export const authPage = '/desktopApp/auth';
