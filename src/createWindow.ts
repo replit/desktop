@@ -195,8 +195,11 @@ export function createWindow(props?: WindowProps): BrowserWindow {
       };
     }
 
-    log.info('Opening external URL in window open handler: ', details);
-    shell.openExternal(details.url);
+    // Only open externally if the window is actually focused to prevent windows from opening in the background.
+    if (window.isFocused()) {
+      log.info('Opening external URL in window open handler: ', details);
+      shell.openExternal(details.url);
+    }
 
     return {
       action: 'deny',
@@ -221,8 +224,15 @@ export function createWindow(props?: WindowProps): BrowserWindow {
       }
 
       event.preventDefault();
-      log.info('Opening external URL in will-navigate event handler: ', event);
-      shell.openExternal(event.url);
+
+      // Only open externally if the window is actually focused to prevent windows from opening in the background.
+      if (window.isFocused()) {
+        log.info(
+          'Opening external URL in will-navigate event handler: ',
+          event,
+        );
+        shell.openExternal(event.url);
+      }
     }
   });
 
