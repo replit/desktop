@@ -9,8 +9,8 @@ dependencies:
     specifier: ^4.5.0
     version: 4.14.0
   electron-log:
-    specifier: 5.0.0-beta.25
-    version: 5.0.0-beta.25
+    specifier: 5.1.4
+    version: 5.1.4
   electron-squirrel-startup:
     specifier: ^1.0.0
     version: 1.0.0
@@ -2201,9 +2201,9 @@ packages:
     dev: true
     optional: true
 
-  /electron-log@5.0.0-beta.25:
-    resolution: {integrity: sha512-ihfT5W3cGx0x8+tTO+51lyxWbu2pXcbFlBcdYRw13Q4PtJh3n38385ZC7gnpfP9Ou6SFgYfyd2qsL2BYRpulXQ==}
-    engines: {electron: '>= 13', node: '>= 14'}
+  /electron-log@5.1.4:
+    resolution: {integrity: sha512-P0RSXnwT3z+e89Z5uAcZDeN85/QjIgv764a93kqCi+wh2Jm22CCbc3AGDt4S8rsxAHWHB4Q0PGsQl3fw1AN0kQ==}
+    engines: {node: '>= 14'}
     dev: false
 
   /electron-squirrel-startup@1.0.0:
