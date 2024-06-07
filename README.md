@@ -60,11 +60,13 @@ To publish a new release of the app, run the release script like so:
 pnpm release $version
 ```
 
-where `version` is either a semver release keyword like major, minor, or patch, or an exact version like `v1.0.0`.
+where `version` is either a semver release keyword like major, minor, or patch, or an exact version like `v1.0.0`. While you can pass in exact versions, it's recommended to use semver keywords in most cases.
 
-This will trigger a GitHub workflow that builds the artifacts for each platform and uploads them to a new [Release](https://github.com/replit/desktop/releases).
+This will trigger a GitHub workflow that builds the artifacts for each platform and uploads them to a new [Release](https://github.com/replit/desktop/releases) by pushing a tagged commit to main.
 
 Note that the Release will be in a draft state until you manually publish it. Make sure you add release notes to describe what changed since the last published version as they will be displayed to users when they download updates.
+
+Before you run the script, make sure that the `GH_TOKEN` environment variable is a valid [fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#fine-grained-personal-access-tokens) with read access to metadata and read/write access to actions and code in order for the publish process to succesfully push the final build artifacts (exe, dmg, etc) from CI. You can view and update it via the repository settings as described [here](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).
 
 ## Auto Updates
 
@@ -95,3 +97,6 @@ You can view and download the certificate itself by visiting the Comodo SSL Stor
 
 Note that to recreate the `pfx` file (which is what's ultimately needed to sign the app) from the `cer` or `crt` file that you download from the Certpanel dashboard, you will need to generate it by via `openssl` by following the instructions [here](https://help.comodosslstore.com/support/solutions/articles/22000265839-windows-converting-code-signing-to-pfx). To do so, you will need our private key (also in 1Password) as well as the intermediate certificates that Comodo provides.
 
+### CI
+
+We sign the app in CI as part of the build and release process when publishing a new release. Make sure that the above env vars (`APPLE_*` and `WINDOWS_*`) remain valid credentials and are kept up to date in the repository secrets settings used by GitHub actions otherwise the app will not get correctly signed on subsequent releases.
