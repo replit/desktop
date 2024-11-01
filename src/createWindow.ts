@@ -15,6 +15,7 @@ import {
   personalReplUrlRegex,
   homePage,
   isProduction,
+  legacyTeamReplUrlRegex,
 } from './constants';
 import log from 'electron-log/main';
 import { events } from './events';
@@ -57,7 +58,8 @@ function setLastOpenRepl(url: string, lastOpenRepl: string | null) {
 
   if (
     !personalReplUrlRegex.test(u.pathname) &&
-    !teamReplUrlRegex.test(u.pathname)
+    !teamReplUrlRegex.test(u.pathname) &&
+    !legacyTeamReplUrlRegex.test(u.pathname)
   ) {
     return;
   }
