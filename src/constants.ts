@@ -27,7 +27,7 @@ export const personalReplUrlRegex = /^\/@([^/#?]+?)(?:\/([^/#?]+?))[/#?]?$/i;
 // Matches /t/:orgSlug/:orgId/repls/:replSlug
 export const legacyTeamReplUrlRegex =
   /^\/t(?:\/([^/#?]+?))(?:\/([^/#?]+?))\/repls(?:\/([^/#?]+?))[/#?]?$/i;
-// Matches /t/:orgSlug/:orgId/repls/:replSlug
+// Matches /t/:orgSlug/repls/:replSlug
 export const teamReplUrlRegex =
   /^\/t(?:\/([^/#?]+?))\/repls(?:\/([^/#?]+?))[/#?]?$/i;
 
