@@ -8,6 +8,7 @@ import {
   semverRegex,
   authPage,
   homePage,
+  legacyTeamReplUrlRegex,
 } from './constants';
 import path from 'path';
 import { createWindow } from './createWindow';
@@ -128,7 +129,11 @@ function handleNew(language: string) {
 }
 
 function handleRepl(url: string) {
-  if (!personalReplUrlRegex.test(url) && !teamReplUrlRegex.test(url)) {
+  if (
+    !personalReplUrlRegex.test(url) && 
+    !teamReplUrlRegex.test(url) && 
+    !legacyTeamReplUrlRegex.test(url)
+  ) {
     log.error('Expected valid workspace URL');
 
     return;

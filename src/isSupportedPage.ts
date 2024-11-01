@@ -1,5 +1,6 @@
 import {
   desktopAppPrefix,
+  legacyTeamReplUrlRegex,
   personalReplUrlRegex,
   teamReplUrlRegex,
 } from './constants';
@@ -11,6 +12,7 @@ export default function isSupportedPage(page: string): boolean {
     page.startsWith(desktopAppPrefix) ||
     personalReplUrlRegex.test(page) ||
     teamReplUrlRegex.test(page) ||
+    legacyTeamReplUrlRegex.test(page) ||
     supportedNonDesktopAppPages.includes(page)
   );
 }

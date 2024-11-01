@@ -25,8 +25,11 @@ export const isLoadingProdReplit = baseUrl === defaultBaseUrl;
 // Matches /@:username/:slug
 export const personalReplUrlRegex = /^\/@([^/#?]+?)(?:\/([^/#?]+?))[/#?]?$/i;
 // Matches /t/:orgSlug/:orgId/repls/:replSlug
-export const teamReplUrlRegex =
+export const legacyTeamReplUrlRegex =
   /^\/t(?:\/([^/#?]+?))(?:\/([^/#?]+?))\/repls(?:\/([^/#?]+?))[/#?]?$/i;
+// Matches /t/:orgSlug/repls/:replSlug
+export const teamReplUrlRegex =
+  /^\/t(?:\/([^/#?]+?))\/repls(?:\/([^/#?]+?))[/#?]?$/i;
 
 export const homePage = '/desktopApp/home';
 export const authPage = '/desktopApp/auth';
