@@ -82,8 +82,33 @@ function createStore() {
       // This fixes the bug where opening a Repl from a Splash Screen opens it on some other display.
       const mousePosition = screen.getCursorScreenPoint();
       const mouseScreen = screen.getDisplayNearestPoint(mousePosition);
+      const workArea = mouseScreen.workArea;
 
-      return store.get(Key.WINDOW_BOUNDS, mouseScreen.workArea) as Rectangle;
+      const DEFAULT_WIDTH = 1200;
+      const DEFAULT_HEIGHT = 900;
+      const PADDING = 40;
+
+      let defaultBounds: Rectangle;
+      if (
+        DEFAULT_WIDTH <= workArea.width &&
+        DEFAULT_HEIGHT <= workArea.height
+      ) {
+        // If the window fits, center it in the work area
+        const x = workArea.x + Math.floor((workArea.width - DEFAULT_WIDTH) / 2);
+        const y =
+          workArea.y + Math.floor((workArea.height - DEFAULT_HEIGHT) / 2);
+        defaultBounds = { x, y, width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
+      } else {
+        // If the default size is larger than the work area, shrink it
+        defaultBounds = {
+          x: workArea.x + PADDING,
+          y: workArea.y + PADDING,
+          width: workArea.width - PADDING * 2,
+          height: workArea.height - PADDING * 2,
+        };
+      }
+
+      return store.get(Key.WINDOW_BOUNDS, defaultBounds) as Rectangle;
     },
     getUser(): User | null {
       return store.get(Key.USER_INFO, null) as User | null;
