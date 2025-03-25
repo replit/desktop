@@ -13,7 +13,7 @@ import { isMac } from './platform';
 
 const newWindowMenuItem = {
   label: 'New Window',
-  accelerator: 'CommandOrControl+Shift+N',
+  accelerator: 'CommandOrControl+N',
   click: () => createWindow(),
 };
 

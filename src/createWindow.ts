@@ -71,6 +71,15 @@ function setLastOpenRepl(url: string, lastOpenRepl: string | null) {
   store.setLastOpenRepl(u.pathname);
 }
 
+function offsetRectangle(rect: Rectangle, offset = { x: 20, y: 20 }) {
+  return {
+    x: rect.x + offset.x,
+    y: rect.y + offset.y,
+    width: rect.width,
+    height: rect.height,
+  };
+}
+
 function isInBounds(rect: Rectangle) {
   return screen.getAllDisplays().some(({ bounds }) => {
     const { x, y, width, height } = bounds;
@@ -247,7 +256,8 @@ export function createWindow(props?: WindowProps): BrowserWindow {
     store.clearWindowBounds();
   }
 
-  window.setBounds(store.getWindowBounds());
+  // We offset new windows a bit so they are visible if spawned on top of existing ones
+  window.setBounds(offsetRectangle(store.getWindowBounds()));
 
   window.on('close', () => {
     store.setWindowBounds(window.getBounds());
