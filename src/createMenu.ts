@@ -1,11 +1,14 @@
 import {
   app,
+  clipboard,
+  dialog,
   Menu,
   MenuItem,
   MenuItemConstructorOptions,
 } from 'electron';
 import { isProduction } from './constants';
 import { createWindow } from './createWindow';
+import { handleAuthComplete } from './deeplink';
 import { isMac } from './platform';
 
 const newWindowMenuItem = {
@@ -13,6 +16,38 @@ const newWindowMenuItem = {
   accelerator: 'CommandOrControl+Shift+N',
   click: () => createWindow(),
 };
+
+const completeAuthFromClipboardMenuItem = {
+  label: 'Complete Auth From Clipboard',
+  click: () => completeAuthFromClipboard(),
+};
+
+// we use deeplinking for authentication, but deeplinks are not supported in
+// unpackaged macOS and Linux builds, this is a dev-only workaround to finish
+// the authentication flow by copying the auth url into a clipboard
+async function completeAuthFromClipboard() {
+  const maybeUrl = clipboard.readText();
+
+  function showUrlInvalidDialog(url: string) {
+    dialog.showErrorBox(
+      'Authentication Error',
+      `The URL in the clipboard is not valid: ${url}`,
+    );
+  }
+
+  try {
+    const url = new URL(maybeUrl);
+    const authToken = url.searchParams.get('authToken');
+
+    if (url.pathname === '/desktopApp/authSuccess' && authToken?.length > 0) {
+      handleAuthComplete(authToken);
+    } else {
+      showUrlInvalidDialog(maybeUrl);
+    }
+  } catch (e) {
+    showUrlInvalidDialog(maybeUrl);
+  }
+}
 
 export function createDockMenu(): Menu {
   const menu = new Menu();
@@ -50,6 +85,7 @@ export function createApplicationMenu(): Menu {
     label: 'File',
     submenu: [
       newWindowMenuItem,
+      !isProduction ? completeAuthFromClipboardMenuItem : [],
       { type: 'separator' },
       isMac() ? { role: 'close' } : { role: 'quit' },
     ],
@@ -71,17 +107,16 @@ export function createApplicationMenu(): Menu {
     ],
   });
 
-  const devOnlyMenuItems = [
+  // View Menu
+  const devOnlyViewMenuItems = [
     { role: 'reload' },
     { role: 'forceReload' },
     { type: 'separator' },
   ];
-
-  // View Menu
   template.push({
     label: 'View',
     submenu: [
-      ...(!isProduction ? devOnlyMenuItems : []),
+      ...(!isProduction ? devOnlyViewMenuItems : []),
       ...(allowDevtools ? [{ role: 'toggleDevTools' }] : []),
       { role: 'togglefullscreen' },
     ],

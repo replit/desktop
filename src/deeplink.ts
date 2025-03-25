@@ -130,8 +130,8 @@ function handleNew(language: string) {
 
 function handleRepl(url: string) {
   if (
-    !personalReplUrlRegex.test(url) && 
-    !teamReplUrlRegex.test(url) && 
+    !personalReplUrlRegex.test(url) &&
+    !teamReplUrlRegex.test(url) &&
     !legacyTeamReplUrlRegex.test(url)
   ) {
     log.error('Expected valid workspace URL');
@@ -152,7 +152,7 @@ function handleRepl(url: string) {
   });
 }
 
-function handleAuthComplete(authToken: string) {
+export function handleAuthComplete(authToken: string) {
   const windows = BrowserWindow.getAllWindows();
   const authUrl = `${baseUrl}${authPage}`;
 
