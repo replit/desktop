@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/electron';
+import * as Sentry from '@sentry/electron/main';
 import { app, autoUpdater, dialog } from 'electron';
 import { isProduction } from './constants';
 import { isLinux, isMac } from './platform';

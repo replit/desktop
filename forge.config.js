@@ -1,3 +1,6 @@
+const fs = require('fs/promises');
+const path = require('path');
+
 const osxNotarize =
   process.env.APPLE_ID &&
   process.env.APPLE_PASSWORD &&
@@ -84,8 +87,6 @@ module.exports = {
         name: 'Replit',
         icon: './assets/logo.icns',
         overwrite: false,
-        // Set a different path for each architecture to avoid conflicts when uploading
-        dmgPath: process.arch === 'arm64' ? 'Replit.dmg' : 'Replit-Intel.dmg',
         additionalDMGOptions: {
           'background-color': '#0E1525',
         },
@@ -113,6 +114,23 @@ module.exports = {
       config: {},
     },
   ],
+  hooks: {
+    postMake: async (_, results) => {
+      for (let result of results) {
+        for (let artifact of result.artifacts) {
+          if (artifact.endsWith('Replit.dmg')) {
+            const dmgPath = artifact;
+            if (process.arch !== 'arm64') {
+              await fs.rename(
+                dmgPath,
+                path.join(path.dirname(dmgPath), 'Replit-Intel.dmg'),
+              );
+            }
+          }
+        }
+      }
+    },
+  },
   publishers: [
     {
       name: '@electron-forge/publisher-github',
