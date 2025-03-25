@@ -31,6 +31,8 @@ You can then launch a packaged version of the app (needed to test certain featur
 
 To test your changes on other platforms, we recommend using a Virtual Machine host like [UTM](https://mac.getutm.app).
 
+When going through the authentication flow in development (through unpackaged app) on macOS and Linux, after clicking "Login" on the welcome page, a new empty Electron window will open. This is expected, as [deeplinks are not support in unpackaged apps](https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#:~:text=On%20macOS%20and%20Linux%2C%20this%20feature%20will%20only%20work%20when%20your%20app%20is%20packaged.%20It%20will%20not%20work%20when%20you%27re%20launching%20it%20in%20development%20from%20the%20command%2Dline). To finish the flow, copy the URL from the browser into the clipboard (it should look like `http://localhost:3000/desktopApp/authSuccess?authToken=...`), and from the app menubar choose "File -> Complete Auth From Clipboard". This menu item is only available in dev.
+
 ## API Versioning
 
 The Electron app communicates with the web frontend through the `replitDesktop` global object defined in `src/preload.ts`. As we develop both applications, this API has to be able to adapt, but at the same time can't break existing clients. The main failure mode we're trying to avoid is someone opening an older version of the Electron app and loading a newer version of the web client which requires a new API that's not supported by the old Electron client.
@@ -100,3 +102,4 @@ Note that to recreate the `pfx` file (which is what's ultimately needed to sign 
 ### CI
 
 We sign the app in CI as part of the build and release process when publishing a new release. Make sure that the above env vars (`APPLE_*` and `WINDOWS_*`) remain valid credentials and are kept up to date in the repository secrets settings used by GitHub actions otherwise the app will not get correctly signed on subsequent releases.
+
