@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/electron';
+import * as Sentry from '@sentry/electron/main';
 import { isProduction } from './constants';
 import log from 'electron-log/main';
 import store from './store';
