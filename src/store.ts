@@ -41,9 +41,9 @@ function getStoreName() {
   }
 
   // Other URLs could be repl.co URLs from hosted RoR instances
-  const { host } = new URL(baseUrl);
+  const { hostname } = new URL(baseUrl);
 
-  return `config-dev-${host}`;
+  return `config-dev-${hostname}`;
 }
 
 function createStore() {
