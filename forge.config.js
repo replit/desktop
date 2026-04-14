@@ -81,11 +81,10 @@ module.exports = {
     {
       name: '@electron-forge/maker-dmg',
       config: {
-        name: 'Replit',
+        // Use a different name for each architecture to avoid conflicts when uploading
+        name: process.arch === 'arm64' ? 'Replit' : 'Replit-Intel',
         icon: './assets/logo.icns',
-        overwrite: false,
-        // Set a different path for each architecture to avoid conflicts when uploading
-        dmgPath: process.arch === 'arm64' ? 'Replit.dmg' : 'Replit-Intel.dmg',
+        overwrite: true,
         additionalDMGOptions: {
           'background-color': '#0E1525',
         },
