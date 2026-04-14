@@ -10,19 +10,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-latest, macos-13, ubuntu-latest, windows-latest ]
-        arch: [ x64, arm64 ]
-        # Publishing artifacts for multiple Windows architectures has
-        # a bug which can cause the wrong architecture to be downloaded
-        # for an update, so until that is fixed, only build Windows x64
-        exclude:
-        - os: windows-latest
-          arch: arm64
-        # Only build arm64 builds on M1 and x86 builds on Intel Mac
-        - os: macos-latest 
-          arch: x64
-        - os: macos-13 
-          arch: arm64 
+        include:
+          - os: macos-latest
+            arch: arm64
+          - os: ubuntu-latest
+            arch: x64
+          - os: ubuntu-latest
+            arch: arm64
+          - os: windows-latest
+            arch: x64
 
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +46,7 @@ jobs:
           fileName: 'windows-certificate.pfx'
           encodedString: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE }}
       - name: Generate MacOS code signing certificate
-        if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
+        if: matrix.os == 'macos-latest'
         run: ./scripts/add-macos-cert.sh
         env:
           MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
