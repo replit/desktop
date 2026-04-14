@@ -16,14 +16,14 @@ jobs:
     runs-on: ubuntu-latest 
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          version: 8.5.1 
+          version: 9
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.10.x
+          node-version: 22.x
           cache: pnpm
       - name: Install
         run: pnpm install
@@ -39,7 +39,7 @@ jobs:
     outputs:
       config: ${{ steps.filter.outputs.config }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ github.event_name == 'push' }}
       - uses: dorny/paths-filter@v2
         id: filter
@@ -58,7 +58,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macOS-latest, macOS-12, ubuntu-latest, windows-latest ]
+        os: [ macos-latest, macos-13, ubuntu-latest, windows-latest ]
         arch: [ x64, arm64 ]
         # Publishing artifacts for multiple Windows architectures has
         # a bug which can cause the wrong architecture to be downloaded
@@ -67,20 +67,20 @@ jobs:
         - os: windows-latest
           arch: arm64
         # Only build arm64 builds on M1 and x86 builds on Intel Mac
-        - os: macOS-latest 
+        - os: macos-latest 
           arch: x64
-        - os: macOS-12
+        - os: macos-13
           arch: arm64
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          version: 8.5.1 
+          version: 9
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.10.x
+          node-version: 22.x
           cache: pnpm
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -96,7 +96,7 @@ jobs:
           fileName: 'windows-certificate.pfx'
           encodedString: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE }}
       - name: Generate MacOS code signing certificate
-        if: matrix.os == 'macOS-latest' || matrix.os == 'macOS-12'
+        if: matrix.os == 'macos-latest' || matrix.os == 'macos-13'
         run: ./scripts/add-macos-cert.sh
         env:
           MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
