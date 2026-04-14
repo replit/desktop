@@ -5,7 +5,8 @@
     "noImplicitAny": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "target": "es2015",
+    "target": "es2020",
+    "skipLibCheck": true,
     "paths": {
       "*": ["node_modules/*"]
     }
