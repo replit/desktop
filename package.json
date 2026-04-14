@@ -24,6 +24,13 @@
     "pnpm": ">=8.5.1",
     "node": ">=20.10.0"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "electron-winstaller",
+      "esbuild"
+    ]
+  },
   "prettier": {
     "trailingComma": "all",
     "singleQuote": true
