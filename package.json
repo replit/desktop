@@ -48,7 +48,7 @@
     "@typescript-eslint/parser": "^7.0.0",
     "cpy": "^9.0.1",
     "cross-env": "^7.0.3",
-    "electron": "~35.7.5",
+    "electron": "~39.8.5",
     "electron-winstaller": "^5.4.0",
     "esbuild": "^0.25.0",
     "eslint": "^8.57.0",
