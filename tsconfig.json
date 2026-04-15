@@ -4,11 +4,8 @@
     "esModuleInterop": true,
     "noImplicitAny": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "target": "es2015",
-    "paths": {
-      "*": ["node_modules/*"]
-    }
+    "target": "es2020",
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*"
